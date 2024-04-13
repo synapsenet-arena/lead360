@@ -1,4 +1,7 @@
+import { isNonEmptyString } from '@sniptt/guards';
+
 import {
+  AddressFilter,
   CurrencyFilter,
   DateFilter,
   FloatFilter,
@@ -11,7 +14,7 @@ import {
 import { makeAndFilterVariables } from '@/object-record/utils/makeAndFilterVariables';
 import { ViewFilterOperand } from '@/views/types/ViewFilterOperand';
 import { Field } from '~/generated/graphql';
-import { isNonNullable } from '~/utils/isNonNullable';
+import { isDefined } from '~/utils/isDefined';
 
 import { Filter } from '../../object-filter-dropdown/types/Filter';
 
@@ -33,13 +36,11 @@ export const turnObjectDropdownFilterIntoQueryFilter = (
     );
 
     if (!correspondingField) {
-      throw new Error(
-        `Could not find field ${rawUIFilter.fieldMetadataId} in metadata object`,
-      );
+      continue;
     }
 
-    if (!isNonNullable(rawUIFilter.value) || rawUIFilter.value === '') {
-      return undefined;
+    if (!isDefined(rawUIFilter.value) || rawUIFilter.value === '') {
+      continue;
     }
 
     switch (rawUIFilter.definition.type) {
@@ -134,7 +135,7 @@ export const turnObjectDropdownFilterIntoQueryFilter = (
               });
               break;
             case ViewFilterOperand.IsNot:
-              if (parsedRecordIds.length) {
+              if (parsedRecordIds.length > 0) {
                 objectRecordFilters.push({
                   not: {
                     [correspondingField.name + 'Id']: {
@@ -254,6 +255,116 @@ export const turnObjectDropdownFilterIntoQueryFilter = (
             );
         }
         break;
+      case 'ADDRESS':
+        switch (rawUIFilter.operand) {
+          case ViewFilterOperand.Contains:
+            objectRecordFilters.push({
+              or: [
+                {
+                  [correspondingField.name]: {
+                    addressStreet1: {
+                      ilike: `%${rawUIFilter.value}%`,
+                    },
+                  } as AddressFilter,
+                },
+                {
+                  [correspondingField.name]: {
+                    addressStreet2: {
+                      ilike: `%${rawUIFilter.value}%`,
+                    },
+                  } as AddressFilter,
+                },
+                {
+                  [correspondingField.name]: {
+                    addressCity: {
+                      ilike: `%${rawUIFilter.value}%`,
+                    },
+                  } as AddressFilter,
+                },
+              ],
+            });
+            break;
+          case ViewFilterOperand.DoesNotContain:
+            objectRecordFilters.push({
+              and: [
+                {
+                  not: {
+                    [correspondingField.name]: {
+                      addressStreet1: {
+                        ilike: `%${rawUIFilter.value}%`,
+                      },
+                    } as AddressFilter,
+                  },
+                },
+                {
+                  not: {
+                    [correspondingField.name]: {
+                      addressStreet2: {
+                        ilike: `%${rawUIFilter.value}%`,
+                      },
+                    } as AddressFilter,
+                  },
+                },
+                {
+                  not: {
+                    [correspondingField.name]: {
+                      addressCity: {
+                        ilike: `%${rawUIFilter.value}%`,
+                      },
+                    } as AddressFilter,
+                  },
+                },
+              ],
+            });
+            break;
+          default:
+            throw new Error(
+              `Unknown operand ${rawUIFilter.operand} for ${rawUIFilter.definition.type} filter`,
+            );
+        }
+        break;
+      case 'SELECT': {
+        const stringifiedSelectValues = rawUIFilter.value;
+        let parsedOptionValues: string[] = [];
+
+        if (!isNonEmptyString(stringifiedSelectValues)) {
+          break;
+        }
+
+        try {
+          parsedOptionValues = JSON.parse(stringifiedSelectValues);
+        } catch (e) {
+          throw new Error(
+            `Cannot parse filter value for SELECT filter : "${stringifiedSelectValues}"`,
+          );
+        }
+
+        if (parsedOptionValues.length > 0) {
+          switch (rawUIFilter.operand) {
+            case ViewFilterOperand.Is:
+              objectRecordFilters.push({
+                [correspondingField.name]: {
+                  in: parsedOptionValues,
+                } as UUIDFilter,
+              });
+              break;
+            case ViewFilterOperand.IsNot:
+              objectRecordFilters.push({
+                not: {
+                  [correspondingField.name]: {
+                    in: parsedOptionValues,
+                  } as UUIDFilter,
+                },
+              });
+              break;
+            default:
+              throw new Error(
+                `Unknown operand ${rawUIFilter.operand} for ${rawUIFilter.definition.type} filter`,
+              );
+          }
+        }
+        break;
+      }
       default:
         throw new Error('Unknown filter type');
     }

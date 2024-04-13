@@ -25,10 +25,6 @@ jest.mock('uuid', () => ({
   v4: jest.fn(() => mockId),
 }));
 
-jest.mock('@/object-metadata/hooks/useMapFieldMetadataToGraphQLQuery', () => ({
-  useMapFieldMetadataToGraphQLQuery: () => () => '\n',
-}));
-
 jest.mock('@/object-record/hooks/useFindManyRecords', () => ({
   useFindManyRecords: () => ({ records: initialFavorites }),
 }));
@@ -150,7 +146,7 @@ describe('useFavorites', () => {
       };
 
       const responderProvided: ResponderProvided = {
-        announce: (message: string) => console.log(message),
+        announce: () => {},
       };
 
       result.current.handleReorderFavorite(

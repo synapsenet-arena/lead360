@@ -13,15 +13,11 @@ import {
   RenewTokenMutation,
   RenewTokenMutationVariables,
 } from '~/generated/graphql';
+import { isDefined } from '~/utils/isDefined';
+import { isUndefinedOrNull } from '~/utils/isUndefinedOrNull';
 
 const logger = loggerLink(() => 'Twenty-Refresh');
 
-/**
- * Renew token mutation with custom apollo client
- * @param uri string | UriFunction | undefined
- * @param refreshToken string
- * @returns RenewTokenMutation
- */
 const renewTokenMutation = async (
   uri: string | UriFunction | undefined,
   refreshToken: string,
@@ -40,23 +36,18 @@ const renewTokenMutation = async (
   >({
     mutation: RenewTokenDocument,
     variables: {
-      refreshToken: refreshToken,
+      appToken: refreshToken,
     },
     fetchPolicy: 'network-only',
   });
 
-  if (errors || !data) {
+  if (isDefined(errors) || isUndefinedOrNull(data)) {
     throw new Error('Something went wrong during token renewal');
   }
 
   return data;
 };
 
-/**
- * Renew token and update cookie storage
- * @param uri string | UriFunction | undefined
- * @returns TokenPair
- */
 export const renewToken = async (
   uri: string | UriFunction | undefined,
   tokenPair: AuthTokenPair | undefined | null,
@@ -67,5 +58,5 @@ export const renewToken = async (
 
   const data = await renewTokenMutation(uri, tokenPair.refreshToken.token);
 
-  return data.renewToken.tokens;
+  return data?.renewToken.tokens;
 };

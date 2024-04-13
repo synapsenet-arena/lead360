@@ -3,6 +3,7 @@ import { Decorator, Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, waitFor, within } from '@storybook/test';
 
 import { useSetHotkeyScope } from '@/ui/utilities/hotkey/hooks/useSetHotkeyScope';
+import { FieldMetadataType } from '~/generated/graphql';
 
 import { FieldContextProvider } from '../../../__stories__/FieldContextProvider';
 import { useEmailField } from '../../../hooks/useEmailField';
@@ -44,11 +45,12 @@ const EmailFieldInputWithContext = ({
         fieldDefinition={{
           fieldMetadataId: 'email',
           label: 'Email',
-          type: 'EMAIL',
+          type: FieldMetadataType.Email,
           iconName: 'IconLink',
           metadata: {
             fieldName: 'email',
             placeHolder: 'username@email.com',
+            objectMetadataNameSingular: 'person',
           },
         }}
         entityId={entityId}
@@ -74,7 +76,7 @@ const tabJestFn = fn();
 const shiftTabJestFn = fn();
 
 const clearMocksDecorator: Decorator = (Story, context) => {
-  if (context.parameters.clearMocks) {
+  if (context.parameters.clearMocks === true) {
     enterJestFn.mockClear();
     escapeJestfn.mockClear();
     clickOutsideJestFn.mockClear();

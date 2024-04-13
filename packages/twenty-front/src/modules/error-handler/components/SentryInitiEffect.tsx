@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as Sentry from '@sentry/react';
+import { isNonEmptyString } from '@sniptt/guards';
 import { useRecoilValue } from 'recoil';
 
 import { currentUserState } from '@/auth/states/currentUserState';
@@ -7,6 +8,7 @@ import { currentWorkspaceMemberState } from '@/auth/states/currentWorkspaceMembe
 import { currentWorkspaceState } from '@/auth/states/currentWorkspaceState';
 import { sentryConfigState } from '@/client-config/states/sentryConfigState';
 import { REACT_APP_SERVER_BASE_URL } from '~/config';
+import { isDefined } from '~/utils/isDefined';
 
 export const SentryInitEffect = () => {
   const sentryConfig = useRecoilValue(sentryConfigState);
@@ -18,8 +20,10 @@ export const SentryInitEffect = () => {
   const [isSentryInitialized, setIsSentryInitialized] = useState(false);
 
   useEffect(() => {
-    if (sentryConfig?.dsn && !isSentryInitialized) {
+    if (isNonEmptyString(sentryConfig?.dsn) && !isSentryInitialized) {
       Sentry.init({
+        environment: sentryConfig?.environment ?? undefined,
+        release: sentryConfig?.release ?? undefined,
         dsn: sentryConfig?.dsn,
         integrations: [
           new Sentry.BrowserTracing({
@@ -38,7 +42,7 @@ export const SentryInitEffect = () => {
       setIsSentryInitialized(true);
     }
 
-    if (currentUser) {
+    if (isDefined(currentUser)) {
       Sentry.setUser({
         email: currentUser?.email,
         id: currentUser?.id,

@@ -1,6 +1,6 @@
 import { isNonEmptyString } from '@sniptt/guards';
 
-import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
+import { useMapToObjectRecordIdentifier } from '@/object-metadata/hooks/useMapToObjectRecordIdentifier';
 import { OrderBy } from '@/object-metadata/types/OrderBy';
 import { DEFAULT_SEARCH_REQUEST_LIMIT } from '@/object-record/constants/DefaultSearchRequestLimit';
 import { useFindManyRecords } from '@/object-record/hooks/useFindManyRecords';
@@ -9,7 +9,7 @@ import { EntityForSelect } from '@/object-record/relation-picker/types/EntityFor
 import { ObjectRecord } from '@/object-record/types/ObjectRecord';
 import { makeAndFilterVariables } from '@/object-record/utils/makeAndFilterVariables';
 import { makeOrFilterVariables } from '@/object-record/utils/makeOrFilterVariables';
-import { isNonNullable } from '~/utils/isNonNullable';
+import { isDefined } from '~/utils/isDefined';
 
 type SearchFilter = { fieldNames: string[]; filter: string | number };
 
@@ -33,9 +33,10 @@ export const useFilteredSearchEntityQuery = ({
   excludeEntityIds?: string[];
   objectNameSingular: string;
 }): EntitiesForMultipleEntitySelect<EntityForSelect> => {
-  const { mapToObjectRecordIdentifier } = useObjectMetadataItem({
+  const { mapToObjectRecordIdentifier } = useMapToObjectRecordIdentifier({
     objectNameSingular,
   });
+
   const mappingFunction = (record: ObjectRecord) => ({
     ...mapToObjectRecordIdentifier(record),
     record,
@@ -59,7 +60,7 @@ export const useFilteredSearchEntityQuery = ({
       fieldNames.map((fieldName) => {
         const [parentFieldName, subFieldName] = fieldName.split('.');
 
-        if (subFieldName) {
+        if (isNonEmptyString(subFieldName)) {
           // Composite field
           return {
             [parentFieldName]: {
@@ -102,15 +103,11 @@ export const useFilteredSearchEntityQuery = ({
     });
 
   return {
-    selectedEntities: selectedRecords
-      .map(mappingFunction)
-      .filter(isNonNullable),
+    selectedEntities: selectedRecords.map(mappingFunction).filter(isDefined),
     filteredSelectedEntities: filteredSelectedRecords
       .map(mappingFunction)
-      .filter(isNonNullable),
-    entitiesToSelect: recordsToSelect
-      .map(mappingFunction)
-      .filter(isNonNullable),
+      .filter(isDefined),
+    entitiesToSelect: recordsToSelect.map(mappingFunction).filter(isDefined),
     loading:
       recordsToSelectLoading ||
       filteredSelectedRecordsLoading ||

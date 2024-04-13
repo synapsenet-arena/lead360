@@ -26,8 +26,6 @@ const StyledContainer = styled.div`
   display: flex;
   flex: 1;
   flex-direction: row;
-  margin-left: ${({ theme }) => theme.spacing(2)};
-  margin-right: ${({ theme }) => theme.spacing(2)};
 `;
 
 const StyledWrapper = styled.div`
@@ -50,12 +48,12 @@ export const RecordBoard = ({ recordBoardId }: RecordBoardProps) => {
   const boardRef = useRef<HTMLDivElement>(null);
 
   const {
-    getColumnIdsState,
+    columnIdsState,
     columnsFamilySelector,
     recordIdsByColumnIdFamilyState,
   } = useRecordBoardStates(recordBoardId);
 
-  const columnIds = useRecoilValue(getColumnIdsState());
+  const columnIds = useRecoilValue(columnIdsState);
 
   const { resetRecordSelection, setRecordAsSelected } =
     useRecordBoardSelection(recordBoardId);

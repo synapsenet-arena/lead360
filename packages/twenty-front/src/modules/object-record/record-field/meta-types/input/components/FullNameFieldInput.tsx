@@ -5,7 +5,7 @@ import { FieldInputOverlay } from '@/ui/field/input/components/FieldInputOverlay
 
 import { usePersistField } from '../../../hooks/usePersistField';
 
-import { FieldInputEvent } from './DateFieldInput';
+import { FieldInputEvent } from './DateTimeFieldInput';
 
 const FIRST_NAME_PLACEHOLDER_WITH_SPECIAL_CHARACTER_TO_AVOID_PASSWORD_MANAGERS =
   'F‌‌irst name';
@@ -66,6 +66,10 @@ export const FullNameFieldInput = ({
     setDraftValue(convertToFullName(newDoubleText));
   };
 
+  const handlePaste = (newDoubleText: FieldDoubleText) => {
+    setDraftValue(convertToFullName(newDoubleText));
+  };
+
   return (
     <FieldInputOverlay>
       <DoubleTextInput
@@ -82,6 +86,7 @@ export const FullNameFieldInput = ({
         onEscape={handleEscape}
         onShiftTab={handleShiftTab}
         onTab={handleTab}
+        onPaste={handlePaste}
         hotkeyScope={hotkeyScope}
         onChange={handleChange}
       />

@@ -54,6 +54,7 @@ export const SignInUpForm = () => {
   const { form } = useSignInUpForm();
 
   const {
+    isInviteMode,
     signInUpStep,
     signInUpMode,
     continueWithCredentials,
@@ -70,8 +71,10 @@ export const SignInUpForm = () => {
       } else if (signInUpStep === SignInUpStep.Email) {
         continueWithCredentials();
       } else if (signInUpStep === SignInUpStep.Password) {
-        setShowErrors(true);
-        form.handleSubmit(submitCredentials)();
+        if (!form.formState.isSubmitting) {
+          setShowErrors(true);
+          form.handleSubmit(submitCredentials)();
+        }
       }
     }
   };
@@ -89,14 +92,21 @@ export const SignInUpForm = () => {
   }, [signInUpMode, signInUpStep]);
 
   const title = useMemo(() => {
-    if (signInUpMode === SignInUpMode.Invite) {
+    if (isInviteMode) {
       return `Join ${workspace?.displayName ?? ''} team`;
+    }
+
+    if (
+      signInUpStep === SignInUpStep.Init ||
+      signInUpStep === SignInUpStep.Email
+    ) {
+      return 'Welcome to Twenty';
     }
 
     return signInUpMode === SignInUpMode.SignIn
       ? 'Sign in to Twenty'
       : 'Sign up to Twenty';
-  }, [signInUpMode, workspace?.displayName]);
+  }, [signInUpMode, workspace?.displayName, isInviteMode, signInUpStep]);
 
   const theme = useTheme();
 
@@ -217,7 +227,7 @@ export const SignInUpForm = () => {
             }}
             Icon={() => form.formState.isSubmitting && <Loader />}
             disabled={
-              SignInUpStep.Init
+              signInUpStep === SignInUpStep.Init
                 ? false
                 : signInUpStep === SignInUpStep.Email
                   ? !form.watch('email')
@@ -229,14 +239,14 @@ export const SignInUpForm = () => {
           />
         </StyledForm>
       </StyledContentContainer>
-      {signInUpStep === SignInUpStep.Password ? (
+      {signInUpStep === SignInUpStep.Password && (
         <ActionLink onClick={handleResetPassword(form.getValues('email'))}>
           Forgot your password?
         </ActionLink>
-      ) : (
+      )}
+      {signInUpStep === SignInUpStep.Init && (
         <FooterNote>
-          By using Twenty, you agree to the Terms of Service and Data Processing
-          Agreement.
+          By using Twenty, you agree to the Terms of Service and Privacy Policy.
         </FooterNote>
       )}
     </>

@@ -3,8 +3,9 @@ import { ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
 import { getLabelIdentifierFieldMetadataItem } from '@/object-metadata/utils/getLabelIdentifierFieldMetadataItem';
 import { isLabelIdentifierField } from '@/object-metadata/utils/isLabelIdentifierField';
 import { SettingsObjectFieldSelectFormValues } from '@/settings/data-model/components/SettingsObjectFieldSelectForm';
-import { SETTINGS_FIELD_METADATA_TYPES } from '@/settings/data-model/constants/SettingsFieldMetadataTypes';
+import { getSettingsFieldTypeConfig } from '@/settings/data-model/utils/getSettingsFieldTypeConfig';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
+import { isDefined } from '~/utils/isDefined';
 
 export const getFieldDefaultPreviewValue = ({
   fieldMetadataItem,
@@ -20,27 +21,41 @@ export const getFieldDefaultPreviewValue = ({
   relationObjectMetadataItem?: ObjectMetadataItem;
   selectOptions?: SettingsObjectFieldSelectFormValues;
 }) => {
-  // Select field
-  if (fieldMetadataItem.type === FieldMetadataType.Select && selectOptions) {
-    return selectOptions.find(({ isDefault }) => isDefault) || selectOptions[0];
+  if (
+    fieldMetadataItem.type === FieldMetadataType.Select &&
+    isDefined(selectOptions)
+  ) {
+    const defaultSelectOption =
+      selectOptions.find(({ isDefault }) => isDefault) || selectOptions[0];
+    return defaultSelectOption.value;
   }
 
-  // Relation field
+  if (
+    fieldMetadataItem.type === FieldMetadataType.MultiSelect &&
+    isDefined(selectOptions)
+  ) {
+    return selectOptions.map((selectOption) => selectOption.value);
+  }
+
   if (
     fieldMetadataItem.type === FieldMetadataType.Relation &&
-    relationObjectMetadataItem
+    isDefined(relationObjectMetadataItem)
   ) {
     const relationLabelIdentifierFieldMetadataItem =
       getLabelIdentifierFieldMetadataItem(relationObjectMetadataItem);
 
     if (!relationLabelIdentifierFieldMetadataItem) return null;
 
+    const { type: relationLabelIdentifierFieldType } =
+      relationLabelIdentifierFieldMetadataItem;
+    const relationFieldTypeConfig = getSettingsFieldTypeConfig(
+      relationLabelIdentifierFieldType,
+    );
+
     const defaultRelationLabelIdentifierFieldValue =
-      relationLabelIdentifierFieldMetadataItem.type === FieldMetadataType.Text
+      relationLabelIdentifierFieldType === FieldMetadataType.Text
         ? relationObjectMetadataItem.labelSingular
-        : SETTINGS_FIELD_METADATA_TYPES[
-            relationLabelIdentifierFieldMetadataItem.type
-          ]?.defaultValue;
+        : relationFieldTypeConfig?.defaultValue;
 
     const defaultRelationRecord = {
       [relationLabelIdentifierFieldMetadataItem.name]:
@@ -61,8 +76,9 @@ export const getFieldDefaultPreviewValue = ({
       objectMetadataItem,
     });
 
-  // Other fields
+  const fieldTypeConfig = getSettingsFieldTypeConfig(fieldMetadataItem.type);
+
   return isLabelIdentifier && fieldMetadataItem.type === FieldMetadataType.Text
     ? objectMetadataItem.labelSingular
-    : SETTINGS_FIELD_METADATA_TYPES[fieldMetadataItem.type]?.defaultValue;
+    : fieldTypeConfig?.defaultValue;
 };

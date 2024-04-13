@@ -1,45 +1,37 @@
-import { gql, useApolloClient } from '@apollo/client';
+import { useCallback } from 'react';
+import { useApolloClient } from '@apollo/client';
+import { useRecoilValue } from 'recoil';
 
-import { useMapFieldMetadataToGraphQLQuery } from '@/object-metadata/hooks/useMapFieldMetadataToGraphQLQuery';
-import { ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
+import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
+import { objectMetadataItemsState } from '@/object-metadata/states/objectMetadataItemsState';
+import { getRecordFromCache } from '@/object-record/cache/utils/getRecordFromCache';
 import { ObjectRecord } from '@/object-record/types/ObjectRecord';
-import { capitalize } from '~/utils/string/capitalize';
 
 export const useGetRecordFromCache = ({
-  objectMetadataItem,
+  objectNameSingular,
 }: {
-  objectMetadataItem: ObjectMetadataItem;
+  objectNameSingular: string;
 }) => {
-  const mapFieldMetadataToGraphQLQuery = useMapFieldMetadataToGraphQLQuery();
+  const { objectMetadataItem } = useObjectMetadataItem({
+    objectNameSingular,
+  });
+
+  const objectMetadataItems = useRecoilValue(objectMetadataItemsState);
+
   const apolloClient = useApolloClient();
 
-  return <CachedObjectRecord extends ObjectRecord = ObjectRecord>(
-    recordId: string,
-    cache = apolloClient.cache,
-  ) => {
-    if (!objectMetadataItem) {
-      return null;
-    }
-
-    const capitalizedObjectName = capitalize(objectMetadataItem.nameSingular);
-
-    const cacheReadFragment = gql`
-      fragment ${capitalizedObjectName}Fragment on ${capitalizedObjectName} {
-        id
-        ${objectMetadataItem.fields
-          .map((field) => mapFieldMetadataToGraphQLQuery({ field }))
-          .join('\n')}
-      }
-    `;
-
-    const cachedRecordId = cache.identify({
-      __typename: capitalize(objectMetadataItem.nameSingular),
-      id: recordId,
-    });
-
-    return cache.readFragment<CachedObjectRecord & { __typename: string }>({
-      id: cachedRecordId,
-      fragment: cacheReadFragment,
-    });
-  };
+  return useCallback(
+    <CachedObjectRecord extends ObjectRecord = ObjectRecord>(
+      recordId: string,
+      cache = apolloClient.cache,
+    ) => {
+      return getRecordFromCache<CachedObjectRecord>({
+        cache,
+        recordId,
+        objectMetadataItems,
+        objectMetadataItem,
+      });
+    },
+    [objectMetadataItem, objectMetadataItems, apolloClient],
+  );
 };

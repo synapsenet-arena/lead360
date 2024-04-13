@@ -1,12 +1,13 @@
 import { useApolloClient } from '@apollo/client';
 
+import { useObjectMetadataItems } from '@/object-metadata/hooks/useObjectMetadataItems';
 import { ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
 import { getRecordsFromRecordConnection } from '@/object-record/cache/utils/getRecordsFromRecordConnection';
-import { useGenerateFindManyRecordsQuery } from '@/object-record/hooks/useGenerateFindManyRecordsQuery';
 import { ObjectRecord } from '@/object-record/types/ObjectRecord';
 import { ObjectRecordQueryResult } from '@/object-record/types/ObjectRecordQueryResult';
 import { ObjectRecordQueryVariables } from '@/object-record/types/ObjectRecordQueryVariables';
-import { isNonNullable } from '~/utils/isNonNullable';
+import { generateFindManyRecordsQuery } from '@/object-record/utils/generateFindManyRecordsQuery';
+import { isDefined } from '~/utils/isDefined';
 
 export const useReadFindManyRecordsQueryInCache = ({
   objectMetadataItem,
@@ -15,17 +16,24 @@ export const useReadFindManyRecordsQueryInCache = ({
 }) => {
   const apolloClient = useApolloClient();
 
-  const generateFindManyRecordsQuery = useGenerateFindManyRecordsQuery();
+  const { objectMetadataItems } = useObjectMetadataItems();
 
   const readFindManyRecordsQueryInCache = <
     T extends ObjectRecord = ObjectRecord,
   >({
     queryVariables,
+    queryFields,
+    depth,
   }: {
     queryVariables: ObjectRecordQueryVariables;
+    queryFields?: Record<string, any>;
+    depth?: number;
   }) => {
     const findManyRecordsQueryForCacheRead = generateFindManyRecordsQuery({
       objectMetadataItem,
+      objectMetadataItems,
+      queryFields,
+      depth,
     });
 
     const existingRecordsQueryResult = apolloClient.readQuery<
@@ -38,7 +46,7 @@ export const useReadFindManyRecordsQueryInCache = ({
     const existingRecordConnection =
       existingRecordsQueryResult?.[objectMetadataItem.namePlural];
 
-    const existingObjectRecords = isNonNullable(existingRecordConnection)
+    const existingObjectRecords = isDefined(existingRecordConnection)
       ? getRecordsFromRecordConnection({
           recordConnection: existingRecordConnection,
         })

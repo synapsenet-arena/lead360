@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import { useRecoilState } from 'recoil';
 
+import { RightDrawerCalendarEvent } from '@/activities/calendar/right-drawer/components/RightDrawerCalendarEvent';
 import { RightDrawerEmailThread } from '@/activities/emails/right-drawer/components/RightDrawerEmailThread';
-import { RightDrawerEmailThreadTopBar } from '@/activities/emails/right-drawer/components/RightDrawerEmailThreadTopBar';
 import { RightDrawerCreateActivity } from '@/activities/right-drawer/components/create/RightDrawerCreateActivity';
 import { RightDrawerEditActivity } from '@/activities/right-drawer/components/edit/RightDrawerEditActivity';
 
@@ -23,32 +23,35 @@ const StyledRightDrawerBody = styled.div`
   height: calc(
     100vh - ${({ theme }) => theme.spacing(14)} - 1px
   ); // (-1 for border)
-  overflow: auto;
+  //overflow: auto;
   position: relative;
 `;
+
+const RIGHT_DRAWER_PAGES_CONFIG = {
+  [RightDrawerPages.CreateActivity]: {
+    page: <RightDrawerCreateActivity />,
+    topBar: <RightDrawerActivityTopBar />,
+  },
+  [RightDrawerPages.EditActivity]: {
+    page: <RightDrawerEditActivity />,
+    topBar: <RightDrawerActivityTopBar />,
+  },
+  [RightDrawerPages.ViewEmailThread]: {
+    page: <RightDrawerEmailThread />,
+    topBar: <RightDrawerActivityTopBar showActionBar={false} />,
+  },
+  [RightDrawerPages.ViewCalendarEvent]: {
+    page: <RightDrawerCalendarEvent />,
+    topBar: <RightDrawerActivityTopBar showActionBar={false} />,
+  },
+};
 
 export const RightDrawerRouter = () => {
   const [rightDrawerPage] = useRecoilState(rightDrawerPageState);
 
-  let page = <></>;
-  let topBar = <></>;
-
-  switch (rightDrawerPage) {
-    case RightDrawerPages.CreateActivity:
-      page = <RightDrawerCreateActivity />;
-      topBar = <RightDrawerActivityTopBar />;
-      break;
-    case RightDrawerPages.EditActivity:
-      page = <RightDrawerEditActivity />;
-      topBar = <RightDrawerActivityTopBar />;
-      break;
-    case RightDrawerPages.ViewEmailThread:
-      page = <RightDrawerEmailThread />;
-      topBar = <RightDrawerEmailThreadTopBar />;
-      break;
-    default:
-      break;
-  }
+  const { topBar = null, page = null } = rightDrawerPage
+    ? RIGHT_DRAWER_PAGES_CONFIG[rightDrawerPage]
+    : {};
 
   return (
     <StyledRightDrawerPage>

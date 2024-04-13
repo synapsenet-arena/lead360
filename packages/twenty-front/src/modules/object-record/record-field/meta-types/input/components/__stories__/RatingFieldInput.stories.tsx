@@ -4,6 +4,7 @@ import { expect, fn, userEvent, waitFor, within } from '@storybook/test';
 
 import { useSetHotkeyScope } from '@/ui/utilities/hotkey/hooks/useSetHotkeyScope';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
+import { isDefined } from '~/utils/isDefined';
 
 import { FieldRatingValue } from '../../../../types/FieldMetadata';
 import { FieldContextProvider } from '../../../__stories__/FieldContextProvider';
@@ -49,6 +50,7 @@ const RatingFieldInputWithContext = ({
         iconName: 'Icon123',
         metadata: {
           fieldName: 'Rating',
+          objectMetadataNameSingular: 'person',
         },
       }}
       entityId={entityId}
@@ -62,7 +64,7 @@ const RatingFieldInputWithContext = ({
 const submitJestFn = fn();
 
 const clearMocksDecorator: Decorator = (Story, context) => {
-  if (context.parameters.clearMocks) {
+  if (context.parameters.clearMocks === true) {
     submitJestFn.mockClear();
   }
   return <Story />;
@@ -100,7 +102,7 @@ export const Submit: Story = {
     const firstStar = input.firstElementChild;
 
     await waitFor(() => {
-      if (firstStar) {
+      if (isDefined(firstStar)) {
         userEvent.click(firstStar);
         expect(submitJestFn).toHaveBeenCalledTimes(1);
       }

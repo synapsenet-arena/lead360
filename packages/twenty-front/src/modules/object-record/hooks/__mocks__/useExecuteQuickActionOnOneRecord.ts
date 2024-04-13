@@ -3,74 +3,30 @@ import { gql } from '@apollo/client';
 export { responseData } from './useUpdateOneRecord';
 
 export const query = gql`
-  mutation ExecuteQuickActionOnOnePerson($idToExecuteQuickActionOn: ID!) {
+  mutation ExecuteQuickActionOnOnePerson($idToExecuteQuickActionOn: UUID!) {
     executeQuickActionOnPerson(id: $idToExecuteQuickActionOn) {
-      id
-      opportunities {
-        edges {
-          node {
-            __typename
-            id
-          }
+      __typename
+        xLink {
+          label
+          url
         }
-      }
-      xLink {
-        label
-        url
-      }
-      id
-      pointOfContactForOpportunities {
-        edges {
-          node {
-            __typename
-            id
-          }
-        }
-      }
-      createdAt
-      company {
-        __typename
         id
-      }
-      city
-      email
-      activityTargets {
-        edges {
-          node {
-            __typename
-            id
-          }
+        createdAt
+        city
+        email
+        jobTitle
+        name {
+          firstName
+          lastName
         }
-      }
-      jobTitle
-      favorites {
-        edges {
-          node {
-            __typename
-            id
-          }
+        phone
+        linkedinLink {
+          label
+          url
         }
-      }
-      attachments {
-        edges {
-          node {
-            __typename
-            id
-          }
-        }
-      }
-      name {
-        firstName
-        lastName
-      }
-      phone
-      linkedinLink {
-        label
-        url
-      }
-      updatedAt
-      avatarUrl
-      companyId
+        updatedAt
+        avatarUrl
+        companyId
     }
   }
 `;

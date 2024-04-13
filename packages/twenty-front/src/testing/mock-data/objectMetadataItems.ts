@@ -1,5 +1,8 @@
 import { ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
-import { FieldMetadataType, RelationMetadataType } from '~/generated/graphql';
+import {
+  FieldMetadataType,
+  RelationMetadataType,
+} from '~/generated-metadata/graphql';
 
 export const mockObjectMetadataItem: ObjectMetadataItem = {
   __typename: 'object',
@@ -11,6 +14,7 @@ export const mockObjectMetadataItem: ObjectMetadataItem = {
   description: 'A company',
   icon: 'IconBuildingSkyscraper',
   isCustom: false,
+  isRemote: false,
   isActive: true,
   isSystem: false,
   createdAt: '2023-12-19T12:15:28.459Z',
@@ -362,7 +366,7 @@ export const mockObjectMetadataItem: ObjectMetadataItem = {
       icon: 'IconHeart',
       isCustom: false,
       isActive: true,
-      isSystem: false,
+      isSystem: true,
       isNullable: true,
       createdAt: '2023-12-19T12:15:28.459Z',
       updatedAt: '2023-12-19T12:15:28.459Z',

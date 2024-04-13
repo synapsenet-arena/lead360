@@ -84,8 +84,77 @@ export const mocks = [
       query: gql`
         mutation CreateOneFavorite($input: FavoriteCreateInput!) {
           createFavorite(data: $input) {
-            id
+        __typename
+        id
+        companyId
+        createdAt
+        personId
+        person {
+          __typename
+          xLink {
+            label
+            url
           }
+          id
+          createdAt
+          city
+          email
+          jobTitle
+          name {
+            firstName
+            lastName
+          }
+          phone
+          linkedinLink {
+            label
+            url
+          }
+          updatedAt
+          avatarUrl
+          companyId
+        }
+        position
+        workspaceMemberId
+        workspaceMember {
+          __typename
+          colorScheme
+          name {
+            firstName
+            lastName
+          }
+          locale
+          userId
+          avatarUrl
+          createdAt
+          updatedAt
+          id
+        }
+        company {
+          __typename
+          xLink {
+            label
+            url
+          }
+          linkedinLink {
+            label
+            url
+          }
+          domainName
+          annualRecurringRevenue {
+            amountMicros
+            currencyCode
+          }
+          createdAt
+          address
+          updatedAt
+          name
+          accountOwnerId
+          employees
+          id
+          idealCustomerProfile
+        }
+        updatedAt
+      }
         }
       `,
       variables: {
@@ -108,7 +177,7 @@ export const mocks = [
   {
     request: {
       query: gql`
-        mutation DeleteOneFavorite($idToDelete: ID!) {
+        mutation DeleteOneFavorite($idToDelete: UUID!) {
           deleteFavorite(id: $idToDelete) {
             id
           }
@@ -128,12 +197,81 @@ export const mocks = [
     request: {
       query: gql`
         mutation UpdateOneFavorite(
-          $idToUpdate: ID!
+          $idToUpdate: UUID!
           $input: FavoriteUpdateInput!
         ) {
           updateFavorite(id: $idToUpdate, data: $input) {
-            id
+        __typename
+        id
+        companyId
+        createdAt
+        personId
+        person {
+          __typename
+          xLink {
+            label
+            url
           }
+          id
+          createdAt
+          city
+          email
+          jobTitle
+          name {
+            firstName
+            lastName
+          }
+          phone
+          linkedinLink {
+            label
+            url
+          }
+          updatedAt
+          avatarUrl
+          companyId
+        }
+        position
+        workspaceMemberId
+        workspaceMember {
+          __typename
+          colorScheme
+          name {
+            firstName
+            lastName
+          }
+          locale
+          userId
+          avatarUrl
+          createdAt
+          updatedAt
+          id
+        }
+        company {
+          __typename
+          xLink {
+            label
+            url
+          }
+          linkedinLink {
+            label
+            url
+          }
+          domainName
+          annualRecurringRevenue {
+            amountMicros
+            currencyCode
+          }
+          createdAt
+          address
+          updatedAt
+          name
+          accountOwnerId
+          employees
+          id
+          idealCustomerProfile
+        }
+        updatedAt
+      }
         }
       `,
       variables: {

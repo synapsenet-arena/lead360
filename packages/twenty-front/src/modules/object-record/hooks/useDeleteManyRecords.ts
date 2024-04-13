@@ -3,8 +3,10 @@ import { useApolloClient } from '@apollo/client';
 import { triggerDeleteRecordsOptimisticEffect } from '@/apollo/optimistic-effect/utils/triggerDeleteRecordsOptimisticEffect';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { useObjectMetadataItems } from '@/object-metadata/hooks/useObjectMetadataItems';
-import { getDeleteManyRecordsMutationResponseField } from '@/object-record/hooks/useGenerateDeleteManyRecordMutation';
-import { isNonNullable } from '~/utils/isNonNullable';
+import { useGetRecordFromCache } from '@/object-record/cache/hooks/useGetRecordFromCache';
+import { useDeleteManyRecordsMutation } from '@/object-record/hooks/useDeleteManyRecordsMutation';
+import { getDeleteManyRecordsMutationResponseField } from '@/object-record/utils/getDeleteManyRecordsMutationResponseField';
+import { isDefined } from '~/utils/isDefined';
 import { capitalize } from '~/utils/string/capitalize';
 
 type useDeleteOneRecordProps = {
@@ -21,8 +23,17 @@ export const useDeleteManyRecords = ({
 }: useDeleteOneRecordProps) => {
   const apolloClient = useApolloClient();
 
-  const { objectMetadataItem, deleteManyRecordsMutation, getRecordFromCache } =
-    useObjectMetadataItem({ objectNameSingular });
+  const { objectMetadataItem } = useObjectMetadataItem({
+    objectNameSingular,
+  });
+
+  const getRecordFromCache = useGetRecordFromCache({
+    objectNameSingular,
+  });
+
+  const { deleteManyRecordsMutation } = useDeleteManyRecordsMutation({
+    objectNameSingular,
+  });
 
   const { objectMetadataItems } = useObjectMetadataItems();
 
@@ -56,7 +67,7 @@ export const useDeleteManyRecords = ({
 
             const cachedRecords = records
               .map((record) => getRecordFromCache(record.id, cache))
-              .filter(isNonNullable);
+              .filter(isDefined);
 
             triggerDeleteRecordsOptimisticEffect({
               cache,

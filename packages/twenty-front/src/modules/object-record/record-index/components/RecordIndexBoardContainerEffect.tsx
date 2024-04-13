@@ -2,13 +2,16 @@ import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { useObjectMetadataItemOnly } from '@/object-metadata/hooks/useObjectMetadataItemOnly';
+import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { useRecordActionBar } from '@/object-record/record-action-bar/hooks/useRecordActionBar';
 import { useRecordBoard } from '@/object-record/record-board/hooks/useRecordBoard';
 import { useRecordBoardSelection } from '@/object-record/record-board/hooks/useRecordBoardSelection';
 import { useLoadRecordIndexBoard } from '@/object-record/record-index/hooks/useLoadRecordIndexBoard';
 import { recordIndexFieldDefinitionsState } from '@/object-record/record-index/states/recordIndexFieldDefinitionsState';
+import { recordIndexKanbanFieldMetadataIdState } from '@/object-record/record-index/states/recordIndexKanbanFieldMetadataIdState';
 import { computeRecordBoardColumnDefinitionsFromObjectMetadata } from '@/object-record/utils/computeRecordBoardColumnDefinitionsFromObjectMetadata';
+import { FieldMetadataType } from '~/generated-metadata/graphql';
+import { isDefined } from '~/utils/isDefined';
 
 type RecordIndexBoardContainerEffectProps = {
   objectNameSingular: string;
@@ -21,16 +24,17 @@ export const RecordIndexBoardContainerEffect = ({
   recordBoardId,
   viewBarId,
 }: RecordIndexBoardContainerEffectProps) => {
-  const { objectMetadataItem } = useObjectMetadataItemOnly({
+  const { objectMetadataItem } = useObjectMetadataItem({
     objectNameSingular,
   });
 
   const {
     setColumns,
     setObjectSingularName,
-    getSelectedRecordIdsSelector,
+    selectedRecordIdsSelector,
     setFieldDefinitions,
-    getOnFetchMoreVisibilityChangeState,
+    onFetchMoreVisibilityChangeState,
+    setKanbanFieldMetadataName,
   } = useRecordBoard(recordBoardId);
 
   const { fetchMoreRecords, loading } = useLoadRecordIndexBoard({
@@ -40,7 +44,11 @@ export const RecordIndexBoardContainerEffect = ({
   });
 
   const setOnFetchMoreVisibilityChange = useSetRecoilState(
-    getOnFetchMoreVisibilityChangeState(),
+    onFetchMoreVisibilityChangeState,
+  );
+
+  const recordIndexKanbanFieldMetadataId = useRecoilValue(
+    recordIndexKanbanFieldMetadataIdState,
   );
 
   useEffect(() => {
@@ -67,6 +75,7 @@ export const RecordIndexBoardContainerEffect = ({
     setColumns(
       computeRecordBoardColumnDefinitionsFromObjectMetadata(
         objectMetadataItem,
+        recordIndexKanbanFieldMetadataId ?? '',
         navigateToSelectSettings,
       ),
     );
@@ -74,6 +83,7 @@ export const RecordIndexBoardContainerEffect = ({
     navigateToSelectSettings,
     objectMetadataItem,
     objectNameSingular,
+    recordIndexKanbanFieldMetadataId,
     setColumns,
   ]);
 
@@ -85,7 +95,25 @@ export const RecordIndexBoardContainerEffect = ({
     setFieldDefinitions(recordIndexFieldDefinitions);
   }, [objectMetadataItem, setFieldDefinitions, recordIndexFieldDefinitions]);
 
-  const selectedRecordIds = useRecoilValue(getSelectedRecordIdsSelector());
+  useEffect(() => {
+    if (isDefined(recordIndexKanbanFieldMetadataId)) {
+      const kanbanFieldMetadataName = objectMetadataItem?.fields.find(
+        (field) =>
+          field.type === FieldMetadataType.Select &&
+          field.id === recordIndexKanbanFieldMetadataId,
+      )?.name;
+
+      if (isDefined(kanbanFieldMetadataName)) {
+        setKanbanFieldMetadataName(kanbanFieldMetadataName);
+      }
+    }
+  }, [
+    objectMetadataItem,
+    recordIndexKanbanFieldMetadataId,
+    setKanbanFieldMetadataName,
+  ]);
+
+  const selectedRecordIds = useRecoilValue(selectedRecordIdsSelector());
 
   const { setActionBarEntries, setContextMenuEntries } = useRecordActionBar({
     objectMetadataItem,

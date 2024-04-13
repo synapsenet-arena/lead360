@@ -1,13 +1,13 @@
 import { ReactNode, useState } from 'react';
 import styled from '@emotion/styled';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
-import debounce from 'lodash.debounce';
+import { useDebouncedCallback } from 'use-debounce';
 
 import {
   H1Title,
   H1TitleFontColor,
 } from '@/ui/display/typography/components/H1Title';
-import { Button } from '@/ui/input/button/components/Button';
+import { Button, ButtonAccent } from '@/ui/input/button/components/Button';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { Modal } from '@/ui/layout/modal/components/Modal';
 import {
@@ -25,6 +25,7 @@ export type ConfirmationModalProps = {
   deleteButtonText?: string;
   confirmationPlaceholder?: string;
   confirmationValue?: string;
+  confirmButtonAccent?: ButtonAccent;
 };
 
 const StyledConfirmationModal = styled(Modal)`
@@ -66,6 +67,7 @@ export const ConfirmationModal = ({
   deleteButtonText = 'Delete',
   confirmationValue,
   confirmationPlaceholder,
+  confirmButtonAccent = 'danger',
 }: ConfirmationModalProps) => {
   const [inputConfirmationValue, setInputConfirmationValue] =
     useState<string>('');
@@ -76,7 +78,7 @@ export const ConfirmationModal = ({
     isValueMatchingInput(confirmationValue, value);
   };
 
-  const isValueMatchingInput = debounce(
+  const isValueMatchingInput = useDebouncedCallback(
     (value?: string, inputValue?: string) => {
       setIsValidValue(Boolean(value && inputValue && value === inputValue));
     },
@@ -127,7 +129,7 @@ export const ConfirmationModal = ({
               setIsOpen(false);
             }}
             variant="secondary"
-            accent="danger"
+            accent={confirmButtonAccent}
             title={deleteButtonText}
             disabled={!isValidValue}
             fullWidth

@@ -11,6 +11,7 @@ import { useLeaveTableFocus } from '@/object-record/record-table/hooks/internal/
 import { useDragSelect } from '@/ui/utilities/drag-select/hooks/useDragSelect';
 import { useSetHotkeyScope } from '@/ui/utilities/hotkey/hooks/useSetHotkeyScope';
 import { HotkeyScope } from '@/ui/utilities/hotkey/types/HotkeyScope';
+import { isDefined } from '~/utils/isDefined';
 
 import { CellHotkeyScopeContext } from '../../contexts/CellHotkeyScopeContext';
 import { TableHotkeyScope } from '../../types/TableHotkeyScope';
@@ -22,7 +23,7 @@ export const DEFAULT_CELL_SCOPE: HotkeyScope = {
 };
 
 export const useOpenRecordTableCell = () => {
-  const { pathToShowPage } = useContext(RecordTableRowContext);
+  const { pathToShowPage, isReadOnly } = useContext(RecordTableRowContext);
 
   const { setCurrentTableCellInEditMode } = useCurrentTableCellEditMode();
   const setHotkeyScope = useSetHotkeyScope();
@@ -45,6 +46,10 @@ export const useOpenRecordTableCell = () => {
 
   const openTableCell = useRecoilCallback(
     () => (options?: { initialValue?: string }) => {
+      if (isReadOnly) {
+        return;
+      }
+
       if (isFirstColumnCell && !isEmpty) {
         leaveTableFocus();
         navigate(pathToShowPage);
@@ -56,7 +61,7 @@ export const useOpenRecordTableCell = () => {
 
       initFieldInputDraftValue(options?.initialValue);
 
-      if (customCellHotkeyScope) {
+      if (isDefined(customCellHotkeyScope)) {
         setHotkeyScope(
           customCellHotkeyScope.scope,
           customCellHotkeyScope.customScopes,
@@ -69,15 +74,16 @@ export const useOpenRecordTableCell = () => {
       }
     },
     [
+      isReadOnly,
       isFirstColumnCell,
       isEmpty,
-      leaveTableFocus,
-      navigate,
-      pathToShowPage,
       setDragSelectionStartEnabled,
       setCurrentTableCellInEditMode,
       initFieldInputDraftValue,
       customCellHotkeyScope,
+      leaveTableFocus,
+      navigate,
+      pathToShowPage,
       setHotkeyScope,
     ],
   );

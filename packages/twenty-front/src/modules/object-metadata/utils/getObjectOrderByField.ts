@@ -3,15 +3,16 @@ import { OrderBy } from '@/object-metadata/types/OrderBy';
 import { OrderByField } from '@/object-metadata/types/OrderByField';
 import { getLabelIdentifierFieldMetadataItem } from '@/object-metadata/utils/getLabelIdentifierFieldMetadataItem';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
+import { isDefined } from '~/utils/isDefined';
 
-export const getObjectOrderByField = (
+export const getOrderByFieldForObjectMetadataItem = (
   objectMetadataItem: ObjectMetadataItem,
   orderBy?: OrderBy | null,
 ): OrderByField => {
   const labelIdentifierFieldMetadata =
     getLabelIdentifierFieldMetadataItem(objectMetadataItem);
 
-  if (labelIdentifierFieldMetadata) {
+  if (isDefined(labelIdentifierFieldMetadata)) {
     switch (labelIdentifierFieldMetadata.type) {
       case FieldMetadataType.FullName:
         return {

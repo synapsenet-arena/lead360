@@ -13,6 +13,7 @@ import { ExceptionHandlerProvider } from '@/error-handler/components/ExceptionHa
 import { PromiseRejectionEffect } from '@/error-handler/components/PromiseRejectionEffect';
 import { ApolloMetadataClientProvider } from '@/object-metadata/components/ApolloMetadataClientProvider';
 import { ObjectMetadataItemsProvider } from '@/object-metadata/components/ObjectMetadataItemsProvider';
+import { PrefetchDataProvider } from '@/prefetch/components/PrefetchDataProvider';
 import { IconsProvider } from '@/ui/display/icon/components/IconsProvider';
 import { DialogManager } from '@/ui/feedback/dialog-manager/components/DialogManager';
 import { DialogManagerScope } from '@/ui/feedback/dialog-manager/scopes/DialogManagerScope';
@@ -48,6 +49,7 @@ root.render(
                     <UserProvider>
                       <ApolloMetadataClientProvider>
                         <ObjectMetadataItemsProvider>
+                        <PrefetchDataProvider>
                           <AppThemeProvider>
                             <SnackBarProvider>
                               <DialogManagerScope dialogManagerScopeId="dialog-manager">
@@ -62,6 +64,7 @@ root.render(
                               </DialogManagerScope>
                             </SnackBarProvider>
                           </AppThemeProvider>
+                          </PrefetchDataProvider>
                           <PageChangeEffect />
                         </ObjectMetadataItemsProvider>
                       </ApolloMetadataClientProvider>

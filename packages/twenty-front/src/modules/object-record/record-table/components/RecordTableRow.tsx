@@ -23,12 +23,12 @@ const StyledTd = styled.td`
 `;
 
 export const RecordTableRow = ({ recordId, rowIndex }: RecordTableRowProps) => {
-  const { getVisibleTableColumnsSelector, isRowSelectedFamilyState } =
+  const { visibleTableColumnsSelector, isRowSelectedFamilyState } =
     useRecordTableStates();
   const currentRowSelected = useRecoilValue(isRowSelectedFamilyState(recordId));
   const { objectMetadataItem } = useContext(RecordTableContext);
 
-  const visibleTableColumns = useRecoilValue(getVisibleTableColumnsSelector());
+  const visibleTableColumns = useRecoilValue(visibleTableColumnsSelector());
 
   const scrollWrapperRef = useContext(ScrollWrapperContext);
 
@@ -43,8 +43,11 @@ export const RecordTableRow = ({ recordId, rowIndex }: RecordTableRowProps) => {
         recordId,
         rowIndex,
         pathToShowPage:
-          getBasePathToShowPage({ objectMetadataItem }) + recordId,
+          getBasePathToShowPage({
+            objectNameSingular: objectMetadataItem.nameSingular,
+          }) + recordId,
         isSelected: currentRowSelected,
+        isReadOnly: objectMetadataItem.isRemote ?? false,
       }}
     >
       <tr

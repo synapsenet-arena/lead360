@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { useRecordFieldInput } from '@/object-record/record-field/hooks/useRecordFieldInput';
 import { recordStoreFamilySelector } from '@/object-record/record-store/states/selectors/recordStoreFamilySelector';
+import { FieldMetadataType } from '~/generated-metadata/graphql';
 import { canBeCastAsIntegerOrNull } from '~/utils/cast-as-integer-or-null';
 import { convertCurrencyToCurrencyMicros } from '~/utils/convert-currency-amount';
 
@@ -16,7 +17,11 @@ import { isFieldCurrencyValue } from '../../types/guards/isFieldCurrencyValue';
 export const useCurrencyField = () => {
   const { entityId, fieldDefinition, hotkeyScope } = useContext(FieldContext);
 
-  assertFieldMetadata('CURRENCY', isFieldCurrency, fieldDefinition);
+  assertFieldMetadata(
+    FieldMetadataType.Currency,
+    isFieldCurrency,
+    fieldDefinition,
+  );
 
   const fieldName = fieldDefinition.metadata.fieldName;
 
@@ -59,6 +64,8 @@ export const useCurrencyField = () => {
 
   const draftValue = useRecoilValue(getDraftValueSelector());
 
+  const defaultValue = fieldDefinition.defaultValue;
+
   return {
     fieldDefinition,
     fieldValue,
@@ -67,5 +74,6 @@ export const useCurrencyField = () => {
     setFieldValue,
     hotkeyScope,
     persistCurrencyField,
+    defaultValue,
   };
 };

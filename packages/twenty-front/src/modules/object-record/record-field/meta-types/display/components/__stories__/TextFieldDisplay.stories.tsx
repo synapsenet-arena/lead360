@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 
+import { FieldMetadataType } from '~/generated/graphql';
 import { ComponentDecorator } from '~/testing/decorators/ComponentDecorator';
 
 import { FieldContext } from '../../../../contexts/FieldContext';
@@ -28,11 +29,12 @@ const meta: Meta = {
           fieldDefinition: {
             fieldMetadataId: 'text',
             label: 'Text',
-            type: 'TEXT',
+            type: FieldMetadataType.Text,
             iconName: 'IconLink',
             metadata: {
               fieldName: 'Text',
               placeHolder: 'Text',
+              objectMetadataNameSingular: 'person',
             },
           },
           hotkeyScope: 'hotkey-scope',

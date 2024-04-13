@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 
 import { useRegisterInputEvents } from '@/object-record/record-field/meta-types/input/hooks/useRegisterInputEvents';
 import { TEXT_INPUT_STYLE } from '@/ui/theme/constants/TextInputStyle';
+import { isDefined } from '~/utils/isDefined';
 
 export type TextAreaInputProps = {
   disabled?: boolean;
@@ -18,6 +19,7 @@ export type TextAreaInputProps = {
   onClickOutside: (event: MouseEvent | TouchEvent, inputValue: string) => void;
   hotkeyScope: string;
   onChange?: (newText: string) => void;
+  maxRows?: number;
 };
 
 const StyledTextArea = styled(TextareaAutosize)`
@@ -44,6 +46,7 @@ export const TextAreaInput = ({
   onShiftTab,
   onClickOutside,
   onChange,
+  maxRows,
 }: TextAreaInputProps) => {
   const [internalText, setInternalText] = useState(value);
 
@@ -55,7 +58,7 @@ export const TextAreaInput = ({
   const wrapperRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (wrapperRef.current) {
+    if (isDefined(wrapperRef.current)) {
       wrapperRef.current.setSelectionRange(
         wrapperRef.current.value.length,
         wrapperRef.current.value.length,
@@ -83,6 +86,7 @@ export const TextAreaInput = ({
       onChange={handleChange}
       autoFocus={autoFocus}
       value={internalText}
+      maxRows={maxRows}
     />
   );
 };

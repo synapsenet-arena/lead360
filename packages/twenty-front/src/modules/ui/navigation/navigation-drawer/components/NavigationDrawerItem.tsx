@@ -1,12 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
+import { isNonEmptyString } from '@sniptt/guards';
 import { useSetRecoilState } from 'recoil';
+import { Pill } from 'twenty-ui';
 
 import { IconComponent } from '@/ui/display/icon/types/IconComponent';
 import { isNavigationDrawerOpenState } from '@/ui/navigation/states/isNavigationDrawerOpenState';
 import { MOBILE_VIEWPORT } from '@/ui/theme/constants/MobileViewport';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
+import { isDefined } from '~/utils/isDefined';
 
 export type NavigationDrawerItemProps = {
   className?: string;
@@ -36,13 +39,13 @@ const StyledItem = styled.div<StyledItemProps>`
   border: none;
   border-radius: ${({ theme }) => theme.border.radius.sm};
   color: ${(props) => {
-    if (props.active) {
+    if (props.active === true) {
       return props.theme.font.color.primary;
     }
-    if (props.danger) {
+    if (props.danger === true) {
       return props.theme.color.red;
     }
-    if (props.soon) {
+    if (props.soon === true) {
       return props.theme.font.color.light;
     }
     return props.theme.font.color.secondary;
@@ -81,18 +84,6 @@ const StyledItemLabel = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-`;
-
-const StyledSoonPill = styled.div`
-  align-items: center;
-  background-color: ${({ theme }) => theme.background.transparent.light};
-  border-radius: 50px;
-  display: flex;
-  font-size: ${({ theme }) => theme.font.size.xs};
-  height: 16px;
-  justify-content: center;
-  padding-left: ${({ theme }) => theme.spacing(2)};
-  padding-right: ${({ theme }) => theme.spacing(2)};
 `;
 
 const StyledItemCount = styled.div`
@@ -146,12 +137,12 @@ export const NavigationDrawerItem = ({
       setIsNavigationDrawerOpen(false);
     }
 
-    if (onClick) {
+    if (isDefined(onClick)) {
       onClick();
       return;
     }
 
-    if (to) navigate(to);
+    if (isNonEmptyString(to)) navigate(to);
   };
 
   return (
@@ -164,9 +155,9 @@ export const NavigationDrawerItem = ({
       danger={danger}
       soon={soon}
     >
-      {Icon && <Icon size={theme.icon.size.md} stroke={theme.icon.stroke.sm} />}
+      {Icon && <Icon size={theme.icon.size.md} stroke={theme.icon.stroke.md} />}
       <StyledItemLabel>{label}</StyledItemLabel>
-      {soon && <StyledSoonPill>Soon</StyledSoonPill>}
+      {soon && <Pill label="Soon" />}
       {!!count && <StyledItemCount>{count}</StyledItemCount>}
       {keyboard && (
         <StyledKeyBoardShortcut className="keyboard-shortcuts">
