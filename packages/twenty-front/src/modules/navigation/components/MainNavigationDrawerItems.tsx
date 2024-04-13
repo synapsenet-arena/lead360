@@ -1,12 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { IconCheckbox, IconInbox, IconSearch, IconSettings } from 'twenty-ui';
-
+import { IconCheckbox, IconInbox, IconSearch, IconSettings, IconMail } from 'twenty-ui';
 import { CurrentUserDueTaskCountEffect } from '@/activities/tasks/components/CurrentUserDueTaskCountEffect';
 import { currentUserDueTaskCountState } from '@/activities/tasks/states/currentUserTaskCountState';
 import { useCommandMenu } from '@/command-menu/hooks/useCommandMenu';
 import { Favorites } from '@/favorites/components/Favorites';
-import { ObjectMetadataNavItems } from '@/object-metadata/components/ObjectMetadataNavItems';
+import { ObjectMetadataNavItems } from '@/object-metadata/components/ObjectMetadataNavItems'
 import { NavigationDrawerItem } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerItem';
 import { NavigationDrawerSection } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerSection';
 import { NavigationDrawerSectionTitle } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerSectionTitle';
@@ -66,6 +65,21 @@ export const MainNavigationDrawerItems = () => {
       <NavigationDrawerSection>
         <NavigationDrawerSectionTitle label="Workspace" />
         <ObjectMetadataNavItems />
+        <NavigationDrawerItem
+          label="Message Templates"
+          onClick={() => {
+            navigate('/templatelist');
+          }}
+          Icon={IconMail}
+        />
+
+        <NavigationDrawerItem
+          label="Campaigns"
+          onClick={() => {
+            navigate('/campaigns');
+          }}
+          Icon={IconMail}
+        />
       </NavigationDrawerSection>
     </>
   );

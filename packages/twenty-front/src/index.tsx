@@ -6,7 +6,6 @@ import { RecoilRoot } from 'recoil';
 
 import { ApolloProvider } from '@/apollo/components/ApolloProvider';
 import { ClientConfigProvider } from '@/client-config/components/ClientConfigProvider';
-import { ClientConfigProviderEffect } from '@/client-config/components/ClientConfigProviderEffect';
 import { ApolloDevLogEffect } from '@/debug/components/ApolloDevLogEffect';
 import { RecoilDebugObserverEffect } from '@/debug/components/RecoilDebugObserver';
 import { AppErrorBoundary } from '@/error-handler/components/AppErrorBoundary';
@@ -23,8 +22,8 @@ import { SnackBarProviderScope } from '@/ui/feedback/snack-bar-manager/scopes/Sn
 import { AppThemeProvider } from '@/ui/theme/components/AppThemeProvider';
 import { ThemeType } from '@/ui/theme/constants/ThemeLight';
 import { UserProvider } from '@/users/components/UserProvider';
-import { UserProviderEffect } from '@/users/components/UserProviderEffect';
 import { PageChangeEffect } from '~/effect-components/PageChangeEffect';
+import CampaignContext from '~/pages/campaigns/CampaignContext';
 
 import '@emotion/react';
 
@@ -33,9 +32,7 @@ import { App } from './App';
 import './index.css';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') ?? document.body,
-);
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
   <RecoilRoot>
@@ -48,25 +45,25 @@ root.render(
             <ExceptionHandlerProvider>
               <ApolloProvider>
                 <HelmetProvider>
-                  <ClientConfigProviderEffect />
                   <ClientConfigProvider>
-                    <UserProviderEffect />
                     <UserProvider>
                       <ApolloMetadataClientProvider>
                         <ObjectMetadataItemsProvider>
-                          <PrefetchDataProvider>
-                            <AppThemeProvider>
-                              <SnackBarProvider>
-                                <DialogManagerScope dialogManagerScopeId="dialog-manager">
-                                  <DialogManager>
+                        <PrefetchDataProvider>
+                          <AppThemeProvider>
+                            <SnackBarProvider>
+                              <DialogManagerScope dialogManagerScopeId="dialog-manager">
+                                <DialogManager>
+                                  <CampaignContext>
                                     <StrictMode>
                                       <PromiseRejectionEffect />
                                       <App />
                                     </StrictMode>
-                                  </DialogManager>
-                                </DialogManagerScope>
-                              </SnackBarProvider>
-                            </AppThemeProvider>
+                                  </CampaignContext>
+                                </DialogManager>
+                              </DialogManagerScope>
+                            </SnackBarProvider>
+                          </AppThemeProvider>
                           </PrefetchDataProvider>
                           <PageChangeEffect />
                         </ObjectMetadataItemsProvider>

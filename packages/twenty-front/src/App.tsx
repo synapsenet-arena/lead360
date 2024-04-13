@@ -1,23 +1,27 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-
+<<<<import { useRecoilValue } from 'recoil';
 import { VerifyEffect } from '@/auth/components/VerifyEffect';
 import { billingState } from '@/client-config/states/billingState.ts';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { ObjectRecord } from '@/object-record/types/ObjectRecord';
 import { AppPath } from '@/types/AppPath';
+import { CustomPath } from '@/types/CustomPath';
 import { SettingsPath } from '@/types/SettingsPath';
 import { BlankLayout } from '@/ui/layout/page/BlankLayout';
 import { DefaultLayout } from '@/ui/layout/page/DefaultLayout';
 import { PageTitle } from '@/ui/utilities/page-title/PageTitle';
+import { useIsFeatureEnabled } from '@/workspace/hooks/useIsFeatureEnabled';
 import { CommandMenuEffect } from '~/effect-components/CommandMenuEffect';
 import { GotoHotkeysEffect } from '~/effect-components/GotoHotkeysEffect';
 import Authorize from '~/pages/auth/Authorize';
 import { ChooseYourPlan } from '~/pages/auth/ChooseYourPlan.tsx';
+import { useDefaultHomePagePath } from '~/hooks/useDefaultHomePagePath';
 import { CreateProfile } from '~/pages/auth/CreateProfile';
 import { CreateWorkspace } from '~/pages/auth/CreateWorkspace';
 import { PasswordReset } from '~/pages/auth/PasswordReset';
 import { PaymentSuccess } from '~/pages/auth/PaymentSuccess.tsx';
 import { SignInUp } from '~/pages/auth/SignInUp';
 import { DefaultHomePage } from '~/pages/DefaultHomePage';
+import { Campaigns } from '~/pages/campaigns/Campaigns';
 import { ImpersonateEffect } from '~/pages/impersonate/ImpersonateEffect';
 import { NotFound } from '~/pages/not-found/NotFound';
 import { RecordIndexPage } from '~/pages/object-record/RecordIndexPage';
@@ -50,13 +54,38 @@ import { SettingsProfile } from '~/pages/settings/SettingsProfile';
 import { SettingsWorkspace } from '~/pages/settings/SettingsWorkspace';
 import { SettingsWorkspaceMembers } from '~/pages/settings/SettingsWorkspaceMembers';
 import { Tasks } from '~/pages/tasks/Tasks';
-import { getPageTitleFromPath } from '~/utils/title-utils';
 
 export const App = () => {
   const billing = useRecoilValue(billingState);
   const { pathname } = useLocation();
   const pageTitle = getPageTitleFromPath(pathname);
+import { AudioTemplate } from '~/pages/Templates/AudioTemplate';
+import { DocumentTemplate } from '~/pages/Templates/DocumentTemplate';
+import { ImageTemplate } from '~/pages/Templates/ImageTemplate';
+import { TemplatesList } from '~/pages/Templates/TemplatesList';
+import { TextTemplate } from '~/pages/Templates/TextTemplate';
+import { VideoTemplate } from '~/pages/Templates/VideoTemplate';
+import { getPageTitleFromPath } from '~/utils/title-utils';
 
+export const App = () => {
+  const isSelfBillingEnabled = useIsFeatureEnabled('IS_SELF_BILLING_ENABLED');
+  const { pathname } = useLocation();
+  const { defaultHomePagePath } = useDefaultHomePagePath();
+
+  const pageTitle = getPageTitleFromPath(pathname);
+  const isNewRecordBoardEnabled = useIsFeatureEnabled(
+    'IS_NEW_RECORD_BOARD_ENABLED',
+  );
+  const myRecord: ObjectRecord = {
+    id: 'unique_id',
+  };
+
+  const targetableObject = {
+    id: 'string',
+    targetObjectNameSingular: 'string',
+    targetObjectRecord: myRecord,
+    relatedTargetableObjects: undefined,
+  };
   return (
     <>
       <PageTitle title={pageTitle} />
@@ -163,14 +192,6 @@ export const App = () => {
                         path={SettingsPath.DevelopersApiKeyDetail}
                         element={<SettingsDevelopersApiKeyDetail />}
                       />
-                      <Route
-                        path={SettingsPath.DevelopersNewWebhook}
-                        element={<SettingsDevelopersWebhooksNew />}
-                      />
-                      <Route
-                        path={SettingsPath.DevelopersNewWebhookDetail}
-                        element={<SettingsDevelopersWebhooksDetail />}
-                      />
                     </Routes>
                   }
                 />
@@ -205,12 +226,39 @@ export const App = () => {
               </Routes>
             }
           />
+
           <Route path={AppPath.NotFoundWildcard} element={<NotFound />} />
+
         </Route>
         <Route element={<BlankLayout />}>
           <Route path={AppPath.Authorize} element={<Authorize />} />
         </Route>
       </Routes>
+
+          <Route
+            path={CustomPath.ImageTemplatePage}
+            element={<ImageTemplate targetableObject={targetableObject} />}
+          />
+          <Route
+            path={CustomPath.TextTemplatePage}
+            element={<TextTemplate />}
+          />
+          <Route path={CustomPath.CampaignsPage} element={<Campaigns />} />
+          <Route
+            path={CustomPath.AudioTemplatePage}
+            element={<AudioTemplate targetableObject={targetableObject} />}
+          />
+          <Route
+            path={CustomPath.VideoTemplatePage}
+            element={<VideoTemplate targetableObject={targetableObject} />}
+          />
+          <Route
+            path={CustomPath.DocumentTemplatePage}
+            element={<DocumentTemplate targetableObject={targetableObject} />}
+          />
+          <Route path={CustomPath.TemplatesPage} element={<TemplatesList />} />
+        </Routes>
+      </DefaultLayout>
     </>
   );
 };
