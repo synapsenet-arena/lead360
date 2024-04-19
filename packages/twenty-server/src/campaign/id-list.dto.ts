@@ -7,10 +7,10 @@ export class IdList {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => IdDto)
-  selected: IdDto[];
+  selectedID: IdDto[];
 
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => IdDto)
-  unselected: IdDto[];
+  unselectedID: IdDto[];
 }

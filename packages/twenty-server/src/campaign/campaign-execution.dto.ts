@@ -10,13 +10,13 @@ export class CampaignExecutionDTO {
   @IsISO8601({ strict: true })
   queryTimestamp: string;
 
-  campaignExecutionId: string;
+  campaignTriggerId: string;
 
   @IsISO8601({ strict: true })
   startDate: Date;
 
   @IsISO8601({ strict: true })
-  endDate: Date;
+  stopDate: Date;
 
   @ValidateNested()
   @Type(() => IdList)

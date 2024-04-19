@@ -4,26 +4,42 @@ export class FormDataDTO {
   @IsOptional()
   email: string;
 
+  @IsOptional()
   firstName: string;
 
   @IsOptional()
-  lastName: string;
+  name: string;
 
   @IsOptional()
-  appintmentDate: Date;
+  weight: string;
 
   @IsOptional()
-  contactNumber: string;
+  gender: string;
+
+  @IsOptional()
+  medicalHistory: string;
+
+  @IsOptional()
+  appointmentReason: string;
+
+  @IsOptional()
+  height: string;
+
+  @IsOptional()
+  appointmentType: string;
 
   @IsOptional()
   appointmentLocation: string;
 
   @IsOptional()
-  reasonForAppointment: string;
-
-  @IsOptional()
   consent: string;
 
   @IsOptional()
-  appointmentType: string;
+  phoneNumber: string;
+
+  @IsOptional()
+  lastName: string;
+
+  @IsOptional()
+  appointmentDate: Date;
 }

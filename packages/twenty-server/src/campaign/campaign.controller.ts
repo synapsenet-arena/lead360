@@ -37,13 +37,4 @@ export class CampaignController {
       return error;
     }
   }
-
-  @Post('/execute/identified')
-  async execute(@Body() body: any) {
-    try {
-      this.campaignService.triggerIdentifiedWorkflow(body);
-    } catch (error) {
-      return error;
-    }
-  }
 }
