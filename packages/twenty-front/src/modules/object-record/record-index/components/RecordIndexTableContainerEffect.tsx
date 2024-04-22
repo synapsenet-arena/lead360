@@ -30,6 +30,7 @@ import { UPDATE_LAST_EXECUTION_ID } from '@/users/graphql/queries/updateLastExec
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useNavigate } from 'react-router-dom';
 import { CustomPath } from '@/types/CustomPath';
+import { error } from 'console';
 
 type RecordIndexTableContainerEffectProps = {
   objectNameSingular: string;
@@ -55,7 +56,7 @@ export const RecordIndexTableContainerEffect = ({
     color: ${({ theme }) => theme.font.color.secondary};
     display: flex;
     flex-direction: column;
-    height: auto%;
+    height: auto;
     justify-content: space-between;
     width: 100%;
     align-items: center;
@@ -201,7 +202,7 @@ export const RecordIndexTableContainerEffect = ({
     > * + * {
       margin-left: ${({ theme }) => theme.spacing(10)};
     }
-    height: auto%;
+    height: auto;
     justify-content: flex-start;
     width: 100%;
     align-items: center;
@@ -268,7 +269,7 @@ export const RecordIndexTableContainerEffect = ({
   const [updateExecutionID] = useMutation(UPDATE_LAST_EXECUTION_ID);
   const [queryTimeStamp, setQueryTimeStamp] = useState<Date | null>(null);
   const [masterCheckboxChecked, setMasterCheckboxChecked] = useState(true);
-  const [campaignLists, setCampaignLists] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>([])
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const { enqueueSnackBar } = useSnackBar();
   const navigate = useNavigate();
@@ -286,13 +287,9 @@ export const RecordIndexTableContainerEffect = ({
 
   let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
     GET_CAMPAIGN_LISTS,
-    {
-      fetchPolicy: 'network-only',
-      onCompleted: (data) => {
-        setCampaignLists([data]);
-      },
-    },
+    
   );
+  
 
   let [filterleads, { data: filterLeadsData }] = useLazyQuery(FILTER_LEADS, {
     fetchPolicy: 'network-only',
@@ -311,7 +308,7 @@ export const RecordIndexTableContainerEffect = ({
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setCampaignLists([]);
+    setCampaigns([]);
     setLeadsData([]);
     filterLeadsData = [];
     setSelectedRows({});
@@ -331,13 +328,13 @@ export const RecordIndexTableContainerEffect = ({
 
   const handleRunCampaign = async () => {
     try {
-      const result = await selectedCampaign({
-        variables: {
-          id: { eq: selectedRowIds[0] },
-        },
-      });
-      console.log(result, 'RESULT');
-      const campaignExecutionID = `${campaignLists[0]?.campaignLists?.edges[0]
+      // const result = await selectedCampaign({
+      //   variables: {
+      //     id: { eq: selectedRowIds[0] },
+      //   },
+      // });
+      // console.log(result, 'RESULT');
+      const campaignExecutionID = `${campaigns[0]?.campaigns?.edges[0]
         ?.node?.id}-${new Date().toISOString()}`;
 
       const selectedLeadIds = Object.keys(selectedRows).filter(
@@ -373,13 +370,54 @@ export const RecordIndexTableContainerEffect = ({
         stopDateToSend = new Date().toISOString();
       }
 
+     
+      // if (response.ok) {
+      const { data: addTriggerData } = await addTriggerCampaignRecord({
+        variables: {
+          input: {
+            name: campaigns[0]?.campaigns?.edges[0]?.node?.name,
+            executionId: campaignExecutionID,
+            startDate: startDate
+              ? startDate.toISOString()
+              : new Date().toISOString(),
+            stopDate: stopDate
+              ? stopDate.toISOString()
+              : new Date().toISOString(),
+            status: 'ACTIVE',
+            campaignId:  campaigns[0]?.campaigns?.edges[0]?.node?.id
+          },
+        },
+      });
+
+      const { data: updateData } = await updateCampaignListStatus({
+        variables: {
+          idToUpdate: campaigns[0]?.campaigns?.edges[0]?.node?.id,
+          input: {
+            status: 'ACTIVE',
+          },
+        },
+      });
+
+      // const { data: updateExecutionid } = await updateExecutionID({
+      //   variables: {
+      //     idToUpdate: campaigns[0]?.campaigns?.edges[0]?.node?.id,
+      //     input: {
+      //       lastExecutionId: campaignExecutionID,
+      //     },
+      //   },
+      // });
+
+      console.log('Response from ADD_TRIGGER_CAMPAIGN_RECORD:', addTriggerData.createCampaignTrigger.id);
+      console.log('Response from UPDATE_CAMPAIGN_STATUS:', updateData);
+      // console.log('Response from UPDATE_LAST_EXECUTION_ID:', updateExecutionid);
+
       const requestBody = {
-        campaignId: campaignLists[0]?.campaignLists?.edges[0]?.node?.id,
-        QueryTimestamp: queryTimeStamp,
+        campaignId: campaigns[0]?.campaigns?.edges[0]?.node?.id,
+        queryTimestamp: queryTimeStamp,
         id: {
           [idType]: idsToSend,
         },
-        campaignExecutionId: campaignExecutionID,
+        campaignTriggerId: addTriggerData?.createCampaignTrigger?.id,
         startDate: startDateToSend,
         stopDate: stopDateToSend,
       };
@@ -399,43 +437,6 @@ export const RecordIndexTableContainerEffect = ({
       // console.log('Response from the API:', data);
       const response = true;
 
-      // if (response.ok) {
-      const { data: addTriggerData } = await addTriggerCampaignRecord({
-        variables: {
-          input: {
-            name: campaignLists[0]?.campaignLists?.edges[0]?.node?.name,
-            executionId: campaignExecutionID,
-            startDate: startDate
-              ? startDate.toISOString()
-              : new Date().toISOString(),
-            endDate: stopDate
-              ? stopDate.toISOString()
-              : new Date().toISOString(),
-            status: 'ACTIVE',
-          },
-        },
-      });
-
-      const { data: updateData } = await updateCampaignListStatus({
-        variables: {
-          idToUpdate: campaignLists[0]?.campaignLists?.edges[0]?.node?.id,
-          input: {
-            status: 'ACTIVE',
-          },
-        },
-      });
-
-      const { data: updateExecutionid } = await updateExecutionID({
-        variables: {
-          idToUpdate: campaignLists[0]?.campaignLists?.edges[0]?.node?.id,
-          input: {
-            lastExecutionId: campaignExecutionID,
-          },
-        },
-      });
-      console.log('Response from ADD_TRIGGER_CAMPAIGN_RECORD:', addTriggerData);
-      console.log('Response from UPDATE_CAMPAIGN_STATUS:', updateData);
-      console.log('Response from UPDATE_LAST_EXECUTION_ID:', updateExecutionid);
       if (response) {
         setConfirmModalOpen(false);
         setIsModalOpen(false);
@@ -451,8 +452,10 @@ export const RecordIndexTableContainerEffect = ({
 
   const handleDisplayLeads = async () => {
     try {
+      console.log(campaigns[0]?.campaigns?.edges[0]?.node?.segment?.filters, "segmentfilters")
+
       const segmentFilters = JSON.parse(
-        campaignLists[0]?.campaignLists?.edges[0]?.node?.segment?.filters,
+        campaigns[0]?.campaigns?.edges[0]?.node?.segment?.filters
       );
       const response = await filterleads({ variables: segmentFilters });
       const leadsCount = response.data?.leads?.totalCount || 0;
@@ -460,7 +463,7 @@ export const RecordIndexTableContainerEffect = ({
       console.log('Data from the filters fetched:', response.data);
       setQueryTimeStamp(new Date());
       console.log('Timestamp: ', queryTimeStamp?.toString());
-    } catch (error) {
+    } catch (error){
       console.error('Error fetching data:', error);
     }
   };
@@ -512,27 +515,83 @@ export const RecordIndexTableContainerEffect = ({
     handleRunCampaign();
     // setConfirmModalOpen(false);
   };
+  
+  // const fetchSelectedCampaign = async () => {
+  //   let result = await selectedCampaign({
+  //     variables: {
+  //       filter: {
+  //         id: { eq: selectedRowIds[0] },
+  //       },
+  //     },
+  //   });
+  //   setCampaigns(selectedCampaignData
+  //   )
+  //   // setCampaigns([result])
+
+  //   console.log(
+  //     campaigns,"<-------------",
+  //   );
+
+  // };
+  // if(selectedRowIds.length==1 &&runCampaignCallback()){
+  //   fetchSelectedCampaign()
+  // }
 
   useEffect(() => {
     const fetchSelectedCampaign = async () => {
-      const result = await selectedCampaign({
-        variables: {
-          filter: {
-            id: { eq: selectedRowIds[0] },
-          },
-        },
-      });
-      console.log(
-        campaignLists[0]?.campaignLists?.edges[0]?.node?.campaignName,
-        '====',
-      );
-    };
+      if (selectedRowIds.length === 1 && runCampaignCallback()) {
+        try {
+          const  data  = await selectedCampaign({
+            variables: {
+              filter: {
+                id: { eq: selectedRowIds[0] },
+              },
+            },
+          });
+          setCampaigns([data.data]); // Assuming 'data' contains the fetched campaign data
+          console.log('Fetched campaign:', campaigns);
+        setIsModalOpen(true);
 
-    if (runCampaignCallback() && !isModalOpen) {
-      setIsModalOpen(true);
-      fetchSelectedCampaign();
-    }
-  }, [runCampaignCallback, isModalOpen]);
+        } catch (error) {
+          console.error('Error fetching campaign:', error);
+        }
+      }
+    };
+  
+    fetchSelectedCampaign();
+  }, [selectedRowIds, runCampaignCallback, selectedCampaign]);
+//   useEffect(() => {
+//   console.log('Campaigns:', campaigns); // Log campaigns whenever it changes
+// }, [campaigns]);
+
+  //  useEffect(() => {
+  //   const fetchSelectedCampaign = async () => {
+  //     let result = await selectedCampaign({
+  //       variables: {
+  //         filter: {
+  //           id: { eq: selectedRowIds[0] },
+  //         },
+  //       },
+  //     });
+  //     setCampaigns(selectedCampaignData)
+  //     // setCampaigns([result])
+
+  //     console.log(
+  //       campaigns,"<-------------",
+  //     );
+
+  //   };
+
+  //   const fetchData = async () => {
+  //     if (runCampaignCallback() && !isModalOpen) {
+  //       await fetchSelectedCampaign();
+  //       setIsModalOpen(true);
+  //     }
+  //   };
+
+  //    fetchData(); 
+  // }, [runCampaignCallback, isModalOpen]);
+
 
   return (
     <>
@@ -550,8 +609,7 @@ export const RecordIndexTableContainerEffect = ({
                   <StyledTitleText>Campaign Name:</StyledTitleText>
                   <StyledText>
                     {
-                      campaignLists[0]?.campaignLists?.edges[0]?.node
-                        ?.campaignName
+                      campaigns[0]?.campaigns?.edges[0]?.node?.name
                     }
                   </StyledText>
                 </StyledTitleTextContainer>
@@ -559,8 +617,8 @@ export const RecordIndexTableContainerEffect = ({
                   <StyledTitleText>Segment Name:</StyledTitleText>
                   <StyledText>
                     {
-                      campaignLists[0]?.campaignLists?.edges[0]?.node?.segment
-                        ?.segmentName
+                      campaigns[0]?.campaigns?.edges[0]?.node?.segment
+                        ?.name
                     }
                   </StyledText>
                 </StyledTitleTextContainer>
@@ -568,7 +626,7 @@ export const RecordIndexTableContainerEffect = ({
                   <StyledTitleText>Description:</StyledTitleText>
                   <StyledText>
                     {
-                      campaignLists[0]?.campaignLists?.edges[0]?.node
+                      campaigns[0]?.campaigns?.edges[0]?.node
                         ?.description
                     }
                   </StyledText>
@@ -577,8 +635,8 @@ export const RecordIndexTableContainerEffect = ({
                   <StyledTitleText>Specialty:</StyledTitleText>
                   <StyledText>
                     {
-                      campaignLists[0]?.campaignLists?.edges[0]?.node
-                        ?.specialtyType
+                      campaigns[0]?.campaigns?.edges[0]?.node
+                        ?.specialty
                     }
                   </StyledText>
                 </StyledTitleTextContainer>
@@ -586,8 +644,8 @@ export const RecordIndexTableContainerEffect = ({
                   <StyledTitleText>Sub Specialty:</StyledTitleText>
                   <StyledText>
                     {
-                      campaignLists[0]?.campaignLists?.edges[0]?.node
-                        ?.subSpecialtyType
+                      campaigns[0]?.campaigns?.edges[0]?.node
+                        ?.subspecialty
                     }
                   </StyledText>
                 </StyledTitleTextContainer>
@@ -595,8 +653,17 @@ export const RecordIndexTableContainerEffect = ({
                   <StyledTitleText>Message Template:</StyledTitleText>
                   <StyledText>
                     {
-                      campaignLists[0]?.campaignLists?.edges[0]?.node
-                        ?.messagingMedia
+                      campaigns[0]?.campaigns?.edges[0]?.node
+                        ?.messageTemplate?.name
+                    }
+                  </StyledText>
+                </StyledTitleTextContainer>
+                <StyledTitleTextContainer>
+                  <StyledTitleText>Form Template:</StyledTitleText>
+                  <StyledText>
+                    {
+                      campaigns[0]?.campaigns?.edges[0]?.node
+                        ?.formTemplate?.name
                     }
                   </StyledText>
                 </StyledTitleTextContainer>

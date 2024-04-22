@@ -49,7 +49,7 @@ export const RecordIndexPageHeader = ({
     color: ${({ theme }) => theme.font.color.secondary};
     display: flex;
     flex-direction: column;
-    height: auto%;
+    height: auto;
     justify-content: space-between;
     width: 100%;
     align-items: center;
@@ -164,7 +164,7 @@ flex-direction: row;
 > * + * {
   margin-left: ${({ theme }) => theme.spacing(10)};
 }
-height: auto%;
+height: auto;
 justify-content: flex-start;
 width: 100%;
 align-items: center;
@@ -255,13 +255,15 @@ const StyledTable = styled.table`
 
   const fetchCampaigns = () => {
     if (!campaignsLoading) {
+
       console.log('LOADING...');
-      const campaigns = campaignsData?.campaignLists.edges.map(
+      const campaigns = campaignsData?.campaigns.edges.map(
         (edge: { node: any }) => ({
           value: edge.node?.id,
-          label: edge.node?.campaignName,
+          label: edge.node?.name,
         }),
       );
+     
       setCampaignsList(campaigns);
       setSelectedCampaign(campaignsData);
       setShowDropdown(true);
@@ -278,15 +280,15 @@ const StyledTable = styled.table`
     if (selected) {
       setSelectedCampaign(selected.label);
 
-      const campaignDetails = campaignsData?.campaignLists.edges.find(
-        (edge: any) => edge.node.campaignName === selected.label,
+      const campaignDetails = campaignsData?.campaigns.edges.find(
+        (edge: any) => edge.node.name === selected.label,
       );
 
       if (campaignDetails) {
         setCampaignDetails(campaignDetails);
         console.log(
           'Selected Campaign Details:',
-          campaignDetails.node.campaignName,
+          campaignDetails.node.name,
         );
       }
     }
@@ -296,9 +298,9 @@ const StyledTable = styled.table`
   useEffect(() => {
     if (objectNamePlural === 'appointmentForms') {
       setPage('/templatelist');
-    } else if (objectNamePlural === 'campaignLists') {
+    } else if (objectNamePlural === 'campaigns') {
       setPage('/campaigns');
-    } else if (objectNamePlural === 'segmentLists') {
+    } else if (objectNamePlural === 'segments') {
       setPage('/segment');
     } else if (objectNamePlural === 'campaignTriggers') {
       setPage('/campaignTriggers');
@@ -322,10 +324,16 @@ const StyledTable = styled.table`
       setLeadsData(data);
     },
   });
-
   const handleRunCampaign = async () => {
     try {
-      const campaignExecutionID = `${campaignDetails?.node?.id}-${new Date().toISOString()}`;
+      // const result = await selectedCampaign({
+      //   variables: {
+      //     id: { eq: selectedRowIds[0] },
+      //   },
+      // });
+      // console.log(result, 'RESULT');
+      const campaignExecutionID = `${campaignDetails[0]?.campaigns?.edges[0]
+        ?.node?.id}-${new Date().toISOString()}`;
 
       const selectedLeadIds = Object.keys(selectedRows).filter(
         (leadId) => selectedRows[leadId],
@@ -360,13 +368,54 @@ const StyledTable = styled.table`
         stopDateToSend = new Date().toISOString();
       }
 
+     
+      // if (response.ok) {
+      const { data: addTriggerData } = await addTriggerCampaignRecord({
+        variables: {
+          input: {
+            name: campaignDetails[0]?.campaigns?.edges[0]?.node?.name,
+            executionId: campaignExecutionID,
+            startDate: startDate
+              ? startDate.toISOString()
+              : new Date().toISOString(),
+            stopDate: stopDate
+              ? stopDate.toISOString()
+              : new Date().toISOString(),
+            status: 'ACTIVE',
+            campaignId:  campaignDetails[0]?.campaigns?.edges[0]?.node?.id
+          },
+        },
+      });
+
+      const { data: updateData } = await updateCampaignListStatus({
+        variables: {
+          idToUpdate: selectedCampaignId,
+          input: {
+            status: 'ACTIVE',
+          },
+        },
+      });
+
+      // const { data: updateExecutionid } = await updateExecutionID({
+      //   variables: {
+      //     idToUpdate: campaigns[0]?.campaigns?.edges[0]?.node?.id,
+      //     input: {
+      //       lastExecutionId: campaignExecutionID,
+      //     },
+      //   },
+      // });
+
+      console.log('Response from ADD_TRIGGER_CAMPAIGN_RECORD:', addTriggerData.createCampaignTrigger.id);
+      console.log('Response from UPDATE_CAMPAIGN_STATUS:', updateData);
+      // console.log('Response from UPDATE_LAST_EXECUTION_ID:', updateExecutionid);
+
       const requestBody = {
-        campaignId: campaignDetails?.node?.id,
-        QueryTimestamp: queryTimeStamp,
+        campaignId: campaignDetails[0]?.campaigns?.edges[0]?.node?.id,
+        queryTimestamp: queryTimeStamp,
         id: {
           [idType]: idsToSend,
         },
-        campaignExecutionId: campaignExecutionID,
+        campaignTriggerId: addTriggerData?.createCampaignTrigger?.id,
         startDate: startDateToSend,
         stopDate: stopDateToSend,
       };
@@ -386,49 +435,11 @@ const StyledTable = styled.table`
       // console.log('Response from the API:', data);
       const response = true;
 
-      // if (response.ok) {
-      const { data: addTriggerData } = await addTriggerCampaignRecord({
-        variables: {
-          input: {
-            name: campaignDetails?.node?.name,
-            executionId: campaignExecutionID,
-            startDate: startDate
-              ? startDate.toISOString()
-              : new Date().toISOString(),
-            endDate: stopDate
-              ? stopDate.toISOString()
-              : new Date().toISOString(),
-            status: 'ACTIVE',
-          },
-        },
-      });
-
-      const { data: updateData } = await updateCampaignListStatus({
-        variables: {
-          idToUpdate: campaignDetails?.node?.id,
-          input: {
-            status: 'ACTIVE',
-          },
-        },
-      });
-
-      const { data: updateExecutionid } = await updateExecutionID({
-        variables: {
-          idToUpdate: campaignDetails?.node?.id,
-          input: {
-            lastExecutionId: campaignExecutionID,
-          },
-        },
-      });
-      console.log('Response from ADD_TRIGGER_CAMPAIGN_RECORD:', addTriggerData);
-      console.log('Response from UPDATE_CAMPAIGN_STATUS:', updateData);
-      console.log('Response from UPDATE_LAST_EXECUTION_ID:', updateExecutionid);
       if (response) {
         setConfirmModalOpen(false);
         setIsModalOpen(false);
-       
       }
-      navigate(CustomPath.CampaignTriggersPage)
+      navigate(CustomPath.CampaignTriggersPage);
       enqueueSnackBar('Campaign running successfully', {
         variant: 'success',
       });
@@ -542,12 +553,12 @@ const StyledTable = styled.table`
             <StyledCampaignInfoCard>
               <StyledTitleTextContainer>
                 <StyledTitleText>Campaign Name:</StyledTitleText>
-                <StyledText>{campaignDetails?.node?.campaignName}</StyledText>
+                <StyledText>{campaignDetails?.node?.name}</StyledText>
               </StyledTitleTextContainer>
               <StyledTitleTextContainer>
                 <StyledTitleText>Segment Name:</StyledTitleText>
                 <StyledText>
-                  {campaignDetails?.node?.segment?.segmentName}
+                  {campaignDetails?.node?.segment?.name}
                 </StyledText>
               </StyledTitleTextContainer>
               <StyledTitleTextContainer>
@@ -556,17 +567,17 @@ const StyledTable = styled.table`
               </StyledTitleTextContainer>
               <StyledTitleTextContainer>
                 <StyledTitleText>Specialty:</StyledTitleText>
-                <StyledText>{campaignDetails?.node?.specialtyType}</StyledText>
+                <StyledText>{campaignDetails?.node?.specialty}</StyledText>
               </StyledTitleTextContainer>
               <StyledTitleTextContainer>
                 <StyledTitleText>Sub Specialty:</StyledTitleText>
                 <StyledText>
-                  {campaignDetails?.node?.subSpecialtyType}
+                  {campaignDetails?.node?.subspecialty}
                 </StyledText>
               </StyledTitleTextContainer>
               <StyledTitleTextContainer>
                 <StyledTitleText>Message Template:</StyledTitleText>
-                <StyledText>{campaignDetails?.node?.messagingMedia}</StyledText>
+                <StyledText>{campaignDetails?.node?.messageTemplate.name}</StyledText>
               </StyledTitleTextContainer>
             </StyledCampaignInfoCard>
             <SytledHR />

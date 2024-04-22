@@ -56,7 +56,7 @@ const StyledInputCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: auto%;
+  height: auto;
   justify-content: space-between;
   width: 70%;
   align-items: center;
@@ -199,7 +199,7 @@ export const Segment = () => {
     });
     // const filterJson =  await filter.json()
     
-    let filterString = `{ "filter": ${JSON.stringify(filter)}`;
+    let filterString = `{ "filter": ${JSON.stringify(filter)} }`;
 
     console.log('This is the filter:', filterString);
 
@@ -228,8 +228,8 @@ export const Segment = () => {
       const variables = {
         input: {
           id: uuidv4(),
-          segmentName: segmentName,
-          segmentDescription: segmentDescription,
+          name: segmentName,
+          description: segmentDescription,
           filters: filterString,
         },
       };

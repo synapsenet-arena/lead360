@@ -129,7 +129,7 @@ export const Campaigns = () => {
     useQuery(GET_SEGMENT_LISTS);
   const fetchSegments = () => {
     if (!segmentLoading) {
-      const segments = segmentsData?.segmentLists.edges.map(
+      const segments = segmentsData?.segments.edges.map(
         (edge: { node: any }) => ({
           value: edge.node?.id,
           label: edge.node?.segmentName,
