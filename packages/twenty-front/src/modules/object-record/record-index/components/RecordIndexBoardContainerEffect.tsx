@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-
 import { useObjectMetadataItemOnly } from '@/object-metadata/hooks/useObjectMetadataItemOnly';
 import { useRecordActionBar } from '@/object-record/record-action-bar/hooks/useRecordActionBar';
 import { useRecordBoard } from '@/object-record/record-board/hooks/useRecordBoard';
@@ -98,5 +97,4 @@ export const RecordIndexBoardContainerEffect = ({
     setContextMenuEntries?.();
   }, [setActionBarEntries, setContextMenuEntries]);
 
-  return <></>;
 };

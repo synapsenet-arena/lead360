@@ -1,7 +1,6 @@
 import { useCallback, useContext, useState } from 'react';
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
-
 import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
 import { RecordBoardContext } from '@/object-record/record-board/contexts/RecordBoardContext';
 import { RecordBoardColumnContext } from '@/object-record/record-board/record-board-column/contexts/RecordBoardColumnContext';
@@ -75,8 +74,8 @@ export const RecordBoardColumnNewOpportunityButton = () => {
           disableBackgroundBlur
           onCancel={handleCancel}
           onEntitySelected={handleEntitySelect}
-          relationObjectNameSingular={CoreObjectNameSingular.Company}
-          relationPickerScopeId="relation-picker"
+          relationObjectNameSingular={CoreObjectNameSingular.Campaign}
+          // relationPickerScopeId="relation-picker"
           selectedRelationRecordIds={[]}
         />
       ) : (

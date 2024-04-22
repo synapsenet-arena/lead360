@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-
 import { CurrentUserDueTaskCountEffect } from '@/activities/tasks/components/CurrentUserDueTaskCountEffect';
 import { currentUserDueTaskCountState } from '@/activities/tasks/states/currentUserTaskCountState';
 import { useCommandMenu } from '@/command-menu/hooks/useCommandMenu';
@@ -9,7 +8,6 @@ import { ObjectMetadataNavItems } from '@/object-metadata/components/ObjectMetad
 import {
   IconBell,
   IconCheckbox,
-  IconMail,
   IconSearch,
   IconSettings,
 } from '@/ui/display/icon';
@@ -18,7 +16,6 @@ import { NavigationDrawerSection } from '@/ui/navigation/navigation-drawer/compo
 import { NavigationDrawerSectionTitle } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerSectionTitle';
 import { navigationMemorizedUrlState } from '@/ui/navigation/states/navigationMemorizedUrlState';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
-
 import { useIsTasksPage } from '../hooks/useIsTasksPage';
 
 export const MainNavigationDrawerItems = () => {
@@ -72,21 +69,6 @@ export const MainNavigationDrawerItems = () => {
       <NavigationDrawerSection>
         <NavigationDrawerSectionTitle label="Workspace" />
         <ObjectMetadataNavItems />
-        <NavigationDrawerItem
-          label="Message Templates"
-          onClick={() => {
-            navigate('/templatelist');
-          }}
-          Icon={IconMail}
-        />
-
-<NavigationDrawerItem
-          label="Run Campaign"
-          onClick={() => {
-            navigate('/runcampaign');
-          }}
-          Icon={IconMail}
-        />
       </NavigationDrawerSection>
     </>
   );

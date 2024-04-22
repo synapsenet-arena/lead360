@@ -35,22 +35,11 @@ const StyledModalDiv = styled(motion.div)<{
         return theme.modal.size.lg;
       case 'extralarge':
         return theme.modal.size.xl;
-      case 'superlarge':
-        return theme.modal.size.xxl;
       default:
         return 'auto';
     }
   }};
-
-  height: ${({ size, theme }) => {
-    switch (size) {
-
-      case 'superlarge':
-        return theme.modal.size.xxl;
-      default:
-        return 'auto';
-    }
-  }};
+  
   padding: ${({ padding, theme }) => {
     switch (padding) {
       case 'none':

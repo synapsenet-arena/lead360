@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-
 import { useOpenCreateActivityDrawer } from '@/activities/hooks/useOpenCreateActivityDrawer';
 import { useEventTracker } from '@/analytics/hooks/useEventTracker';
 import { useOnboardingStatus } from '@/auth/hooks/useOnboardingStatus';
@@ -19,7 +18,6 @@ import { IconCheckbox } from '@/ui/display/icon';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useSetHotkeyScope } from '@/ui/utilities/hotkey/hooks/useSetHotkeyScope';
 import { useGetWorkspaceFromInviteHashLazyQuery } from '~/generated/graphql';
-
 import { useIsMatchingLocation } from '../hooks/useIsMatchingLocation';
 
 // TODO: break down into smaller functions and / or hooks
@@ -73,7 +71,7 @@ export const PageChangeEffect = () => {
       });
       navigate(AppPath.SignUp);
     };
-    if (isMatchingLocation(CustomPath.CampaignForm)) {
+    if (isMatchingLocation(CustomPath.CampaignForm) || isMatchingLocation(CustomPath.CampaignForm2) || isMatchingLocation(CustomPath.CampaignForm3) ) {
       console.log('Path Location:', location.pathname);
       navigate(location.pathname);
       return;
@@ -155,6 +153,20 @@ export const PageChangeEffect = () => {
         break;
       }
       case isMatchingLocation(CustomPath.CampaignForm): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+      case isMatchingLocation(CustomPath.CampaignForm2): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+      case isMatchingLocation(CustomPath.CampaignForm3): {
         setHotkeyScope(PageHotkeyScope.CampaignForm, {
           goto: true,
           keyboardShortcutMenu: true,

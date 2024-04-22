@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Section } from '@react-email/components';
 import { IconSpeakerphone } from '@tabler/icons-react';
 import { Button, Select, TextArea, TextInput } from 'tsup.ui.index';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 import {
@@ -19,6 +19,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { GET_MESSAGE_TEMPLATES } from '@/users/graphql/queries/getMessageTemplates';
 import { GET_SPECIALTY } from '@/users/graphql/queries/getSpecialtyDetails';
+import { GET_SEGMENT_LISTS } from '@/users/graphql/queries/getSegments';
+import { GET_FORM_TEMPLATES } from '@/users/graphql/queries/getFormTemplates';
 const StyledCheckboxLabel = styled.span`
   margin-left: ${({ theme }) => theme.spacing(2)};
 `;
@@ -97,7 +99,11 @@ type MessageTemplate = {
   value: string;
   label: string;
 };
-
+type SegmentList = {
+  type: string;
+  value: string;
+  label: string;
+};
 export const Campaigns = () => {
   const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>(
     [],
@@ -117,6 +123,44 @@ export const Campaigns = () => {
       }));
     setMessageTemplates(channelTemplates);
   };
+
+  const [segmentsList, setSegmentsList] = useState<any>([]);
+  const { loading: segmentLoading, data: segmentsData } =
+    useQuery(GET_SEGMENT_LISTS);
+  const fetchSegments = () => {
+    if (!segmentLoading) {
+      const segments = segmentsData?.segmentLists.edges.map(
+        (edge: { node: any }) => ({
+          value: edge.node?.id,
+          label: edge.node?.segmentName,
+        }),
+      );
+      setSegmentsList(segments);
+    }
+  };
+
+  const [formTemplates, setFormTemplates] = useState<any>([]);
+  const { loading: formTemplateLoading, data: formTemplateData } =
+    useQuery(GET_FORM_TEMPLATES);
+
+  const fetchFormTemplates = () => {
+    console.log(formTemplateData,">>>>>>>>>>>>")
+    if (!formTemplateLoading) {
+      const forms = formTemplateData?.formTemplates.edges.map(
+        (edge: { node: any }) => ({
+          value: edge.node?.id,
+          label: edge.node?.name,
+        }),
+      );
+      setFormTemplates(forms);
+    }
+  };
+
+  useEffect(() => {
+    fetchSegments();
+    fetchFormTemplates()
+  }, [segmentLoading, formTemplateLoading]);
+
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedSubSpecialty, setSelectedSubSpecialty] = useState('');
 
@@ -176,7 +220,6 @@ export const Campaigns = () => {
     setMessageContent(e.target.value);
     console.log('Message content', messageContent);
   };
-  console.log(campaignData.whatsapptemplate);
 
   const { enqueueSnackBar } = useSnackBar();
   const onSelectCheckBoxChange = (
@@ -219,10 +262,6 @@ export const Campaigns = () => {
       });
     }
   };
-
-  console.log('email: ', campaignData.emailTemplate);
-  console.log('Whatsapp: ', campaignData.whatsappTemplate);
-  console.log('Whatsapp: ', campaignData.whatsapptemplate);
 
   return (
     <PageContainer>
@@ -285,23 +324,22 @@ export const Campaigns = () => {
             />
           </Section>
           <Section>
-          {specialty && (
-            
-            <Section>
-              <H2Title
-                title="Subspecialty Type"
-                description="Select a subspecialization within the selected medical specialty"
-              />
-              <Select
-                fullWidth
-                // disabled
-                dropdownId="Sub Specialty Type"
-                value={subSpecialty}
-                options={SpecialtyTypes[specialty]}
-                onChange={handleSubSpecialtySelectChange}
-              />
-            </Section>
-          )}
+            {specialty && (
+              <Section>
+                <H2Title
+                  title="Subspecialty Type"
+                  description="Select a subspecialization within the selected medical specialty"
+                />
+                <Select
+                  fullWidth
+                  // disabled
+                  dropdownId="Sub Specialty Type"
+                  value={subSpecialty}
+                  options={SpecialtyTypes[specialty]}
+                  onChange={handleSubSpecialtySelectChange}
+                />
+              </Section>
+            )}
           </Section>
           <SytledHR />
           <Section>
@@ -309,18 +347,17 @@ export const Campaigns = () => {
               title="Target Audience"
               description="Your Target Audience will be displayed in Campaign List"
             />
-            <TextInput
-              // placeholder={'Select target Audience'}
-              value={campaignData?.targetAudience}
+            <Select
+              fullWidth
+              dropdownId="segments"
+              value={campaignData.targetAudience}
+              options={segmentsList}
               onChange={(e) =>
                 setCampaignData({
                   ...campaignData,
                   targetAudience: e,
                 })
               }
-              name="targetAudience"
-              required
-              fullWidth
             />
           </Section>
           <SytledHR />
@@ -416,7 +453,8 @@ export const Campaigns = () => {
                 )}
               </StyledComboInputContainer>
             </StyledSection>
-          </Section>
+          </Section>    setShowDropdown(true)
+
 
           <SytledHR />
 
@@ -425,17 +463,17 @@ export const Campaigns = () => {
               title="Loading Page URL"
               description="URL for the landing page, to be used here"
             />
-            <TextInput
-              value={campaignData?.pageUrl}
+            <Select
+              fullWidth
+              dropdownId="formTemplates"
+              value={campaignData.pageUrl}
+              options={formTemplates}
               onChange={(e) =>
                 setCampaignData({
                   ...campaignData,
                   pageUrl: e,
                 })
               }
-              name="pageUrl"
-              required
-              fullWidth
             />
           </Section>
 

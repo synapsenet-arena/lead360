@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const UPDATE_CAMPAIGNLIST_STATUS = gql`
-mutation UpdateOneCampaignList($idToUpdate: ID!, $input: CampaignListUpdateInput!) {
-    updateCampaignList(id: $idToUpdate, data: $input) {
+mutation UpdateOneCampaign($idToUpdate: ID!, $input: CampaignUpdateInput!) {
+    updateCampaign(id: $idToUpdate, data: $input) {
       id
     }
   }

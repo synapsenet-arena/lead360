@@ -5,10 +5,11 @@ import { useMutation, useQuery } from '@apollo/client';
 import { Button } from '@/ui/input/button/components/Button';
 import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
 import { UPDATE_CAMPAIGNLIST_STATUS } from '@/users/graphql/queries/updateCampaignlistStatus';
+import { ADD_TRIGGER_CAMPAIGN_RECORD } from '@/users/graphql/queries/addTriggerCampaignRecord';
 import { UPDATE_LAST_EXECUTION_ID } from '@/users/graphql/queries/updateLastExecutionId';
 import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
 import { useLazyQuery } from '@apollo/client';
-
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import {
   ReactElement,
   JSXElementConstructor,
@@ -17,6 +18,7 @@ import {
 } from 'react';
 import { IconCalendar, IconUsersGroup } from '@tabler/icons-react';
 import { ModalWrapper } from '@/spreadsheet-import/components/ModalWrapper';
+import { ModalWrapper1 } from '@/spreadsheet-import/components/ModalWrapper1';
 import { Section } from '@react-email/components';
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 import {
@@ -192,9 +194,12 @@ export const RunCampaign = () => {
   const [leadsData, setLeadsData] = useState<any | any[]>([]);
   const [totalLeadsCount, setTotalLeadsCount] = useState<number>(0);
   const [updateCampaignListStatus] = useMutation(UPDATE_CAMPAIGNLIST_STATUS);
+  const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
   const [updateExecutionID] = useMutation(UPDATE_LAST_EXECUTION_ID);
   const [queryTimeStamp, setQueryTimeStamp] = useState<Date | null>(null);
   const [masterCheckboxChecked, setMasterCheckboxChecked] = useState(true);
+  const { enqueueSnackBar } = useSnackBar();
+
 
   const fields = [
     'name',
@@ -231,6 +236,7 @@ export const RunCampaign = () => {
       setLeadsData(data);
     },
   });
+
   const [selectedRows, setSelectedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
@@ -297,6 +303,7 @@ export const RunCampaign = () => {
     );
   };
 
+  
   const handleRunCampaign = async () => {
     try {
       const campaignExecutionID = `${selectedRowData?.id}-${new Date().toISOString()}`;
@@ -358,6 +365,25 @@ export const RunCampaign = () => {
       // const data = await response.json();
 
       // console.log('Response from the API:', data);
+      const response =true
+
+      // if (response.ok) {
+      const { data: addTriggerData } = await addTriggerCampaignRecord({
+        variables: {
+          input: {
+            name: selectedRowData?.name,
+            executionId: campaignExecutionID,
+            startDate: startDate
+              ? startDate.toISOString()
+              : new Date().toISOString(),
+            endDate: stopDate
+              ? stopDate.toISOString()
+              : new Date().toISOString(),
+            status: 'ACTIVE',
+          },
+        },
+      });
+
       const { data: updateData } = await updateCampaignListStatus({
         variables: {
           idToUpdate: selectedRowData?.id,
@@ -375,8 +401,17 @@ export const RunCampaign = () => {
           },
         },
       });
+      console.log('Response from ADD_TRIGGER_CAMPAIGN_RECORD:', addTriggerData);
       console.log('Response from UPDATE_CAMPAIGN_STATUS:', updateData);
       console.log('Response from UPDATE_LAST_EXECUTION_ID:', updateExecutionid);
+      if (response) {
+        setConfirmModalOpen(false); 
+        setModalOpen(false); 
+      }
+      enqueueSnackBar('Campaign running successfully', {
+        variant: 'success',
+      });
+
     } catch (error) {
       console.log('Error in triggering campaign', error);
     }
@@ -392,6 +427,20 @@ export const RunCampaign = () => {
     }
     setSelectedRows(updatedSelectedRows);
     setMasterCheckboxChecked(!masterCheckboxChecked);
+  };
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
+  const openConfirmModal = () => {
+    setConfirmModalOpen(true);
+  };
+
+  const confirmRunCampaign = () => {
+    handleRunCampaign();
+    // setConfirmModalOpen(false);
+  };
+
+  const cancelRunCampaign = () => {
+    setConfirmModalOpen(false);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -603,7 +652,7 @@ export const RunCampaign = () => {
               title="Run Campaign"
               variant="primary"
               accent="dark"
-              onClick={handleRunCampaign}
+              onClick={openConfirmModal}
             />
           </StyledButton>
           <StyledInputCard>
@@ -664,6 +713,27 @@ export const RunCampaign = () => {
             )}
           </StyledInputCard>
         </StyledInputCard>
+
+        <ModalWrapper1 isOpen={confirmModalOpen} onClose={cancelRunCampaign}>
+          <StyledInputCard>
+            <StyledText>Are you sure you want to run the campaign?</StyledText>
+
+            <StyledButton>
+              <Button
+                title="Confirm"
+                variant="primary"
+                accent="dark"
+                onClick={confirmRunCampaign}
+              />
+              <Button
+                title="Cancel"
+                variant="primary"
+                accent="danger"
+                onClick={cancelRunCampaign}
+              />
+            </StyledButton>
+          </StyledInputCard>
+        </ModalWrapper1>
       </ModalWrapper>
     </>
   );
