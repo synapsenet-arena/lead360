@@ -9,10 +9,9 @@ import { ModalCloseButton } from './ModalCloseButton';
 const StyledModal = styled(Modal)`
   height: 61%;
   overflow: scroll;
-  min-height: 90%;
-  min-width: 90%;
   position: relative;
-  width: 63%;
+  width: 23%;
+  height: 150px;
   @media (max-width: ${MOBILE_VIEWPORT}px) {
     min-width: auto;
     min-height: auto;
@@ -33,7 +32,7 @@ type ModalWrapperProps = {
   onClose: () => void;
 };
 
-export const ModalWrapper = ({
+export const ModalWrapper1 = ({
   children,
   isOpen,
   onClose,
@@ -41,7 +40,7 @@ export const ModalWrapper = ({
   const { rtl } = useSpreadsheetImportInternal();
 
   return (
-    <StyledModal isOpen={isOpen} size="large">
+    <StyledModal isOpen={isOpen} size="small">
       <StyledRtlLtr dir={rtl ? 'rtl' : 'ltr'}>
         <ModalCloseButton onClose={onClose} />
         {children}

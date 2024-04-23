@@ -28,7 +28,7 @@ export class CampaignController {
       return error;
     }
   }
-
+  
   @Post('/execute')
   async executeCampaign(@Body() campaignExecutionData: CampaignExecutionDTO) {
     try {
@@ -37,4 +37,5 @@ export class CampaignController {
       return error;
     }
   }
+
 }

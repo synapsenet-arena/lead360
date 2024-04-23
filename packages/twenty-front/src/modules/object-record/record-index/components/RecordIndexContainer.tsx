@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
-
 import { useColumnDefinitionsFromFieldMetadata } from '@/object-metadata/hooks/useColumnDefinitionsFromFieldMetadata';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { useObjectNameSingularFromPlural } from '@/object-metadata/hooks/useObjectNameSingularFromPlural';
@@ -151,18 +150,18 @@ export const RecordIndexContainer = ({
       )}
       {recordIndexViewType === ViewType.Kanban && (
         <>
-          <RecordIndexBoardContainer
-            recordBoardId={recordIndexId}
-            viewBarId={recordIndexId}
-            objectNameSingular={objectNameSingular}
-            createRecord={createRecord}
-          />
-          <RecordIndexBoardContainerEffect
-            objectNameSingular={objectNameSingular}
-            recordBoardId={recordIndexId}
-            viewBarId={recordIndexId}
-          />
-        </>
+        <RecordIndexBoardContainer
+          recordBoardId={recordIndexId}
+          viewBarId={recordIndexId}
+          objectNameSingular={objectNameSingular}
+          createRecord={createRecord}
+        />
+        <RecordIndexBoardContainerEffect
+          objectNameSingular={objectNameSingular}
+          recordBoardId={recordIndexId}
+          viewBarId={recordIndexId}
+        />
+      </>
       )}
     </StyledContainer>
   );

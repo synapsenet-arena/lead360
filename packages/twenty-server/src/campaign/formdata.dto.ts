@@ -42,4 +42,5 @@ export class FormDataDTO {
 
   @IsOptional()
   appointmentDate: Date;
+
 }

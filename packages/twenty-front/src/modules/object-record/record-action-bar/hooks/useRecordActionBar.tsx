@@ -1,7 +1,6 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isNonEmptyString } from '@sniptt/guards';
 import { useRecoilCallback, useSetRecoilState } from 'recoil';
-
 import { useFavorites } from '@/favorites/hooks/useFavorites';
 import { ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
 import { useDeleteManyRecords } from '@/object-record/hooks/useDeleteManyRecords';
@@ -25,6 +24,9 @@ type useRecordActionBarProps = {
   selectedRecordIds: string[];
   callback?: () => void;
 };
+
+export const campaignListObject = "campaigns"
+export const campaignTriggerObject = "campaignTriggers"
 
 export const useRecordActionBar = ({
   objectMetadataItem,
@@ -68,10 +70,15 @@ export const useRecordActionBar = ({
     callback?.();
   });
 
+  const [runCampaignClicked,setRunCampaignClicked]=useState(false)
   const handleDeleteClick = useCallback(async () => {
     callback?.();
     await deleteManyRecords(selectedRecordIds);
   }, [callback, deleteManyRecords, selectedRecordIds]);
+  const handleRunCampaign = () => {
+    console.log(selectedRecordIds,"0000000000000000")
+    setRunCampaignClicked(true)
+  }
 
   const handleExecuteQuickActionOnClick = useCallback(async () => {
     callback?.();
@@ -90,8 +97,19 @@ export const useRecordActionBar = ({
         accent: 'danger',
         onClick: () => handleDeleteClick(),
       },
+      ...(selectedRecordIds.length === 1 && (objectMetadataItem.namePlural == campaignListObject || objectMetadataItem.namePlural == campaignTriggerObject)
+        ? [
+            {
+              label: 'Run Campaign',
+              Icon: IconPuzzle,
+              onClick: () => {
+                handleRunCampaign();
+              },
+            },
+          ]
+        : []),
     ],
-    [handleDeleteClick],
+    [handleDeleteClick, handleRunCampaign, selectedRecordIds.length]
   );
 
   const dataExecuteQuickActionOnmentEnabled = useIsFeatureEnabled(
@@ -99,6 +117,13 @@ export const useRecordActionBar = ({
   );
 
   const hasOnlyOneRecordSelected = selectedRecordIds.length === 1;
+  
+
+  useEffect(() => {
+    if(selectedRecordIds.length!=1){
+      setRunCampaignClicked(false)
+    }
+  }, [selectedRecordIds]);
 
   const isFavorite =
     isNonEmptyString(selectedRecordIds[0]) &&
@@ -164,5 +189,13 @@ export const useRecordActionBar = ({
       handleExecuteQuickActionOnClick,
       setActionBarEntriesState,
     ]),
+    runCampaignCallback: useCallback(() => {
+      return runCampaignClicked && selectedRecordIds.length === 1;
+    }, [selectedRecordIds,runCampaignClicked]),
+    runCallback: useCallback(() => {
+      return {'HELLO': "SANJANA"};
+    }, [selectedRecordIds,runCampaignClicked]),
+    
+  
   };
 };

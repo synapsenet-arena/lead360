@@ -229,7 +229,6 @@ export class CampaignService {
       });
 
       const data = await response.json();
-
       if (data.errors) {
         throw error('Required Form Data is Invalid');
       }
@@ -250,7 +249,6 @@ export class CampaignService {
 
         console.log(airflowResponse, 'airflowResponse');
       }
-
       return 'Form Data Saved Successfully';
     } catch (error) {
       console.error(error);

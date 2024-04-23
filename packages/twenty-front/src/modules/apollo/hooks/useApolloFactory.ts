@@ -2,17 +2,14 @@ import { useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InMemoryCache, NormalizedCacheObject } from '@apollo/client';
 import { useRecoilState } from 'recoil';
-
 import { tokenPairState } from '@/auth/states/tokenPairState';
 import { isDebugModeState } from '@/client-config/states/isDebugModeState';
 import { AppPath } from '@/types/AppPath';
 import { REACT_APP_SERVER_BASE_URL } from '~/config';
 import { useIsMatchingLocation } from '~/hooks/useIsMatchingLocation';
 import { useUpdateEffect } from '~/hooks/useUpdateEffect';
-
 import { ApolloFactory } from '../services/apollo.factory';
 import { CustomPath } from '@/types/CustomPath';
-
 export const useApolloFactory = () => {
   // eslint-disable-next-line @nx/workspace-no-state-useref
   const apolloRef = useRef<ApolloFactory<NormalizedCacheObject> | null>(null);
@@ -39,7 +36,7 @@ export const useApolloFactory = () => {
       },
       onUnauthenticatedError: () => {
         // setTokenPair(null);
-        if (isMatchingLocation(CustomPath.CampaignForm)) {
+        if (isMatchingLocation(CustomPath.CampaignForm)  || isMatchingLocation(CustomPath.CampaignForm2) || isMatchingLocation(CustomPath.CampaignForm3)) {
           navigate(location.pathname);
         } else if (
           !isMatchingLocation(AppPath.Verify) &&

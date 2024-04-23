@@ -1,5 +1,4 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
-
 import { ObjectRecord } from '@/object-record/types/ObjectRecord';
 import { AppPath } from '@/types/AppPath';
 import { CustomPath } from '@/types/CustomPath';
@@ -54,6 +53,9 @@ import { TextTemplate } from '~/pages/Templates/TextTemplate';
 import { VideoTemplate } from '~/pages/Templates/VideoTemplate';
 import { getPageTitleFromPath } from '~/utils/title-utils';
 import { Segment } from '~/pages/Segment/Segment';
+import { RunCampaign } from '~/pages/campaigns/RunCampaign';
+import { CampaignForm2 } from '~/pages/campaigns/CampaignForm2';
+import { CampaignForm3 } from '~/pages/campaigns/CampaignForm3';
 
 export const App = () => {
   const isSelfBillingEnabled = useIsFeatureEnabled('IS_SELF_BILLING_ENABLED');
@@ -211,6 +213,8 @@ export const App = () => {
           />
           <Route path={CustomPath.CampaignsPage} element={<Campaigns />} />
           <Route path={CustomPath.CampaignForm} element={<CampaignForm />} />
+          <Route path={CustomPath.CampaignForm2} element={<CampaignForm2 />} />
+          <Route path={CustomPath.CampaignForm3} element={<CampaignForm3 />} />
 
           <Route
             path={CustomPath.AudioTemplatePage}
@@ -227,6 +231,8 @@ export const App = () => {
           <Route path={CustomPath.TemplatesPage} element={<TemplatesList />} />
 
           <Route path={CustomPath.SegmentPage} element={<Segment />} />
+          <Route path={CustomPath.RunCampaign} element={<RunCampaign />} />
+
         </Routes>
       </DefaultLayout>
     </>
