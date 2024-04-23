@@ -32,7 +32,7 @@ export class CampaignController {
   @Post('/execute')
   async executeCampaign(@Body() campaignExecutionData: CampaignExecutionDTO) {
     try {
-      this.campaignService.triggerCampaignStartWorkflow(campaignExecutionData);
+      return this.campaignService.triggerCampaignStartWorkflow(campaignExecutionData);
     } catch (error) {
       return error;
     }

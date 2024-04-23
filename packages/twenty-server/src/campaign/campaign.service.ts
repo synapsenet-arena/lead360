@@ -12,6 +12,7 @@ import { GetFormTemplate } from 'src/campaign/get-form-template-query';
 import { GetLeadData } from 'src/campaign/get-lead-query';
 import { CreateFormResponse } from 'src/campaign/create-form-response-query';
 import { GetOpportunityData } from 'src/campaign/get-opportunity-query';
+import { response } from 'express';
 
 @Injectable()
 export class CampaignService {
@@ -54,7 +55,7 @@ export class CampaignService {
   ) {
     const data = {
       conf: campaignExecutionData,
-      dag_run_id: campaignExecutionData.campaignTriggerId,
+      dag_run_id: `${campaignExecutionData.campaignTriggerId}-${Date.parse(Date())}`,
       logical_date: campaignExecutionData.startDate,
       note: 'string',
     };
@@ -74,7 +75,7 @@ export class CampaignService {
       );
 
       response = await response.json();
-
+      console.log(response)
       return response;
     } catch (error) {
       return error;
