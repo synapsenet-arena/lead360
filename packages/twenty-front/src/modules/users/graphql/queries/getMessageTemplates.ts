@@ -2,295 +2,294 @@ import { gql } from '@apollo/client';
 
 export const GET_MESSAGE_TEMPLATES = gql`
 query FindManyMessageTemplates($filter: MessageTemplateFilterInput, $orderBy: MessageTemplateOrderByInput, $lastCursor: String, $limit: Float) {
-    messageTemplates(
-      filter: $filter
-      orderBy: $orderBy
-      first: $limit
-      after: $lastCursor
-    ) {
-      edges {
-        node {
-          id
-          id
-          position
-          typeOfCommunicationChannels
-          updatedAt
-          attachments {
-            edges {
-              node {
+  messageTemplates(
+    filter: $filter
+    orderBy: $orderBy
+    first: $limit
+    after: $lastCursor
+  ) {
+    edges {
+      node {
+        id
+        updatedAt
+        createdAt
+        channelType
+        name
+        body
+        id
+        favorites {
+          edges {
+            node {
+              __typename
+              id
+              updatedAt
+              campaign {
                 __typename
                 id
-                messageTemplate {
-                  __typename
-                  id
-                }
-                fullPath
-                activity {
-                  __typename
-                  id
-                }
-                updatedAt
-                leadId
-                subspecialty {
-                  __typename
-                  id
-                }
-                segmentList {
-                  __typename
-                  id
-                }
-                lead {
-                  __typename
-                  id
-                }
-                companyId
-                subspecialtyId
-                type
-                campaignList {
-                  __typename
-                  id
-                }
-                messageTemplateId
-                specialty {
-                  __typename
-                  id
-                }
-                segmentListId
-                createdAt
-                person {
-                  __typename
-                  id
-                }
-                id
-                campaignTrigger {
-                  __typename
-                  id
-                }
-                company {
-                  __typename
-                  id
-                }
-                opportunity {
-                  __typename
-                  id
-                }
-                messageResponseId
-                specialtyId
-                appointmentFormId
-                name
-                campaignTriggerId
-                authorId
-                campaignFormId
-                campaignForm {
-                  __typename
-                  id
-                }
-                messageResponse {
-                  __typename
-                  id
-                }
-                campaignListId
-                author {
-                  __typename
-                  id
-                }
-                appointmentForm {
-                  __typename
-                  id
-                }
-                opportunityId
-                activityId
-                personId
               }
-              __typename
+              position
+              workspaceMemberId
+              subspecialtyId
+              formResponse {
+                __typename
+                id
+              }
+              specialty {
+                __typename
+                id
+              }
+              personId
+              company {
+                __typename
+                id
+              }
+              formTemplateId
+              lead {
+                __typename
+                id
+              }
+              campaignTrigger {
+                __typename
+                id
+              }
+              messageTemplateId
+              person {
+                __typename
+                id
+              }
+              campaignTriggerId
+              id
+              segmentId
+              opportunityId
+              subspecialty {
+                __typename
+                id
+              }
+              createdAt
+              segment {
+                __typename
+                id
+              }
+              formTemplate {
+                __typename
+                id
+              }
+              campaignId
+              formResponseId
+              specialtyId
+              opportunity {
+                __typename
+                id
+              }
+              communicationLogId
+              messageTemplate {
+                __typename
+                id
+              }
+              workspaceMember {
+                __typename
+                id
+              }
+              companyId
+              leadId
+              communicationLog {
+                __typename
+                id
+              }
             }
             __typename
           }
-          favorites {
-            edges {
-              node {
-                __typename
-                id
-                updatedAt
-                position
-                workspaceMemberId
-                campaignListId
-                messageTemplate {
-                  __typename
-                  id
-                }
-                campaignFormId
-                subspecialty {
-                  __typename
-                  id
-                }
-                campaignTriggerId
-                personId
-                campaignForm {
-                  __typename
-                  id
-                }
-                company {
-                  __typename
-                  id
-                }
-                appointmentForm {
-                  __typename
-                  id
-                }
-                person {
-                  __typename
-                  id
-                }
-                appointmentFormId
-                id
-                segmentList {
-                  __typename
-                  id
-                }
-                campaignTrigger {
-                  __typename
-                  id
-                }
-                messageResponse {
-                  __typename
-                  id
-                }
-                messageResponseId
-                messageTemplateId
-                segmentListId
-                opportunityId
-                specialty {
-                  __typename
-                  id
-                }
-                subspecialtyId
-                createdAt
-                leadId
-                specialtyId
-                opportunity {
-                  __typename
-                  id
-                }
-                workspaceMember {
-                  __typename
-                  id
-                }
-                companyId
-                campaignList {
-                  __typename
-                  id
-                }
-                lead {
-                  __typename
-                  id
-                }
-              }
-              __typename
-            }
-            __typename
-          }
-          status
-          body
-          typeOfCommunicationChannel
-          name
-          activityTargets {
-            edges {
-              node {
-                __typename
-                id
-                company {
-                  __typename
-                  id
-                }
-                specialtyId
-                campaignFormId
-                messageTemplate {
-                  __typename
-                  id
-                }
-                campaignList {
-                  __typename
-                  id
-                }
-                opportunity {
-                  __typename
-                  id
-                }
-                subspecialty {
-                  __typename
-                  id
-                }
-                activityId
-                id
-                appointmentForm {
-                  __typename
-                  id
-                }
-                person {
-                  __typename
-                  id
-                }
-                leadId
-                messageResponse {
-                  __typename
-                  id
-                }
-                segmentListId
-                createdAt
-                segmentList {
-                  __typename
-                  id
-                }
-                appointmentFormId
-                opportunityId
-                campaignTriggerId
-                campaignTrigger {
-                  __typename
-                  id
-                }
-                activity {
-                  __typename
-                  id
-                }
-                updatedAt
-                messageResponseId
-                campaignForm {
-                  __typename
-                  id
-                }
-                messageTemplateId
-                companyId
-                subspecialtyId
-                lead {
-                  __typename
-                  id
-                }
-                personId
-                specialty {
-                  __typename
-                  id
-                }
-                campaignListId
-              }
-              __typename
-            }
-            __typename
-          }
-          createdAt
           __typename
         }
-        cursor
+        attachments {
+          edges {
+            node {
+              __typename
+              id
+              specialty {
+                __typename
+                id
+              }
+              fullPath
+              activity {
+                __typename
+                id
+              }
+              updatedAt
+              formResponseId
+              companyId
+              campaign {
+                __typename
+                id
+              }
+              communicationLog {
+                __typename
+                id
+              }
+              type
+              segment {
+                __typename
+                id
+              }
+              formResponse {
+                __typename
+                id
+              }
+              subspecialty {
+                __typename
+                id
+              }
+              communicationLogId
+              specialtyId
+              createdAt
+              messageTemplate {
+                __typename
+                id
+              }
+              person {
+                __typename
+                id
+              }
+              formTemplateId
+              subspecialtyId
+              id
+              leadId
+              company {
+                __typename
+                id
+              }
+              messageTemplateId
+              opportunity {
+                __typename
+                id
+              }
+              formTemplate {
+                __typename
+                id
+              }
+              segmentId
+              lead {
+                __typename
+                id
+              }
+              campaignId
+              name
+              authorId
+              campaignTriggerId
+              campaignTrigger {
+                __typename
+                id
+              }
+              author {
+                __typename
+                id
+              }
+              opportunityId
+              activityId
+              personId
+            }
+            __typename
+          }
+          __typename
+        }
+        activityTargets {
+          edges {
+            node {
+              __typename
+              id
+              subspecialtyId
+              company {
+                __typename
+                id
+              }
+              specialtyId
+              opportunity {
+                __typename
+                id
+              }
+              campaignTrigger {
+                __typename
+                id
+              }
+              campaignTriggerId
+              activityId
+              id
+              person {
+                __typename
+                id
+              }
+              messageTemplate {
+                __typename
+                id
+              }
+              formResponseId
+              createdAt
+              opportunityId
+              segmentId
+              campaignId
+              activity {
+                __typename
+                id
+              }
+              lead {
+                __typename
+                id
+              }
+              formResponse {
+                __typename
+                id
+              }
+              updatedAt
+              subspecialty {
+                __typename
+                id
+              }
+              communicationLogId
+              companyId
+              leadId
+              formTemplate {
+                __typename
+                id
+              }
+              specialty {
+                __typename
+                id
+              }
+              communicationLog {
+                __typename
+                id
+              }
+              segment {
+                __typename
+                id
+              }
+              campaign {
+                __typename
+                id
+              }
+              personId
+              formTemplateId
+              messageTemplateId
+            }
+            __typename
+          }
+          __typename
+        }
+        status
+        position
         __typename
       }
-      pageInfo {
-        hasNextPage
-        startCursor
-        endCursor
-        __typename
-      }
-      totalCount
+      cursor
       __typename
     }
+    pageInfo {
+      hasNextPage
+      startCursor
+      endCursor
+      __typename
+    }
+    totalCount
+    __typename
   }
+}
 `;

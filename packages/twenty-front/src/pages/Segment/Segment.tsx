@@ -32,6 +32,7 @@ import { ModalWrapper } from '@/spreadsheet-import/components/ModalWrapper';
 import DateTimePicker from '@/ui/input/components/internal/date/components/DateTimePicker';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { ADD_SEGMENT } from '@/users/graphql/queries/addSegment';
+import { useNavigate } from 'react-router-dom';
 
 const StyledBoardContainer = styled.div`
   display: flex;
@@ -56,7 +57,7 @@ const StyledInputCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: auto%;
+  height: auto;
   justify-content: space-between;
   width: 70%;
   align-items: center;
@@ -124,6 +125,8 @@ export const Segment = () => {
   const [selectedFilterOptions, setSelectedFilterOptions] = useState<
     Record<string, string>
   >({});
+  const navigate=useNavigate()
+
   const [filterDivs, setFilterDivs] = useState<string[]>([]);
   const [segmentName, setSegmentName] = useState('');
   const [segmentDescription, setSegmentDescription] = useState('');
@@ -199,7 +202,7 @@ export const Segment = () => {
     });
     // const filterJson =  await filter.json()
     
-    let filterString = `{ "filter": ${JSON.stringify(filter)}`;
+    let filterString = `{ "filter": ${JSON.stringify(filter)} }`;
 
     console.log('This is the filter:', filterString);
 
@@ -222,14 +225,13 @@ export const Segment = () => {
     setFilterString(filterString)
   };
 
-  
   const handlesave = async () => {
     try {
       const variables = {
         input: {
           id: uuidv4(),
-          segmentName: segmentName,
-          segmentDescription: segmentDescription,
+          name: segmentName,
+          description: segmentDescription,
           filters: filterString,
         },
       };
@@ -239,6 +241,7 @@ export const Segment = () => {
       enqueueSnackBar('Segment saved successfully', {
         variant: 'success',
       });
+      navigate('/objects/segments')
     } catch (errors: any) {
       console.log('Error saving segment', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
@@ -304,8 +307,6 @@ export const Segment = () => {
                 variant="primary"
                 accent="dark"
                 onClick={handlesave}
-                // size="medium"
-                // onClick={handlesave}
               />
             </StyledButton>
             {filterDivs.map((key) => (
