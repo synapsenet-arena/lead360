@@ -11,9 +11,9 @@ query FindManySegments($filter: SegmentFilterInput, $orderBy: SegmentOrderByInpu
       edges {
         node {
           id
-          segmentDescription
+          description
           filters
-          segmentName
+          name
         }
       }
       pageInfo {

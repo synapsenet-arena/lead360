@@ -17,7 +17,6 @@ import {
   CheckboxSize,
   CheckboxVariant,
 } from '@/ui/input/components/Checkbox';
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { IconCalendar } from '@/ui/display/icon';
 import DateTimePicker from '@/ui/input/components/internal/date/components/DateTimePicker';
 import { Button } from '@/ui/input/button/components/Button';
@@ -30,7 +29,6 @@ import { UPDATE_LAST_EXECUTION_ID } from '@/users/graphql/queries/updateLastExec
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useNavigate } from 'react-router-dom';
 import { CustomPath } from '@/types/CustomPath';
-import { error } from 'console';
 
 type RecordIndexTableContainerEffectProps = {
   objectNameSingular: string;
@@ -52,88 +50,47 @@ export const RecordIndexTableContainerEffect = ({
     recordTableId,
   });
 
-  const StyledInputCard = styled.div`
-    color: ${({ theme }) => theme.font.color.secondary};
+  const PageContainer = styled.div`
     display: flex;
     flex-direction: column;
-    height: auto;
-    justify-content: space-between;
     width: 100%;
-    align-items: center;
+    overflow: scroll;
   `;
 
-  const StyledModalInputCard = styled.div`
-    color: ${({ theme }) => theme.font.color.secondary};
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    width: 100%;
-    align-items: center;
-    margin-top: ${({ theme }) => theme.spacing(4)};
-  `;
-  const StyledTitleBar = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-bottom: ${({ theme }) => theme.spacing(10)};
-    margin-top: ${({ theme }) => theme.spacing(4)};
-    place-items: center;
-    width: 100%;
-  `;
-
-  const StyledTitle = styled.div`
+  const StyledTitle1 = styled.div`
     color: ${({ theme }) => theme.font.color.primary};
     font-weight: ${({ theme }) => theme.font.weight.semiBold};
+    font-size: 2.5em;
+    text-decoration: underline;
+  `;
+
+  const StyledTitle2 = styled.div`
+    color: ${({ theme }) => theme.font.color.primary};
+    font-weight: ${({ theme }) => theme.font.weight.semiBold};
+    font-size: 2em;
+    margin-top: ${({ theme }) => theme.spacing(4)};
+    margin-bottom: ${({ theme }) => theme.spacing(3)};
+  `;
+
+  const StyledTitle3 = styled.div`
+    align-items: center;
+    color: ${({ theme }) => theme.font.color.primary};
+    display: flex;
+    font-size: 1.6em;
+    font-weight: ${({ theme }) =>
+      theme.font.weight.semiBold}; /* Center horizontally */
+    // height: 100%; /* Center vertically */
+    justify-content: center; /* Ensure full height */
   `;
 
   const StyledButton = styled.span`
     display: flex;
     justify-content: space-between;
-    margin-bottom: ${({ theme }) => theme.spacing(6)};
+    margin-top: ${({ theme }) => theme.spacing(10)};
     width: 100%;
-  `;
-
-  const StyledCampaignInfoCard = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    background: ${({ theme }) => theme.background.secondary};
-    border: 1px solid ${({ theme }) => theme.border.color.medium};
-    border-radius: ${({ theme }) => theme.border.radius.md};
-    padding: ${({ theme }) => theme.spacing(2)};
-    margin-bottom: ${({ theme }) => theme.spacing(4)};
-    width: 90%;
-  `;
-
-  const StyledTitleTextContainer = styled.div`
-    display: flex;
-    align-items: center;
-    margin-bottom: ${({ theme }) => theme.spacing(1)};
-  `;
-
-  const StyledTitleText = styled.span`
-    color: ${({ theme }) => theme.font.color.primary};
-    font-weight: ${({ theme }) => theme.font.weight.semiBold};
-    min-width: 150px;
-
-    margin-right: ${({ theme }) => theme.spacing(2)};
-  `;
-
-  const StyledText = styled.div`
-    color: ${({ theme }) => theme.font.color.secondary};
-  `;
-
-  const SytledHR = styled.hr`
-    background: ${GRAY_SCALE.gray0};
-    color: ${GRAY_SCALE.gray0};
-    bordercolor: ${GRAY_SCALE.gray0};
-    height: 0.2px;
-    width: 100%;
-    margin: ${({ theme }) => theme.spacing(10)};
   `;
 
   const StyledTimerHeader = styled.span`
-    display: flex;
     gap: 15px;
     width: 100%;
     margin-right: ${({ theme }) => theme.spacing(4)};
@@ -147,22 +104,108 @@ export const RecordIndexTableContainerEffect = ({
     margin: ${({ theme }) => theme.spacing(2)};
   `;
 
+  const StyledTitleBar = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-bottom: ${({ theme }) => theme.spacing(10)};
+    margin-top: ${({ theme }) => theme.spacing(4)};
+    place-items: center;
+    width: 100%;
+  `;
+
   const StyledLabel = styled.span`
+    align-items: center;
     align-items: center;
     box-shadow: none;
     color: ${GRAY_SCALE.gray40};
     display: flex;
+    font-size: medium;
     height: 32px;
+    justify-content: center;
     margin-left: ${({ theme }) => theme.spacing(8)};
     padding-left: ${({ theme }) => theme.spacing(2)};
-    justify-content: center;
+  `;
+
+  const StyledInputCard = styled.div`
+    align-items: center;
+    color: ${({ theme }) => theme.font.color.secondary};
+    display: flex;
+    flex-direction: column;
+    height: auto%;
+    justify-content: space-evenly;
+    width: 100%;
+  `;
+
+  const StyledCampaignInfoCard = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background: ${({ theme }) => theme.background.secondary};
+    border: 1px solid ${({ theme }) => theme.border.color.inverted};
+    border-radius: ${({ theme }) => theme.border.radius.md};
+    padding: ${({ theme }) => theme.spacing(2)};
+    margin-bottom: ${({ theme }) => theme.spacing(4)};
+    width: 90%;
+  `;
+
+  const StyledCountContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    > * + * {
+      margin-left: ${({ theme }) => theme.spacing(10)};
+    }
+    height: auto;
+    justify-content: flex-start;
+    width: 100%;
     align-items: center;
   `;
 
-  const StyledTable = styled.table`
+  const StyledModalInputCard = styled.div`
+    color: ${({ theme }) => theme.font.color.secondary};
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     width: 100%;
+    align-items: center;
+    margin-top: ${({ theme }) => theme.spacing(4)};
+  `;
+
+  const StyledCampaignInfoCard2 = styled.div`
+    align-items: flex-start;
+    background: ${({ theme }) =>
+      theme.background.primary}; /* Use the same background */
+    border: 1px solid ${({ theme }) => theme.border.color.secondaryInverted}; /* Use the same border */
+    border-radius: ${({ theme }) => theme.border.radius.md};
+    display: flex;
+    flex-direction: column;
+    padding: ${({ theme }) => theme.spacing(2)};
+    margin-bottom: ${({ theme }) => theme.spacing(4)};
+    width: 90%; /* Use the same width */
+  `;
+
+  const StyledTitleTextContainer = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: ${({ theme }) => theme.spacing(1)};
+  `;
+
+  const StyledTitleText = styled.span`
+    color: ${({ theme }) => theme.font.color.secondary};
+    font-weight: ${({ theme }) => theme.font.weight.medium};
+    min-width: 150px;
+    margin-right: ${({ theme }) => theme.spacing(2)};
+    font-size: 1.4em;
+  `;
+
+  const StyledText = styled.div`
+    color: ${({ theme }) => theme.font.color.secondary};
+  `;
+
+  const StyledTable = styled.table`
     border-collapse: collapse;
     height: 10px;
+    width: 100%;
   `;
 
   const StyledTableRow = styled.tr`
@@ -196,27 +239,6 @@ export const RecordIndexTableContainerEffect = ({
     }
   `;
 
-  const StyledCountContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    > * + * {
-      margin-left: ${({ theme }) => theme.spacing(10)};
-    }
-    height: auto;
-    justify-content: flex-start;
-    width: 100%;
-    align-items: center;
-  `;
-
-  const StyledPropertyBoxContainer = styled.div`
-    align-self: stretch;
-    background: ${({ theme }) => theme.background.secondary};
-    border-radius: ${({ theme }) => theme.border.radius.sm};
-    display: flex;
-    flex-direction: column;
-    gap: ${({ theme }) => theme.spacing(2)};
-    padding: ${({ theme }) => theme.spacing(3)};
-  `;
   const { objectMetadataItem } = useObjectMetadataItem({
     objectNameSingular,
   });
@@ -244,8 +266,6 @@ export const RecordIndexTableContainerEffect = ({
     selectedRecordIds: selectedRowIds,
   });
 
-
-
   useEffect(() => {
     setActionBarEntries?.();
     setContextMenuEntries?.();
@@ -269,7 +289,7 @@ export const RecordIndexTableContainerEffect = ({
   const [updateExecutionID] = useMutation(UPDATE_LAST_EXECUTION_ID);
   const [queryTimeStamp, setQueryTimeStamp] = useState<Date | null>(null);
   const [masterCheckboxChecked, setMasterCheckboxChecked] = useState(true);
-  const [campaigns, setCampaigns] = useState<any[]>([])
+  const [campaigns, setCampaigns] = useState<any[]>([]);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const { enqueueSnackBar } = useSnackBar();
   const navigate = useNavigate();
@@ -285,11 +305,8 @@ export const RecordIndexTableContainerEffect = ({
     'createdAt',
   ];
 
-  let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
-    GET_CAMPAIGN_LISTS,
-    
-  );
-  
+  let [selectedCampaign, { data: selectedCampaignData }] =
+    useLazyQuery(GET_CAMPAIGN_LISTS);
 
   let [filterleads, { data: filterLeadsData }] = useLazyQuery(FILTER_LEADS, {
     fetchPolicy: 'network-only',
@@ -328,14 +345,8 @@ export const RecordIndexTableContainerEffect = ({
 
   const handleRunCampaign = async () => {
     try {
-      // const result = await selectedCampaign({
-      //   variables: {
-      //     id: { eq: selectedRowIds[0] },
-      //   },
-      // });
-      // console.log(result, 'RESULT');
-      const campaignExecutionID = `${campaigns[0]?.campaigns?.edges[0]
-        ?.node?.id}-${new Date().toISOString()}`;
+      const campaignExecutionID = `${campaigns[0]?.campaigns?.edges[0]?.node
+        ?.id}-${new Date().toISOString()}`;
 
       const selectedLeadIds = Object.keys(selectedRows).filter(
         (leadId) => selectedRows[leadId],
@@ -370,8 +381,6 @@ export const RecordIndexTableContainerEffect = ({
         stopDateToSend = new Date().toISOString();
       }
 
-     
-      // if (response.ok) {
       const { data: addTriggerData } = await addTriggerCampaignRecord({
         variables: {
           input: {
@@ -384,7 +393,7 @@ export const RecordIndexTableContainerEffect = ({
               ? stopDate.toISOString()
               : new Date().toISOString(),
             status: 'ACTIVE',
-            campaignId:  campaigns[0]?.campaigns?.edges[0]?.node?.id
+            campaignId: campaigns[0]?.campaigns?.edges[0]?.node?.id,
           },
         },
       });
@@ -397,19 +406,11 @@ export const RecordIndexTableContainerEffect = ({
           },
         },
       });
-
-      // const { data: updateExecutionid } = await updateExecutionID({
-      //   variables: {
-      //     idToUpdate: campaigns[0]?.campaigns?.edges[0]?.node?.id,
-      //     input: {
-      //       lastExecutionId: campaignExecutionID,
-      //     },
-      //   },
-      // });
-
-      console.log('Response from ADD_TRIGGER_CAMPAIGN_RECORD:', addTriggerData.createCampaignTrigger.id);
+      console.log(
+        'Response from ADD_TRIGGER_CAMPAIGN_RECORD:',
+        addTriggerData.createCampaignTrigger.id,
+      );
       console.log('Response from UPDATE_CAMPAIGN_STATUS:', updateData);
-      // console.log('Response from UPDATE_LAST_EXECUTION_ID:', updateExecutionid);
 
       const requestBody = {
         campaignId: campaigns[0]?.campaigns?.edges[0]?.node?.id,
@@ -426,11 +427,11 @@ export const RecordIndexTableContainerEffect = ({
 
       // Now you can send the requestBody to your endpoint
       // const response = await fetch('someEndpointURL', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(requestBody),
+      // method: 'POST',
+      // headers: {
+      // 'Content-Type': 'application/json',
+      // },
+      // body: JSON.stringify(requestBody),
       // });
       // const data = await response.json();
 
@@ -452,10 +453,13 @@ export const RecordIndexTableContainerEffect = ({
 
   const handleDisplayLeads = async () => {
     try {
-      console.log(campaigns[0]?.campaigns?.edges[0]?.node?.segment?.filters, "segmentfilters")
+      console.log(
+        campaigns[0]?.campaigns?.edges[0]?.node?.segment?.filters,
+        'segmentfilters',
+      );
 
       const segmentFilters = JSON.parse(
-        campaigns[0]?.campaigns?.edges[0]?.node?.segment?.filters
+        campaigns[0]?.campaigns?.edges[0]?.node?.segment?.filters,
       );
       const response = await filterleads({ variables: segmentFilters });
       const leadsCount = response.data?.leads?.totalCount || 0;
@@ -463,7 +467,7 @@ export const RecordIndexTableContainerEffect = ({
       console.log('Data from the filters fetched:', response.data);
       setQueryTimeStamp(new Date());
       console.log('Timestamp: ', queryTimeStamp?.toString());
-    } catch (error){
+    } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
@@ -513,238 +517,174 @@ export const RecordIndexTableContainerEffect = ({
 
   const confirmRunCampaign = () => {
     handleRunCampaign();
-    // setConfirmModalOpen(false);
   };
-  
-  // const fetchSelectedCampaign = async () => {
-  //   let result = await selectedCampaign({
-  //     variables: {
-  //       filter: {
-  //         id: { eq: selectedRowIds[0] },
-  //       },
-  //     },
-  //   });
-  //   setCampaigns(selectedCampaignData
-  //   )
-  //   // setCampaigns([result])
 
-  //   console.log(
-  //     campaigns,"<-------------",
-  //   );
-
-  // };
-  // if(selectedRowIds.length==1 &&runCampaignCallback()){
-  //   fetchSelectedCampaign()
-  // }
 
   useEffect(() => {
     const fetchSelectedCampaign = async () => {
       if (selectedRowIds.length === 1 && runCampaignCallback()) {
         try {
-          const  data  = await selectedCampaign({
+          const data = await selectedCampaign({
             variables: {
               filter: {
                 id: { eq: selectedRowIds[0] },
               },
             },
           });
-          setCampaigns([data.data]); // Assuming 'data' contains the fetched campaign data
+          setCampaigns([data.data]); 
           console.log('Fetched campaign:', campaigns);
-        setIsModalOpen(true);
-
+          setIsModalOpen(true);
         } catch (error) {
           console.error('Error fetching campaign:', error);
         }
       }
     };
-  
+
     fetchSelectedCampaign();
   }, [selectedRowIds, runCampaignCallback, selectedCampaign]);
-//   useEffect(() => {
-//   console.log('Campaigns:', campaigns); // Log campaigns whenever it changes
-// }, [campaigns]);
-
-  //  useEffect(() => {
-  //   const fetchSelectedCampaign = async () => {
-  //     let result = await selectedCampaign({
-  //       variables: {
-  //         filter: {
-  //           id: { eq: selectedRowIds[0] },
-  //         },
-  //       },
-  //     });
-  //     setCampaigns(selectedCampaignData)
-  //     // setCampaigns([result])
-
-  //     console.log(
-  //       campaigns,"<-------------",
-  //     );
-
-  //   };
-
-  //   const fetchData = async () => {
-  //     if (runCampaignCallback() && !isModalOpen) {
-  //       await fetchSelectedCampaign();
-  //       setIsModalOpen(true);
-  //     }
-  //   };
-
-  //    fetchData(); 
-  // }, [runCampaignCallback, isModalOpen]);
-
+  
 
   return (
     <>
       {isModalOpen && (
         <ModalWrapper isOpen={isModalOpen} onClose={handleCloseModal}>
           <StyledInputCard>
-            <StyledInputCard>
-              <StyledTitleBar>
-                <StyledTitle>Run Campaign</StyledTitle>
-              </StyledTitleBar>
-              <StyledPropertyBoxContainer>
-                <StyledTitleTextContainer>
+            <StyledTitleBar>
+              <StyledTitle1>Run Campaign</StyledTitle1>
+            </StyledTitleBar>
+            <StyledCampaignInfoCard>
+              <StyledTitleTextContainer>
+                <StyledTitleText>Campaign Name:</StyledTitleText>
+                <StyledText>
+                  {campaigns[0]?.campaigns?.edges[0]?.node?.name}
+                </StyledText>
+              </StyledTitleTextContainer>
+              <StyledTitleTextContainer>
+                <StyledTitleText>Segment Name:</StyledTitleText>
+                <StyledText>
+                  {campaigns[0]?.campaigns?.edges[0]?.node?.segment?.name}
+                </StyledText>
+              </StyledTitleTextContainer>
+              <StyledTitleTextContainer>
+                <StyledTitleText>Description:</StyledTitleText>
+                <StyledText>
+                  {campaigns[0]?.campaigns?.edges[0]?.node?.description}
+                </StyledText>
+              </StyledTitleTextContainer>
+              <StyledTitleTextContainer>
+                <StyledTitleText>Specialty:</StyledTitleText>
+                <StyledText>
+                  {' '}
+                  {campaigns[0]?.campaigns?.edges[0]?.node?.specialty}
+                </StyledText>
+              </StyledTitleTextContainer>
+              <StyledTitleTextContainer>
+                <StyledTitleText>Sub Specialty:</StyledTitleText>
+                <StyledText>
+                  {' '}
+                  {campaigns[0]?.campaigns?.edges[0]?.node?.subspecialty}
+                </StyledText>
+              </StyledTitleTextContainer>
+              <StyledTitleTextContainer>
+                <StyledTitleText>Message Template:</StyledTitleText>
+                <StyledText>
+                  {
+                    campaigns[0]?.campaigns?.edges[0]?.node?.messageTemplate
+                      ?.name
+                  }
+                </StyledText>
+              </StyledTitleTextContainer>
+              <StyledTitleTextContainer>
+                <StyledTitleText>Form Template:</StyledTitleText>
+                <StyledText>
+                  {campaigns[0]?.campaigns?.edges[0]?.node?.formTemplate?.name}
+                </StyledText>
+              </StyledTitleTextContainer>
+            </StyledCampaignInfoCard>
 
-
-                  <StyledTitleText>Campaign Name:</StyledTitleText>
-                  <StyledText>
-                    {
-                      campaigns[0]?.campaigns?.edges[0]?.node?.name
-                    }
-                  </StyledText>
-                </StyledTitleTextContainer>
-                <StyledTitleTextContainer>
-                  <StyledTitleText>Segment Name:</StyledTitleText>
-                  <StyledText>
-                    {
-                      campaigns[0]?.campaigns?.edges[0]?.node?.segment
-                        ?.name
-                    }
-                  </StyledText>
-                </StyledTitleTextContainer>
-                <StyledTitleTextContainer>
-                  <StyledTitleText>Description:</StyledTitleText>
-                  <StyledText>
-                    {
-                      campaigns[0]?.campaigns?.edges[0]?.node
-                        ?.description
-                    }
-                  </StyledText>
-                </StyledTitleTextContainer>
-                <StyledTitleTextContainer>
-                  <StyledTitleText>Specialty:</StyledTitleText>
-                  <StyledText>
-                    {
-                      campaigns[0]?.campaigns?.edges[0]?.node
-                        ?.specialty
-                    }
-                  </StyledText>
-                </StyledTitleTextContainer>
-                <StyledTitleTextContainer>
-                  <StyledTitleText>Sub Specialty:</StyledTitleText>
-                  <StyledText>
-                    {
-                      campaigns[0]?.campaigns?.edges[0]?.node
-                        ?.subspecialty
-                    }
-                  </StyledText>
-                </StyledTitleTextContainer>
-                <StyledTitleTextContainer>
-                  <StyledTitleText>Message Template:</StyledTitleText>
-                  <StyledText>
-                    {
-                      campaigns[0]?.campaigns?.edges[0]?.node
-                        ?.messageTemplate?.name
-                    }
-                  </StyledText>
-                </StyledTitleTextContainer>
-                <StyledTitleTextContainer>
-                  <StyledTitleText>Form Template:</StyledTitleText>
-                  <StyledText>
-                    {
-                      campaigns[0]?.campaigns?.edges[0]?.node
-                        ?.formTemplate?.name
-                    }
-                  </StyledText>
-                </StyledTitleTextContainer>
-              </StyledPropertyBoxContainer>
-              <StyledPropertyBoxContainer>
-                <StyledTimerHeader>
+            <StyledCampaignInfoCard>
+              <StyledInputCard>
+                <StyledTitle2>Campaign Scheduling</StyledTitle2>
                   <StyledTimerHeader>
-                    <H2Title title="Start" />
+                      <StyledTitle3>Start</StyledTitle3>
+                      <Section>
+                        <StyledInputCard>
+                          <StyledCampaignInfoCard2>
+                            <StyledCheckboxContainer>
+                              <Checkbox
+                                checked={false}
+                                indeterminate={false}
+                                variant={CheckboxVariant.Primary}
+                                size={CheckboxSize.Small}
+                                shape={CheckboxShape.Squared}
+                              />
+                              <StyledLabel>Immediately</StyledLabel>
+                            </StyledCheckboxContainer>
+                            <StyledCheckboxContainer>
+                              <Checkbox
+                                checked={showStartDateTimePicker}
+                                onChange={() =>
+                                  setShowStartDateTimePicker(
+                                    !showStartDateTimePicker,
+                                  )
+                                }
+                                indeterminate={false}
+                                variant={CheckboxVariant.Primary}
+                                size={CheckboxSize.Small}
+                                shape={CheckboxShape.Squared}
+                              />
+                              <StyledLabel>
+                                Start Date/Time <IconCalendar />
+                              </StyledLabel>
+                              {showStartDateTimePicker && (
+                                <DateTimePicker
+                                  onChange={(selectedDate) =>
+                                    setStartDate(selectedDate)
+                                  }
+                                  minDate={new Date()}
+                                  value={undefined}
+                                />
+                              )}
+                            </StyledCheckboxContainer>
+                          </StyledCampaignInfoCard2>
+                        </StyledInputCard>
+                      </Section>
+
+                      <StyledTitle3>Stop</StyledTitle3>
+                      <Section>
+                        <StyledInputCard>
+                          <StyledCampaignInfoCard2>
+                            <StyledCheckboxContainer>
+                              <Checkbox
+                                checked={showStopDateTimePicker}
+                                onChange={() =>
+                                  setShowStopDateTimePicker(
+                                    !showStopDateTimePicker,
+                                  )
+                                }
+                                indeterminate={false}
+                                variant={CheckboxVariant.Primary}
+                                size={CheckboxSize.Small}
+                                shape={CheckboxShape.Squared}
+                              />
+                              <StyledLabel>
+                                Stop Date/Time <IconCalendar />
+                              </StyledLabel>
+                              {showStopDateTimePicker && (
+                                <DateTimePicker
+                                  onChange={(selectedDate) => setStopDate(selectedDate)}
+                                  minDate={new Date()} value={undefined}                                />
+                              )}
+                            </StyledCheckboxContainer>
+                          </StyledCampaignInfoCard2>
+                        </StyledInputCard>
+                      </Section>
                   </StyledTimerHeader>
+                
+              </StyledInputCard>
+            </StyledCampaignInfoCard>
 
-                  <Section>
-                    <StyledCheckboxContainer>
-                      <Checkbox
-                        checked={false}
-                        indeterminate={false}
-                        variant={CheckboxVariant.Primary}
-                        size={CheckboxSize.Small}
-                        shape={CheckboxShape.Squared}
-                      />
-                      <StyledLabel>Immediately</StyledLabel>
-                    </StyledCheckboxContainer>
-                    <StyledCheckboxContainer>
-                      <Checkbox
-                        checked={showStartDateTimePicker}
-                        onChange={() =>
-                          setShowStartDateTimePicker(!showStartDateTimePicker)
-                        }
-                        indeterminate={false}
-                        variant={CheckboxVariant.Primary}
-                        size={CheckboxSize.Small}
-                        shape={CheckboxShape.Squared}
-                      />
-                      <StyledLabel>
-                        Start Date/Time <IconCalendar />
-                      </StyledLabel>
-                      {showStartDateTimePicker && (
-                        <DateTimePicker
-                          onChange={(selectedDate) =>
-                            setStartDate(selectedDate)
-                          }
-                          minDate={new Date()}
-                          value={undefined}
-                        />
-                      )}
-                    </StyledCheckboxContainer>
-                  </Section>
-                </StyledTimerHeader>
-                 <StyledTimerHeader>
-                <StyledTimerHeader>
-                  <H2Title title="Stop" />
-                </StyledTimerHeader>
 
-                <Section>
-                  <StyledCheckboxContainer>
-                    <Checkbox
-                      checked={showStopDateTimePicker}
-                      onChange={() =>
-                        setShowStopDateTimePicker(!showStopDateTimePicker)
-                      }
-                      indeterminate={false}
-                      variant={CheckboxVariant.Primary}
-                      size={CheckboxSize.Small}
-                      shape={CheckboxShape.Squared}
-                    />
-                    <StyledLabel>
-                      Start Date/Time <IconCalendar />
-                    </StyledLabel>
-                    {showStopDateTimePicker && (
-                      <DateTimePicker
-                        onChange={(selectedDate) => setStopDate(selectedDate)}
-                        minDate={new Date()}
-                        value={undefined}
-                      />
-                    )}
-                  </StyledCheckboxContainer>
-                </Section>
-              </StyledTimerHeader>
-              </StyledPropertyBoxContainer>
-             
-            </StyledInputCard>
-            <SytledHR />
             <StyledButton>
               <Button
                 title="Display Segment Leads"

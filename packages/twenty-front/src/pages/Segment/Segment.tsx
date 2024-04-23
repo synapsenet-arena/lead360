@@ -32,6 +32,7 @@ import { ModalWrapper } from '@/spreadsheet-import/components/ModalWrapper';
 import DateTimePicker from '@/ui/input/components/internal/date/components/DateTimePicker';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { ADD_SEGMENT } from '@/users/graphql/queries/addSegment';
+import { useNavigate } from 'react-router-dom';
 
 const StyledBoardContainer = styled.div`
   display: flex;
@@ -124,6 +125,8 @@ export const Segment = () => {
   const [selectedFilterOptions, setSelectedFilterOptions] = useState<
     Record<string, string>
   >({});
+  const navigate=useNavigate()
+
   const [filterDivs, setFilterDivs] = useState<string[]>([]);
   const [segmentName, setSegmentName] = useState('');
   const [segmentDescription, setSegmentDescription] = useState('');
@@ -222,7 +225,6 @@ export const Segment = () => {
     setFilterString(filterString)
   };
 
-  
   const handlesave = async () => {
     try {
       const variables = {
@@ -239,6 +241,7 @@ export const Segment = () => {
       enqueueSnackBar('Segment saved successfully', {
         variant: 'success',
       });
+      navigate('/objects/segments')
     } catch (errors: any) {
       console.log('Error saving segment', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
@@ -304,8 +307,6 @@ export const Segment = () => {
                 variant="primary"
                 accent="dark"
                 onClick={handlesave}
-                // size="medium"
-                // onClick={handlesave}
               />
             </StyledButton>
             {filterDivs.map((key) => (

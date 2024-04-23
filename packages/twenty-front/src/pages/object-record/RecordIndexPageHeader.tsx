@@ -12,7 +12,13 @@ import { ViewType } from '@/views/types/ViewType';
 import { capitalize } from '~/utils/string/capitalize';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
-import { Checkbox, CheckboxShape, CheckboxSize, CheckboxVariant, Select } from 'tsup.ui.index';
+import {
+  Checkbox,
+  CheckboxShape,
+  CheckboxSize,
+  CheckboxVariant,
+  Select,
+} from 'tsup.ui.index';
 import styled from '@emotion/styled';
 import { ModalWrapper } from '@/spreadsheet-import/components/ModalWrapper';
 import { GRAY_SCALE } from '@/ui/theme/constants/GrayScale';
@@ -29,8 +35,6 @@ import { CustomPath } from '@/types/CustomPath';
 import { UPDATE_LAST_EXECUTION_ID } from '@/users/graphql/queries/updateLastExecutionId';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
-
-
 type RecordIndexPageHeaderProps = {
   createRecord: () => void;
 };
@@ -45,12 +49,113 @@ export const RecordIndexPageHeader = ({
 }: RecordIndexPageHeaderProps) => {
   const objectNamePlural = useParams().objectNamePlural ?? '';
 
+  const PageContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: scroll;
+  `;
+
+  const StyledTitle1 = styled.div`
+    color: ${({ theme }) => theme.font.color.primary};
+    font-weight: ${({ theme }) => theme.font.weight.semiBold};
+    font-size: 2.5em;
+    text-decoration: underline;
+  `;
+
+  const StyledTitle2 = styled.div`
+    color: ${({ theme }) => theme.font.color.primary};
+    font-weight: ${({ theme }) => theme.font.weight.semiBold};
+    font-size: 2em;
+    margin-top: ${({ theme }) => theme.spacing(4)};
+    margin-bottom: ${({ theme }) => theme.spacing(3)};
+  `;
+
+  const StyledTitle3 = styled.div`
+    align-items: center;
+    color: ${({ theme }) => theme.font.color.primary};
+    display: flex;
+    font-size: 1.6em;
+    font-weight: ${({ theme }) =>
+      theme.font.weight.semiBold}; /* Center horizontally */
+    // height: 100%; /* Center vertically */
+    justify-content: center; /* Ensure full height */
+  `;
+
+  const StyledButton = styled.span`
+    display: flex;
+    justify-content: space-between;
+    margin-top: ${({ theme }) => theme.spacing(10)};
+    width: 100%;
+  `;
+
+  const StyledTimerHeader = styled.span`
+    gap: 15px;
+    width: 100%;
+    margin-right: ${({ theme }) => theme.spacing(4)};
+    margin-left: ${({ theme }) => theme.spacing(4)};
+    justify-content: center;
+  `;
+
+  const StyledCheckboxContainer = styled.div`
+    display: flex;
+    align-items: center;
+    margin: ${({ theme }) => theme.spacing(2)};
+  `;
+
+  const StyledTitleBar = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-bottom: ${({ theme }) => theme.spacing(10)};
+    margin-top: ${({ theme }) => theme.spacing(4)};
+    place-items: center;
+    width: 100%;
+  `;
+
+  const StyledLabel = styled.span`
+    align-items: center;
+    align-items: center;
+    box-shadow: none;
+    color: ${GRAY_SCALE.gray40};
+    display: flex;
+    font-size: medium;
+    height: 32px;
+    justify-content: center;
+    margin-left: ${({ theme }) => theme.spacing(8)};
+    padding-left: ${({ theme }) => theme.spacing(2)};
+  `;
+
   const StyledInputCard = styled.div`
+    align-items: center;
     color: ${({ theme }) => theme.font.color.secondary};
     display: flex;
     flex-direction: column;
+    height: auto%;
+    justify-content: space-evenly;
+    width: 100%;
+  `;
+
+  const StyledCampaignInfoCard = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background: ${({ theme }) => theme.background.secondary};
+    border: 1px solid ${({ theme }) => theme.border.color.inverted};
+    border-radius: ${({ theme }) => theme.border.radius.md};
+    padding: ${({ theme }) => theme.spacing(2)};
+    margin-bottom: ${({ theme }) => theme.spacing(4)};
+    width: 90%;
+  `;
+
+  const StyledCountContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    > * + * {
+      margin-left: ${({ theme }) => theme.spacing(10)};
+    }
     height: auto;
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 100%;
     align-items: center;
   `;
@@ -64,17 +169,18 @@ export const RecordIndexPageHeader = ({
     align-items: center;
     margin-top: ${({ theme }) => theme.spacing(4)};
   `;
-  const StyledCampaignInfoCard = styled.div`
+
+  const StyledCampaignInfoCard2 = styled.div`
+    align-items: flex-start;
+    background: ${({ theme }) =>
+      theme.background.primary}; /* Use the same background */
+    border: 1px solid ${({ theme }) => theme.border.color.secondaryInverted}; /* Use the same border */
+    border-radius: ${({ theme }) => theme.border.radius.md};
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    background: ${({ theme }) => theme.background.secondary};
-    border: 1px solid ${({ theme }) => theme.border.color.medium};
-    border-radius: ${({ theme }) => theme.border.radius.md};
     padding: ${({ theme }) => theme.spacing(2)};
     margin-bottom: ${({ theme }) => theme.spacing(4)};
-    width: 90%;
+    width: 90%; /* Use the same width */
   `;
 
   const StyledTitleTextContainer = styled.div`
@@ -84,96 +190,21 @@ export const RecordIndexPageHeader = ({
   `;
 
   const StyledTitleText = styled.span`
-    color: ${({ theme }) => theme.font.color.primary};
-    font-weight: ${({ theme }) => theme.font.weight.semiBold};
+    color: ${({ theme }) => theme.font.color.secondary};
+    font-weight: ${({ theme }) => theme.font.weight.medium};
     min-width: 150px;
-
     margin-right: ${({ theme }) => theme.spacing(2)};
+    font-size: 1.4em;
   `;
 
   const StyledText = styled.div`
     color: ${({ theme }) => theme.font.color.secondary};
   `;
-  const StyledComboInputContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    > * + * {
-      margin-left: ${({ theme }) => theme.spacing(4)};
-    }
-    width: 200px;
-    justify-content: center;
-    align-items: flex-end;
-  `;
-  const StyledTitleBar = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-bottom: ${({ theme }) => theme.spacing(10)};
-    margin-top: ${({ theme }) => theme.spacing(4)};
-    place-items: center;
-    width: 100%;
-  `;
 
-  const StyledTitle = styled.div`
-    color: ${({ theme }) => theme.font.color.primary};
-    font-weight: ${({ theme }) => theme.font.weight.semiBold};
-  `;
-  const SytledHR = styled.hr`
-  background: ${GRAY_SCALE.gray0};
-  color: ${GRAY_SCALE.gray0};
-  bordercolor: ${GRAY_SCALE.gray0};
-  height: 0.2px;
-  width: 100%;
-  margin: ${({ theme }) => theme.spacing(10)};
-`;
-
-const StyledTimerHeader = styled.span`
-display: flex;
-gap: 15px;
-width: 100%;
-margin-right: ${({ theme }) => theme.spacing(4)};
-margin-left: ${({ theme }) => theme.spacing(4)};
-justify-content: center;
-`;
-
-const StyledCheckboxContainer = styled.div`
-display: flex;
-align-items: center;
-margin: ${({ theme }) => theme.spacing(2)};
-`;
-
-const StyledLabel = styled.span`
-align-items: center;
-box-shadow: none;
-color: ${GRAY_SCALE.gray40};
-display: flex;
-height: 32px;
-margin-left: ${({ theme }) => theme.spacing(8)};
-padding-left: ${({ theme }) => theme.spacing(2)};
-justify-content: center;
-align-items: center;
-`;
-const StyledButton = styled.span`
-display: flex;
-justify-content: space-between;
-margin-bottom: ${({ theme }) => theme.spacing(6)};
-width: 100%;
-`;
-const StyledCountContainer = styled.div`
-display: flex;
-flex-direction: row;
-> * + * {
-  margin-left: ${({ theme }) => theme.spacing(10)};
-}
-height: auto;
-justify-content: flex-start;
-width: 100%;
-align-items: center;
-`;
-
-const StyledTable = styled.table`
-    width: 100%;
+  const StyledTable = styled.table`
     border-collapse: collapse;
     height: 10px;
+    width: 100%;
   `;
 
   const StyledTableRow = styled.tr`
@@ -199,6 +230,13 @@ const StyledTable = styled.table`
     font-weight: ${({ theme }) => theme.font.weight.semiBold};
   `;
 
+  const StyledComboInputContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    > * + * {
+      margin-left: ${({ theme }) => theme.spacing(4)};
+    }
+  `;
 
   const { findObjectMetadataItemByNamePlural } =
     useObjectMetadataItemForSettings();
@@ -237,8 +275,6 @@ const StyledTable = styled.table`
   const [updateExecutionID] = useMutation(UPDATE_LAST_EXECUTION_ID);
   const { enqueueSnackBar } = useSnackBar();
 
-
-
   const fields = [
     'name',
     'age',
@@ -255,7 +291,6 @@ const StyledTable = styled.table`
 
   const fetchCampaigns = () => {
     if (!campaignsLoading) {
-
       console.log('LOADING...');
       const campaigns = campaignsData?.campaigns.edges.map(
         (edge: { node: any }) => ({
@@ -263,7 +298,7 @@ const StyledTable = styled.table`
           label: edge.node?.name,
         }),
       );
-     
+
       setCampaignsList(campaigns);
       setSelectedCampaign(campaignsData);
       setShowDropdown(true);
@@ -286,13 +321,10 @@ const StyledTable = styled.table`
 
       if (campaignDetails) {
         setCampaignDetails(campaignDetails);
-        console.log(
-          'Selected Campaign Details:',
-          campaignDetails.node.name,
-        );
+        console.log('Selected Campaign Details:', campaignDetails.node.name);
       }
     }
-    setIsModalOpen(true)
+    setIsModalOpen(true);
   };
 
   useEffect(() => {
@@ -368,7 +400,6 @@ const StyledTable = styled.table`
         stopDateToSend = new Date().toISOString();
       }
 
-     
       // if (response.ok) {
       const { data: addTriggerData } = await addTriggerCampaignRecord({
         variables: {
@@ -382,7 +413,7 @@ const StyledTable = styled.table`
               ? stopDate.toISOString()
               : new Date().toISOString(),
             status: 'ACTIVE',
-            campaignId:  campaignDetails[0]?.campaigns?.edges[0]?.node?.id
+            campaignId: campaignDetails[0]?.campaigns?.edges[0]?.node?.id,
           },
         },
       });
@@ -405,7 +436,10 @@ const StyledTable = styled.table`
       //   },
       // });
 
-      console.log('Response from ADD_TRIGGER_CAMPAIGN_RECORD:', addTriggerData.createCampaignTrigger.id);
+      console.log(
+        'Response from ADD_TRIGGER_CAMPAIGN_RECORD:',
+        addTriggerData.createCampaignTrigger.id,
+      );
       console.log('Response from UPDATE_CAMPAIGN_STATUS:', updateData);
       // console.log('Response from UPDATE_LAST_EXECUTION_ID:', updateExecutionid);
 
@@ -448,12 +482,9 @@ const StyledTable = styled.table`
     }
   };
 
-
   const handleDisplayLeads = async () => {
     try {
-      const segmentFilters = JSON.parse(
-        campaignDetails.node?.segment?.filters,
-      );
+      const segmentFilters = JSON.parse(campaignDetails.node?.segment?.filters);
       const response = await filterleads({ variables: segmentFilters });
       const leadsCount = response.data?.leads?.totalCount || 0;
       setTotalLeadsCount(leadsCount);
@@ -507,7 +538,7 @@ const StyledTable = styled.table`
     filterLeadsData = [];
     setSelectedRows({});
     setunSelectedRows({});
-    setCampaignDetails(false)
+    setCampaignDetails(false);
   };
 
   const cancelRunCampaign = () => {
@@ -546,218 +577,228 @@ const StyledTable = styled.table`
       </PageHeader>
       <ModalWrapper isOpen={isModalOpen} onClose={handleCloseModal}>
         <StyledInputCard>
-          <StyledInputCard>
-            <StyledTitleBar>
-              <StyledTitle>Run Campaign</StyledTitle>
-            </StyledTitleBar>
-            <StyledCampaignInfoCard>
-              <StyledTitleTextContainer>
-                <StyledTitleText>Campaign Name:</StyledTitleText>
-                <StyledText>{campaignDetails?.node?.name}</StyledText>
-              </StyledTitleTextContainer>
-              <StyledTitleTextContainer>
-                <StyledTitleText>Segment Name:</StyledTitleText>
-                <StyledText>
-                  {campaignDetails?.node?.segment?.name}
-                </StyledText>
-              </StyledTitleTextContainer>
-              <StyledTitleTextContainer>
-                <StyledTitleText>Description:</StyledTitleText>
-                <StyledText>{campaignDetails?.node?.description}</StyledText>
-              </StyledTitleTextContainer>
-              <StyledTitleTextContainer>
-                <StyledTitleText>Specialty:</StyledTitleText>
-                <StyledText>{campaignDetails?.node?.specialty}</StyledText>
-              </StyledTitleTextContainer>
-              <StyledTitleTextContainer>
-                <StyledTitleText>Sub Specialty:</StyledTitleText>
-                <StyledText>
-                  {campaignDetails?.node?.subspecialty}
-                </StyledText>
-              </StyledTitleTextContainer>
-              <StyledTitleTextContainer>
-                <StyledTitleText>Message Template:</StyledTitleText>
-                <StyledText>{campaignDetails?.node?.messageTemplate.name}</StyledText>
-              </StyledTitleTextContainer>
-            </StyledCampaignInfoCard>
-            <SytledHR />
-              <StyledTimerHeader>
-                <StyledTimerHeader>
-                  <H2Title title="Start" />
-                </StyledTimerHeader>
+          <StyledTitleBar>
+            <StyledTitle1>Run Campaign</StyledTitle1>
+          </StyledTitleBar>
+          <StyledCampaignInfoCard>
+            <StyledTitleTextContainer>
+              <StyledTitleText>Campaign Name:</StyledTitleText>
+              <StyledText>{campaignDetails?.node?.name}</StyledText>
+            </StyledTitleTextContainer>
+            <StyledTitleTextContainer>
+              <StyledTitleText>Segment Name:</StyledTitleText>
+              <StyledText>{campaignDetails?.node?.segment?.name}</StyledText>
+            </StyledTitleTextContainer>
+            <StyledTitleTextContainer>
+              <StyledTitleText>Description:</StyledTitleText>
+              <StyledText>{campaignDetails?.node?.description}</StyledText>
+            </StyledTitleTextContainer>
+            <StyledTitleTextContainer>
+              <StyledTitleText>Specialty:</StyledTitleText>
+              <StyledText>{campaignDetails?.node?.specialty}</StyledText>
+            </StyledTitleTextContainer>
+            <StyledTitleTextContainer>
+              <StyledTitleText>Sub Specialty:</StyledTitleText>
+              <StyledText> {campaignDetails?.node?.subspecialty} </StyledText>
+            </StyledTitleTextContainer>
+            <StyledTitleTextContainer>
+              <StyledTitleText>Message Template:</StyledTitleText>
+              <StyledText>
+                {campaignDetails?.node?.messageTemplate.name}
+              </StyledText>
+            </StyledTitleTextContainer>
+            <StyledTitleTextContainer>
+              <StyledTitleText>Form Template:</StyledTitleText>
+              <StyledText>
+                {campaignDetails?.node?.formTemplate?.name}
+              </StyledText>
+            </StyledTitleTextContainer>
+          </StyledCampaignInfoCard>
 
-                <Section>
-                  <StyledCheckboxContainer>
-                    <Checkbox
-                      checked={false}
-                      indeterminate={false}
-                      variant={CheckboxVariant.Primary}
-                      size={CheckboxSize.Small}
-                      shape={CheckboxShape.Squared}
-                    />
-                    <StyledLabel>Immediately</StyledLabel>
-                  </StyledCheckboxContainer>
-                  <StyledCheckboxContainer>
-                    <Checkbox
-                      checked={showStartDateTimePicker}
-                      onChange={() =>
-                        setShowStartDateTimePicker(!showStartDateTimePicker)
-                      }
-                      indeterminate={false}
-                      variant={CheckboxVariant.Primary}
-                      size={CheckboxSize.Small}
-                      shape={CheckboxShape.Squared}
-                    />
-                    <StyledLabel>
-                      Start Date/Time <IconCalendar />
-                    </StyledLabel>
-                    {showStartDateTimePicker && (
-                      <DateTimePicker
-                        onChange={(selectedDate) => setStartDate(selectedDate)}
-                        minDate={new Date()}
-                        value={undefined}
-                      />
-                    )}
-                  </StyledCheckboxContainer>
-                </Section>
-              </StyledTimerHeader>
-              <SytledHR />
-              <StyledTimerHeader>
-                <StyledTimerHeader>
-                  <H2Title title="Stop" />
-                </StyledTimerHeader>
-
-                <Section>
-                  <StyledCheckboxContainer>
-                    <Checkbox
-                      checked={showStopDateTimePicker}
-                      onChange={() =>
-                        setShowStopDateTimePicker(!showStopDateTimePicker)
-                      }
-                      indeterminate={false}
-                      variant={CheckboxVariant.Primary}
-                      size={CheckboxSize.Small}
-                      shape={CheckboxShape.Squared}
-                    />
-                    <StyledLabel>
-                      Start Date/Time <IconCalendar />
-                    </StyledLabel>
-                    {showStopDateTimePicker && (
-                      <DateTimePicker
-                        onChange={(selectedDate) => setStopDate(selectedDate)}
-                        minDate={new Date()}
-                        value={undefined}
-                      />
-                    )}
-                  </StyledCheckboxContainer>
-                </Section>
-              </StyledTimerHeader>
-            </StyledInputCard>
-            <SytledHR />
-            <StyledButton>
-              <Button
-                title="Display Segment Leads"
-                variant="primary"
-                accent="default"
-                onClick={handleDisplayLeads}
-              />
-              <Button
-                title="Run Campaign"
-                variant="primary"
-                accent="dark"
-                onClick={openConfirmModal}
-              />
-            </StyledButton>
+          <StyledCampaignInfoCard>
             <StyledInputCard>
-              {leadsData?.leads?.edges[0] && (
-                <>
-                  <StyledCountContainer>
-                    <StyledTitleText>
-                      Leads fetched at: {queryTimeStamp?.toLocaleString()}
-                    </StyledTitleText>
-                    <StyledTitleText>
-                      Total Leads: {totalLeadsCount}
-                    </StyledTitleText>
-                    <StyledTitleText>
-                      Selected Leads: {Object.keys(selectedRows).length}
-                    </StyledTitleText>
-                    <StyledTitleText>
-                      Unselected Leads: {Object.keys(unSelectedRows).length}
-                    </StyledTitleText>
-                  </StyledCountContainer>
-                  <StyledTable>
-                    <tbody>
-                      <StyledTableRow>
-                        <StyledTableHeaderCell>
-                          <StyledComboInputContainer>
-                            <Checkbox
-                              checked={masterCheckboxChecked}
-                              onChange={handleMasterCheckboxChange}
-                            />
-                            <p>Select</p>
-                          </StyledComboInputContainer>
-                        </StyledTableHeaderCell>
-                        {fields.map((field: string) => (
-                          <StyledTableHeaderCell key={field}>
-                            {capitalize(field)}
-                          </StyledTableHeaderCell>
-                        ))}
-                      </StyledTableRow>
-                      {leadsData?.leads?.edges.map((leadEdge: any) => {
-                        const lead = leadEdge?.node;
-                        return (
-                          <StyledTableRow
-                            key={lead.id}
-                            onClick={() => handleCheckboxChange(lead.id)}
-                          >
-                            <StyledTableCell>
-                              <Checkbox
-                                checked={selectedRows[lead.id]}
-                                onChange={() => handleCheckboxChange(lead.id)}
-                              />
-                            </StyledTableCell>
-                            {fields.map((field: string) => (
-                              <StyledTableCell key={field}>
-                                {lead[field]}
-                              </StyledTableCell>
-                            ))}
-                          </StyledTableRow>
-                        );
-                      })}
-                    </tbody>
-                  </StyledTable>
-                </>
-              )}
-            </StyledInputCard>
-          </StyledInputCard>
+              <StyledTitle2>Campaign Scheduling</StyledTitle2>
+              <StyledTimerHeader>
+                <StyledTitle3>Start</StyledTitle3>
+                <Section>
+                  <StyledInputCard>
+                    <StyledCampaignInfoCard2>
+                      <StyledCheckboxContainer>
+                        <Checkbox
+                          checked={false}
+                          indeterminate={false}
+                          variant={CheckboxVariant.Primary}
+                          size={CheckboxSize.Small}
+                          shape={CheckboxShape.Squared}
+                        />
+                        <StyledLabel>Immediately</StyledLabel>
+                      </StyledCheckboxContainer>
+                      <StyledCheckboxContainer>
+                        <Checkbox
+                          checked={showStartDateTimePicker}
+                          onChange={() =>
+                            setShowStartDateTimePicker(!showStartDateTimePicker)
+                          }
+                          indeterminate={false}
+                          variant={CheckboxVariant.Primary}
+                          size={CheckboxSize.Small}
+                          shape={CheckboxShape.Squared}
+                        />
+                        <StyledLabel>
+                          Start Date/Time <IconCalendar />
+                        </StyledLabel>
+                        {showStartDateTimePicker && (
+                          <DateTimePicker
+                            onChange={(selectedDate) =>
+                              setStartDate(selectedDate)
+                            }
+                            minDate={new Date()}
+                            value={undefined}
+                          />
+                        )}
+                      </StyledCheckboxContainer>
+                    </StyledCampaignInfoCard2>
+                  </StyledInputCard>
+                </Section>
 
-          <ModalWrapper1 isOpen={confirmModalOpen} onClose={cancelRunCampaign}>
+                <StyledTitle3>Stop</StyledTitle3>
+                <Section>
+                  <StyledInputCard>
+                    <StyledCampaignInfoCard2>
+                      <StyledCheckboxContainer>
+                        <Checkbox
+                          checked={showStopDateTimePicker}
+                          onChange={() =>
+                            setShowStopDateTimePicker(!showStopDateTimePicker)
+                          }
+                          indeterminate={false}
+                          variant={CheckboxVariant.Primary}
+                          size={CheckboxSize.Small}
+                          shape={CheckboxShape.Squared}
+                        />
+                        <StyledLabel>
+                          Stop Date/Time <IconCalendar />
+                        </StyledLabel>
+                        {showStopDateTimePicker && (
+                          <DateTimePicker
+                            onChange={(selectedDate) =>
+                              setStopDate(selectedDate)
+                            }
+                            minDate={new Date()}
+                            value={undefined}
+                          />
+                        )}
+                      </StyledCheckboxContainer>
+                    </StyledCampaignInfoCard2>
+                  </StyledInputCard>
+                </Section>
+              </StyledTimerHeader>
+            </StyledInputCard>
+          </StyledCampaignInfoCard>
+
+          <StyledButton>
+            <Button
+              title="Display Segment Leads"
+              variant="primary"
+              accent="default"
+              onClick={handleDisplayLeads}
+            />
+            <Button
+              title="Run Campaign"
+              variant="primary"
+              accent="dark"
+              onClick={openConfirmModal}
+            />
+          </StyledButton>
+          <StyledInputCard>
+            {leadsData?.leads?.edges[0] && (
+              <>
+                <StyledCountContainer>
+                  <StyledTitleText>
+                    Leads fetched at: {queryTimeStamp?.toLocaleString()}
+                  </StyledTitleText>
+                  <StyledTitleText>
+                    Total Leads: {totalLeadsCount}
+                  </StyledTitleText>
+                  <StyledTitleText>
+                    Selected Leads: {Object.keys(selectedRows).length}
+                  </StyledTitleText>
+                  <StyledTitleText>
+                    Unselected Leads: {Object.keys(unSelectedRows).length}
+                  </StyledTitleText>
+                </StyledCountContainer>
+                <StyledTable>
+                  <tbody>
+                    <StyledTableRow>
+                      <StyledTableHeaderCell>
+                        <StyledComboInputContainer>
+                          <Checkbox
+                            checked={masterCheckboxChecked}
+                            onChange={handleMasterCheckboxChange}
+                          />
+                          <p>Select</p>
+                        </StyledComboInputContainer>
+                      </StyledTableHeaderCell>
+                      {fields.map((field: string) => (
+                        <StyledTableHeaderCell key={field}>
+                          {capitalize(field)}
+                        </StyledTableHeaderCell>
+                      ))}
+                    </StyledTableRow>
+                    {leadsData?.leads?.edges.map((leadEdge: any) => {
+                      const lead = leadEdge?.node;
+                      return (
+                        <StyledTableRow
+                          key={lead.id}
+                          onClick={() => handleCheckboxChange(lead.id)}
+                        >
+                          <StyledTableCell>
+                            <Checkbox
+                              checked={selectedRows[lead.id]}
+                              onChange={() => handleCheckboxChange(lead.id)}
+                            />
+                          </StyledTableCell>
+                          {fields.map((field: string) => (
+                            <StyledTableCell key={field}>
+                              {lead[field]}
+                            </StyledTableCell>
+                          ))}
+                        </StyledTableRow>
+                      );
+                    })}
+                  </tbody>
+                </StyledTable>
+              </>
+            )}
+          </StyledInputCard>
+        </StyledInputCard>
+        <ModalWrapper1 isOpen={confirmModalOpen} onClose={cancelRunCampaign}>
+          <StyledModalInputCard>
             <StyledModalInputCard>
-              <StyledModalInputCard>
-                <StyledText>
-                  Are you sure you want to run the campaign?
-                </StyledText>
-              </StyledModalInputCard>
-              <StyledModalInputCard>
-                <StyledComboInputContainer>
-              <StyledButton>
-                <Button
-                  title="Confirm"
-                  variant="primary"
-                  accent="dark"
-                  onClick={confirmRunCampaign}
-                />
-                <Button
-                  title="Cancel"
-                  variant="primary"
-                  accent="danger"
-                  onClick={cancelRunCampaign}
-                />
-              </StyledButton>
-              </StyledComboInputContainer>
-              </StyledModalInputCard>
+              <StyledText>
+                Are you sure you want to run the campaign?
+              </StyledText>
             </StyledModalInputCard>
-          </ModalWrapper1>
+            <StyledModalInputCard>
+              <StyledComboInputContainer>
+                <StyledButton>
+                  <Button
+                    title="Confirm"
+                    variant="primary"
+                    accent="dark"
+                    onClick={confirmRunCampaign}
+                  />
+                  <Button
+                    title="Cancel"
+                    variant="primary"
+                    accent="danger"
+                    onClick={cancelRunCampaign}
+                  />
+                </StyledButton>
+              </StyledComboInputContainer>
+            </StyledModalInputCard>
+          </StyledModalInputCard>
+        </ModalWrapper1>
       </ModalWrapper>
     </>
   );

@@ -1,26 +1,30 @@
 import { gql } from '@apollo/client';
 
 export const GET_SPECIALTY = gql`
-  query FindManySubspecialties(
-    $filter: SubspecialtyFilterInput
-    $orderBy: SubspecialtyOrderByInput
-    $lastCursor: String
-    $limit: Float
+query FindManySubspecialties($filter: SubspecialtyFilterInput, $orderBy: SubspecialtyOrderByInput, $lastCursor: String, $limit: Float) {
+  subspecialties(
+    filter: $filter
+    orderBy: $orderBy
+    first: $limit
+    after: $lastCursor
   ) {
-    subspecialties(
-      filter: $filter
-      orderBy: $orderBy
-      first: $limit
-      after: $lastCursor
-    ) {
-      edges {
-        node {
+    edges {
+      node {
+        id
+        name
+        specialty{
           name
-          specialtyType {
-            name
-          }
         }
+
       }
+      cursor
     }
+    pageInfo {
+      hasNextPage
+      startCursor
+      endCursor
+    }
+    totalCount
   }
+}
 `;
