@@ -20,3 +20,4 @@ coverage
 .vercel
 
 **/**/logs/**
+packages/twenty-server/src/campaign.zip

@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
+import { CampaignExecutionDTO } from 'src/campaign/campaign-execution.dto';
 import { CampaignService } from 'src/campaign/campaign.service';
 import { FormDataDTO } from 'src/campaign/formdata.dto';
 @Controller('/campaign')
@@ -27,4 +28,14 @@ export class CampaignController {
       return error;
     }
   }
+  
+  @Post('/execute')
+  async executeCampaign(@Body() campaignExecutionData: CampaignExecutionDTO) {
+    try {
+      return this.campaignService.triggerCampaignStartWorkflow(campaignExecutionData);
+    } catch (error) {
+      return error;
+    }
+  }
+
 }
