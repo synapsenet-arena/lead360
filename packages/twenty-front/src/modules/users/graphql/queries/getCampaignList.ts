@@ -15,6 +15,7 @@ query FindManyCampaigns($filter: CampaignFilterInput, $orderBy: CampaignOrderByI
         segment{
             id
             name
+            filters
         }
         subspecialty
         specialty

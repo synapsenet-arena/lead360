@@ -137,7 +137,7 @@ export const CampaignForm3 = () => {
     const fetchUserDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/campaign?id=${userid}`,
+          `http://localhost:3000/campaign/${userid}`,
         );
         if (!response.ok) {
           throw new Error('Failed to fetch user details');

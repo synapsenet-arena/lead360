@@ -29,6 +29,7 @@ import { UPDATE_LAST_EXECUTION_ID } from '@/users/graphql/queries/updateLastExec
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useNavigate } from 'react-router-dom';
 import { CustomPath } from '@/types/CustomPath';
+import { send } from 'vite';
 
 type RecordIndexTableContainerEffectProps = {
   objectNameSingular: string;
@@ -131,7 +132,7 @@ export const RecordIndexTableContainerEffect = ({
     color: ${({ theme }) => theme.font.color.secondary};
     display: flex;
     flex-direction: column;
-    height: auto%;
+    height: auto;
     justify-content: space-evenly;
     width: 100%;
   `;
@@ -356,13 +357,13 @@ export const RecordIndexTableContainerEffect = ({
       );
 
       let idsToSend: any[] = [];
-      let idType: 'selected' | 'unselected';
+      let idType: 'selectedID' | 'unselectedID';
 
       if (selectedLeadIds.length < unSelectedLeadIds.length) {
-        idType = 'selected';
+        idType = 'selectedID';
         idsToSend = selectedLeadIds.map((leadId) => ({ id: leadId }));
       } else {
-        idType = 'unselected';
+        idType = 'unselectedID';
         idsToSend = unSelectedLeadIds.map((leadId) => ({ id: leadId }));
       }
 
@@ -426,21 +427,23 @@ export const RecordIndexTableContainerEffect = ({
       console.log('Request Body:', requestBody);
 
       // Now you can send the requestBody to your endpoint
-      // const response = await fetch('someEndpointURL', {
-      // method: 'POST',
-      // headers: {
-      // 'Content-Type': 'application/json',
-      // },
-      // body: JSON.stringify(requestBody),
-      // });
-      // const data = await response.json();
+      const campaignResponse = await fetch(`http://localhost:3000/campaign/execute`, {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+      });
+      const data = await campaignResponse.json();
 
-      // console.log('Response from the API:', data);
-      const response = true;
+      console.log('Response from the API:', data);
+      // const response = true;
 
-      if (response) {
+      if (campaignResponse.status==201) {
         setConfirmModalOpen(false);
         setIsModalOpen(false);
+      }else{
+        throw Error("Campaign Not started ")
       }
       navigate(CustomPath.CampaignTriggersPage);
       enqueueSnackBar('Campaign running successfully', {
@@ -448,6 +451,9 @@ export const RecordIndexTableContainerEffect = ({
       });
     } catch (error) {
       console.log('Error in triggering campaign', error);
+      enqueueSnackBar('Error in triggering campaign', {
+        variant: 'error',
+      });
     }
   };
 

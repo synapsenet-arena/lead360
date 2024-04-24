@@ -212,6 +212,7 @@ export class CampaignService {
       return fetchedData;
     } catch (error) {
       console.error(error);
+      return error
     }
   }
 

@@ -11,7 +11,7 @@ export class CampaignController {
   async validateFormDetails(@Param() id: any) {
     try {
       id = id.id.toString();
-
+          
       return this.campaignService.validateFormDetails(id);
     } catch (error) {
       return error;
