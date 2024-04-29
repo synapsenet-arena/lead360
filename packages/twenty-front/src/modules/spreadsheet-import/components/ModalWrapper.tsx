@@ -19,7 +19,25 @@ const StyledModal = styled(Modal)`
     width: 100%;
     height: 100%;
   }
+  overflow-y: scroll;
+  scrollbar-color: ${({ theme }) => theme.border.color.strong};
+  scrollbar-width: thin;
+  
+   *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px; 
+  }
+
+  *::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.border.color.strong}; 
+    border-radius: ${({ theme }) => theme.border.radius.sm};
+  }
 `;
+
 
 const StyledRtlLtr = styled.div`
   display: flex;

@@ -29,15 +29,18 @@ const CampaignContext = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [leadData, setLeadData] = useState();
   const [campaignData, setCampaignData] = useState({
-    campaignName: '',
-    campaignDescription: '',
-    targetAudience: '',
-    emailTemplate: '',
-    whatsappTemplate: '',
-    leads: '',
     startDate: '',
     endDate: '',
-    pageUrl: '',
+    selectedId: '',
+    unSelectedId: '',
+    querystamp: '',
+    // campaignName: '',
+    // campaignDescription: '',
+    // targetAudience: '',
+    // emailTemplate: '',
+    // whatsappTemplate: '',
+    // pageUrl: '',
+    reload: false
   });
 
   return (

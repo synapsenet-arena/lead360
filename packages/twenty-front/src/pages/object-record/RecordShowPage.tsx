@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 
@@ -17,6 +17,13 @@ import { ShowPageMoreButton } from '@/ui/layout/show-page/components/ShowPageMor
 import { PageTitle } from '@/ui/utilities/page-title/PageTitle';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
 import { isNonNullable } from '~/utils/isNonNullable';
+import { RunCampaignButton } from '@/ui/layout/page/RunCampaignButton';
+import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
+import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { ADD_TRIGGER_CAMPAIGN_RECORD } from '@/users/graphql/queries/addTriggerCampaignRecord';
+import { UPDATE_CAMPAIGNLIST_STATUS } from '@/users/graphql/queries/updateCampaignlistStatus';
+import { UPDATE_LAST_EXECUTION_ID } from '@/users/graphql/queries/updateLastExecutionId';
 
 export const RecordShowPage = () => {
   const { objectNameSingular, objectRecordId } = useParams<{
@@ -66,6 +73,81 @@ export const RecordShowPage = () => {
       createFavorite(record, objectNameSingular);
     }
   };
+  let [selectedCampaign, { data: selectedCampaignData }] =
+    useLazyQuery(GET_CAMPAIGN_LISTS);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await selectedCampaign({
+          variables: {
+            filter: {
+              id: { eq: objectRecordId },
+            },
+          },
+        });
+        const fetchedCampaigns = data?.data?.campaigns?.edges ?? [];
+        setCampaigns(fetchedCampaigns);
+        console.log('Fetched campaign:', fetchedCampaigns);
+      } catch (error) {
+        console.error('Error fetching campaign:', error);
+      }
+    };
+
+    fetchData();
+  }, [objectRecordId, selectedCampaign]);
+
+  const { campaignData, setCampaignData } = useCampaign();
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
+  const handleRuncampaign = async () => {
+    try {
+      const campaignExecutionID = `${campaigns[0]?.campaigns?.edges[0]?.node
+        ?.id}-${new Date().toISOString()}`;
+
+      const { data: addTriggerData } = await addTriggerCampaignRecord({
+        variables: {
+          input: {
+            name: campaigns[0]?.campaigns?.edges[0]?.node?.name,
+            executionId: campaignExecutionID,
+            startDate: campaignData.startDate.toISOString(),
+            stopDate: campaignData.endDate.toISOString(),
+            status: 'ACTIVE',
+            campaignId: campaigns[0]?.campaigns?.edges[0]?.node?.id,
+          },
+        },
+      });
+
+      console.log(
+        'Response from ADD_TRIGGER_CAMPAIGN_RECORD:',
+        addTriggerData.createCampaignTrigger.id,
+      );
+
+      let requestBody: {
+        campaignId: string;
+        queryTimestamp: any;
+        campaignTriggerId: any;
+        startDate: any;
+        stopDate: any;
+        id: { selectedID: any } | { unSelectedID: any };
+      } = {
+        campaignId: objectRecordId,
+        queryTimestamp: campaignData.querystamp,
+        campaignTriggerId: addTriggerData?.createCampaignTrigger?.id,
+        startDate: campaignData.startDate,
+        stopDate: campaignData.endDate,
+        id: { selectedID: campaignData.selectedId },
+      };
+
+      if (campaignData.selectedId.length > campaignData.unSelectedId.length) {
+        requestBody.id = { unSelectedID: campaignData.unSelectedId };
+      }
+
+      console.log(requestBody, 'request body');
+    } catch (error) {
+      console.error('Error fetching campaign:', error);
+    }
+  };
 
   const labelIdentifierFieldValue =
     record?.[labelIdentifierFieldMetadata?.name ?? ''];
@@ -104,6 +186,11 @@ export const RecordShowPage = () => {
               recordId={record.id}
               objectNameSingular={objectNameSingular}
             />
+          </>
+        )}
+        {record && objectNameSingular === 'campaign' && (
+          <>
+            <RunCampaignButton onClick={handleRuncampaign} />
           </>
         )}
       </PageHeader>

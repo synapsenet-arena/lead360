@@ -10,16 +10,22 @@ import { TimelineQueryEffect } from '@/activities/timeline/components/TimelineQu
 import { ActivityTargetableObject } from '@/activities/types/ActivityTargetableEntity';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
+import { IconClock, IconUsersGroup,IconMessage,IconDeviceTabletQuestion, } from '@tabler/icons-react';
+
 import {
   IconCheckbox,
   IconMail,
   IconNotes,
   IconPaperclip,
   IconTimelineEvent,
+ 
 } from '@/ui/display/icon';
 import { TabList } from '@/ui/layout/tab/components/TabList';
 import { useTabList } from '@/ui/layout/tab/hooks/useTabList';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
+import { Schedule } from '@/activities/Schedule/components/schedule';
+import { Leads } from '@/activities/Leads/components/Leads';
+import { FormTemplate } from '@/activities/formTemplate/components/formTemplate';
 
 const StyledShowPageRightContainer = styled.div`
   display: flex;
@@ -28,6 +34,23 @@ const StyledShowPageRightContainer = styled.div`
   justify-content: start;
   overflow: ${() => (useIsMobile() ? 'none' : 'hidden')};
   width: calc(100% + 4px);
+  overflow-y: scroll;
+  scrollbar-color: ${({ theme }) => theme.border.color.strong};
+  scrollbar-width: thin;
+  
+   *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px; 
+  }
+
+  *::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.border.color.strong}; 
+    border-radius: ${({ theme }) => theme.border.radius.sm};
+  }
 `;
 
 const StyledTabListContainer = styled.div`
@@ -73,40 +96,112 @@ export const ShowPageRightContainer = ({
         CoreObjectNameSingular.Company) ||
     targetableObject.targetObjectNameSingular === CoreObjectNameSingular.Person;
 
-  const TASK_TABS = [
-    {
-      id: 'timeline',
-      title: 'Timeline',
-      Icon: IconTimelineEvent,
-      hide: !timeline,
-    },
-    {
-      id: 'tasks',
-      title: 'Tasks',
-      Icon: IconCheckbox,
-      hide: !tasks,
-    },
-    {
-      id: 'notes',
-      title: 'Notes',
-      Icon: IconNotes,
-      hide: !notes,
-    },
-    {
-      id: 'files',
-      title: 'Files',
-      Icon: IconPaperclip,
-      hide: !notes,
-      disabled: targetableObjectMetadataItem.isCustom,
-    },
-    {
-      id: 'emails',
-      title: 'Emails',
-      Icon: IconMail,
-      hide: !shouldDisplayEmailsTab,
-      hasBetaPill: true,
-    },
-  ];
+  let TASK_TABS = [];
+
+  if (targetableObject.targetObjectNameSingular === 'campaign') {
+    TASK_TABS = [
+      {
+        id: 'schedule',
+        title: 'Schedule',
+        Icon: IconClock,
+        hide: !timeline,
+      },
+      {
+        id: 'leads',
+        title: 'Leads',
+        Icon: IconUsersGroup,
+        hide: !tasks,
+      },
+      {
+        id: 'messageTemplate',
+        title: 'Message Template',
+        Icon: IconMessage,
+        hide: !notes,
+      },
+      {
+        id: 'formTemplate',
+        title: 'Form Template',
+        Icon: IconDeviceTabletQuestion,
+        hide: !notes,
+      },
+      {
+        id: 'emails',
+        title: 'Emails',
+        Icon: IconMail,
+        hide: !shouldDisplayEmailsTab,
+        hasBetaPill: true,
+      },
+    ];
+  } else {
+    TASK_TABS = [
+      {
+        id: 'timeline',
+        title: 'Timeline',
+        Icon: IconTimelineEvent,
+        hide: !timeline,
+      },
+      {
+        id: 'tasks',
+        title: 'Tasks',
+        Icon: IconCheckbox,
+        hide: !tasks,
+      },
+      {
+        id: 'notes',
+        title: 'Notes',
+        Icon: IconNotes,
+        hide: !notes,
+      },
+      {
+        id: 'files',
+        title: 'Files',
+        Icon: IconPaperclip,
+        hide: !notes,
+        disabled: targetableObjectMetadataItem.isCustom,
+      },
+      {
+        id: 'emails',
+        title: 'Emails',
+        Icon: IconMail,
+        hide: !shouldDisplayEmailsTab,
+        hasBetaPill: true,
+      },
+    ];
+  }
+  // const TASK_TABS = [
+  //   {
+  //     id: 'timeline',
+  //     title: 'Timeline',
+  //     Icon: IconTimelineEvent,
+  //     hide: !timeline,
+  //   },
+  //   {
+  //     id: 'tasks',
+  //     title: 'Tasks',
+  //     Icon: IconCheckbox,
+  //     hide: !tasks,
+  //   },
+  //   {
+  //     id: 'notes',
+  //     title: 'Notes',
+  //     Icon: IconNotes,
+  //     hide: !notes,
+  //   },
+  //   {
+  //     id: 'files',
+  //     title: 'Files',
+  //     Icon: IconPaperclip,
+  //     hide: !notes,
+  //     disabled: targetableObjectMetadataItem.isCustom,
+  //   },
+  //   {
+  //     id: 'emails',
+  //     title: 'Emails',
+  //     Icon: IconMail,
+  //     hide: !shouldDisplayEmailsTab,
+  //     hasBetaPill: true,
+  //   },
+  // ];
 
   return (
     <StyledShowPageRightContainer>
@@ -127,6 +222,19 @@ export const ShowPageRightContainer = ({
         <Attachments targetableObject={targetableObject} />
       )}
       {activeTabId === 'emails' && <EmailThreads entity={targetableObject} />}
+
+      {activeTabId === 'schedule' && (
+        <Schedule targetableObject={targetableObject} />
+      )}
+      {activeTabId === 'leads' && (
+        <Leads targetableObject={targetableObject}/>
+      )}
+      {/* {activeTabId === 'messageTemplate' && (
+        <MessageTemplate />
+      )} */}
+      {activeTabId === 'formTemplate' && (
+        <FormTemplate targetableObject={targetableObject}/>
+      )}
     </StyledShowPageRightContainer>
   );
 };

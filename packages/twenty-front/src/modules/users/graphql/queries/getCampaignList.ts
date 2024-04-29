@@ -23,6 +23,11 @@ query FindManyCampaigns($filter: CampaignFilterInput, $orderBy: CampaignOrderByI
             id
             name
         }
+        formTemplate{
+          id
+          name
+          value
+      }
 
         segmentId
         messageTemplateId

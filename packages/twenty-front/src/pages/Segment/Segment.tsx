@@ -5,7 +5,6 @@ import { GRAY_SCALE } from '@/ui/theme/constants/GrayScale';
 import { useMutation } from '@apollo/client';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  IconCalendar,
   IconPlayerPlay,
   IconPlus,
   IconUsersGroup,
@@ -13,10 +12,6 @@ import {
 } from '@tabler/icons-react';
 import {
   Button,
-  Checkbox,
-  CheckboxShape,
-  CheckboxSize,
-  CheckboxVariant,
   Select,
   TextArea,
   TextInput,
@@ -28,8 +23,6 @@ import { useLazyQuery } from '@apollo/client';
 import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 import { PreviewLeadsData } from '~/pages/campaigns/PreviewLeadsData';
-import { ModalWrapper } from '@/spreadsheet-import/components/ModalWrapper';
-import DateTimePicker from '@/ui/input/components/internal/date/components/DateTimePicker';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { ADD_SEGMENT } from '@/users/graphql/queries/addSegment';
 import { useNavigate } from 'react-router-dom';
@@ -37,7 +30,7 @@ import { useNavigate } from 'react-router-dom';
 const StyledBoardContainer = styled.div`
   display: flex;
   width: 100%;
-  height: 100%;
+  height: auto;
   flex-direction: column;
   justify-content: flex-start;
   background: ${({ theme }) => theme.background.noisy};
@@ -45,12 +38,30 @@ const StyledBoardContainer = styled.div`
   overflow-y: scroll;
 `;
 
+
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   overflow-y: scroll;
+  scrollbar-color: ${({ theme }) => theme.border.color.strong};
+  scrollbar-width: thin;
+  
+   *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px; 
+  }
+
+  *::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.border.color.strong}; 
+    border-radius: ${({ theme }) => theme.border.radius.sm};
+  }
 `;
+
 
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
@@ -81,12 +92,6 @@ const StyledComboInputContainer1 = styled.div`
   justify-content: space-evenly;
 `;
 
-const StyledCheckboxContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin: ${({ theme }) => theme.spacing(2)};
-`;
-
 const SytledHR = styled.hr`
   background: ${GRAY_SCALE.gray0};
   color: ${GRAY_SCALE.gray0};
@@ -94,30 +99,6 @@ const SytledHR = styled.hr`
   height: 0.2px;
   width: 100%;
   margin: ${({ theme }) => theme.spacing(10)};
-`;
-
-const StyledTitleBar = styled.h3`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
-  margin-top: ${({ theme }) => theme.spacing(4)};
-  place-items: center;
-  width: 100%;
-`;
-
-const StyledTitle = styled.h3`
-  color: ${({ theme }) => theme.font.color.primary};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
-`;
-
-const StyledLabel = styled.span`
-  color: ${({ theme }) => theme.font.color.light};
-  font-size: ${({ theme }) => theme.font.size.xs};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
-  margin-left: ${({ theme }) => theme.spacing(2)};
-  display: flex;
-  align-items: center;
-  text-transform: uppercase;
 `;
 
 export const Segment = () => {
@@ -130,10 +111,6 @@ export const Segment = () => {
   const [filterDivs, setFilterDivs] = useState<string[]>([]);
   const [segmentName, setSegmentName] = useState('');
   const [segmentDescription, setSegmentDescription] = useState('');
-  const [showStartDateTimePicker, setShowStartDateTimePicker] = useState(false);
-  const [showStopDateTimePicker, setShowStopDateTimePicker] = useState(false);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [stopDate, setStopDate] = useState<Date | null>(null);
   const { enqueueSnackBar } = useSnackBar();
   const [filterString, setFilterString] = useState("");
   const handleFilterButtonClick = () => {
@@ -177,8 +154,6 @@ export const Segment = () => {
   });
 
   const [addSegment] = useMutation(ADD_SEGMENT);
-
-  const handleCloseModal = () => {};
 
   const handleRunQuery = async () => {
     const filter:any= {};
@@ -362,95 +337,6 @@ export const Segment = () => {
           </StyledInputCard>
         </StyledBoardContainer>
       </PageContainer>
-
-      <ModalWrapper isOpen={modalOpen} onClose={handleCloseModal}>
-        <Section>
-          <StyledTitleBar>
-            <StyledTitle>Run Campaign</StyledTitle>
-          </StyledTitleBar>
-          <StyledButton>
-            <StyledButton>
-              <H2Title title="Start" />
-            </StyledButton>
-
-            <Section>
-              <StyledCheckboxContainer>
-                <Checkbox
-                  checked={false}
-                  indeterminate={false}
-                  variant={CheckboxVariant.Primary}
-                  size={CheckboxSize.Small}
-                  shape={CheckboxShape.Squared}
-                />
-                <StyledLabel>Immediately</StyledLabel>
-              </StyledCheckboxContainer>
-              <StyledCheckboxContainer>
-                <Checkbox
-                  checked={showStartDateTimePicker}
-                  onChange={() =>
-                    setShowStartDateTimePicker(!showStartDateTimePicker)
-                  }
-                  indeterminate={false}
-                  variant={CheckboxVariant.Primary}
-                  size={CheckboxSize.Small}
-                  shape={CheckboxShape.Squared}
-                />
-                <StyledLabel>
-                  Start Date/Time <IconCalendar />
-                </StyledLabel>
-                {showStartDateTimePicker && (
-                  <DateTimePicker
-                    onChange={(selectedDate) => setStartDate(selectedDate)}
-                    minDate={new Date()}
-                    value={undefined}
-                  />
-                )}
-              </StyledCheckboxContainer>
-            </Section>
-          </StyledButton>
-          <SytledHR />
-          <StyledButton>
-            <StyledButton>
-              <H2Title title="Stop" />
-            </StyledButton>
-
-            <Section>
-              <StyledCheckboxContainer>
-                <Checkbox
-                  checked={false}
-                  indeterminate={false}
-                  variant={CheckboxVariant.Primary}
-                  size={CheckboxSize.Small}
-                  shape={CheckboxShape.Squared}
-                />
-                <StyledLabel>Immediately</StyledLabel>
-              </StyledCheckboxContainer>
-              <StyledCheckboxContainer>
-                <Checkbox
-                  checked={showStopDateTimePicker}
-                  onChange={() =>
-                    setShowStopDateTimePicker(!showStopDateTimePicker)
-                  }
-                  indeterminate={false}
-                  variant={CheckboxVariant.Primary}
-                  size={CheckboxSize.Small}
-                  shape={CheckboxShape.Squared}
-                />
-                <StyledLabel>
-                  Start Date/Time <IconCalendar />
-                </StyledLabel>
-                {showStopDateTimePicker && (
-                  <DateTimePicker
-                    onChange={(selectedDate) => setStopDate(selectedDate)}
-                    minDate={new Date()}
-                    value={undefined}
-                  />
-                )}
-              </StyledCheckboxContainer>
-            </Section>
-          </StyledButton>
-        </Section>
-      </ModalWrapper>
     </>
   );
 };

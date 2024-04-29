@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client'; // Import useQuery hook from @apollo/client
-import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
+
 import { useColumnDefinitionsFromFieldMetadata } from '@/object-metadata/hooks/useColumnDefinitionsFromFieldMetadata';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { useRecordActionBar } from '@/object-record/record-action-bar/hooks/useRecordActionBar';
 import { useRecordTable } from '@/object-record/record-table/hooks/useRecordTable';
 import { useViewBar } from '@/views/hooks/useViewBar';
+<<<<<<< Updated upstream
 import { ModalWrapper } from '@/spreadsheet-import/components/ModalWrapper';
 import styled from '@emotion/styled';
 import { GRAY_SCALE } from '@/ui/theme/constants/GrayScale';
@@ -30,6 +30,8 @@ import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useNavigate } from 'react-router-dom';
 import { CustomPath } from '@/types/CustomPath';
 import { send } from 'vite';
+=======
+>>>>>>> Stashed changes
 
 type RecordIndexTableContainerEffectProps = {
   objectNameSingular: string;
@@ -51,6 +53,7 @@ export const RecordIndexTableContainerEffect = ({
     recordTableId,
   });
 
+<<<<<<< Updated upstream
   const PageContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -240,6 +243,8 @@ export const RecordIndexTableContainerEffect = ({
     }
   `;
 
+=======
+>>>>>>> Stashed changes
   const { objectMetadataItem } = useObjectMetadataItem({
     objectNameSingular,
   });
@@ -257,14 +262,10 @@ export const RecordIndexTableContainerEffect = ({
 
   const selectedRowIds = useRecoilValue(getSelectedRowIdsSelector());
 
-  const {
-    setActionBarEntries,
-    setContextMenuEntries,
-    runCampaignCallback,
-    runCallback,
-  } = useRecordActionBar({
+  const { setActionBarEntries, setContextMenuEntries } = useRecordActionBar({
     objectMetadataItem,
     selectedRecordIds: selectedRowIds,
+    callback: resetTableRowSelection,
   });
 
   useEffect(() => {
@@ -278,6 +279,7 @@ export const RecordIndexTableContainerEffect = ({
     );
   }, [setEntityCountInCurrentView, setOnEntityCountChange]);
 
+<<<<<<< Updated upstream
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showStartDateTimePicker, setShowStartDateTimePicker] = useState(false);
   const [showStopDateTimePicker, setShowStopDateTimePicker] = useState(false);
@@ -799,3 +801,7 @@ export const RecordIndexTableContainerEffect = ({
     </>
   );
 };
+=======
+  return <></>;
+};
+>>>>>>> Stashed changes
