@@ -34,12 +34,12 @@ const CampaignContext = () => {
     selectedId: '',
     unSelectedId: '',
     querystamp: '',
-    // campaignName: '',
-    // campaignDescription: '',
-    // targetAudience: '',
-    // emailTemplate: '',
-    // whatsappTemplate: '',
-    // pageUrl: '',
+    campaignName: '',
+    campaignDescription: '',
+    targetAudience: '',
+    emailTemplate: '',
+    whatsappTemplate: '',
+    pageUrl: '',
     reload: false
   });
 

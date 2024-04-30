@@ -102,18 +102,14 @@ export const RecordShowPage = () => {
   const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
   const handleRuncampaign = async () => {
     try {
-      const campaignExecutionID = `${campaigns[0]?.campaigns?.edges[0]?.node
-        ?.id}-${new Date().toISOString()}`;
-
       const { data: addTriggerData } = await addTriggerCampaignRecord({
         variables: {
           input: {
-            name: campaigns[0]?.campaigns?.edges[0]?.node?.name,
-            executionId: campaignExecutionID,
+            name: campaigns[0]?.node?.name,
             startDate: campaignData.startDate.toISOString(),
             stopDate: campaignData.endDate.toISOString(),
             status: 'ACTIVE',
-            campaignId: campaigns[0]?.campaigns?.edges[0]?.node?.id,
+            campaignId: campaigns[0]?.node?.id,
           },
         },
       });
@@ -129,7 +125,7 @@ export const RecordShowPage = () => {
         campaignTriggerId: any;
         startDate: any;
         stopDate: any;
-        id: { selectedID: any } | { unSelectedID: any };
+        id: { selectedID: any } | { unselectedID: any };
       } = {
         campaignId: objectRecordId,
         queryTimestamp: campaignData.querystamp,
@@ -140,7 +136,7 @@ export const RecordShowPage = () => {
       };
 
       if (campaignData.selectedId.length > campaignData.unSelectedId.length) {
-        requestBody.id = { unSelectedID: campaignData.unSelectedId };
+        requestBody.id = { unselectedID: campaignData.unSelectedId };
       }
 
       console.log(requestBody, 'request body');

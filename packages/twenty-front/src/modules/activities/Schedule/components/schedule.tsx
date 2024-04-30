@@ -88,7 +88,7 @@ export const Schedule = ({
   const [stopDate, setStopDate] = useState<Date | null>(null);
   const { campaignData, setCampaignData } =  useCampaign();
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStartCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const currentDate = new Date(); 
     setStartDate(currentDate);
     setCampaignData({
@@ -97,6 +97,14 @@ export const Schedule = ({
     });
   };
 
+  const handleStopCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const currentDate = new Date(); 
+    setStopDate(currentDate);
+    setCampaignData({
+      ...campaignData,
+      endDate: currentDate,
+    });
+  };
     return (
       <StyledContainer>
         <StyledTitleBar>
@@ -115,7 +123,7 @@ export const Schedule = ({
                 variant={CheckboxVariant.Primary}
                 size={CheckboxSize.Small}
                 shape={CheckboxShape.Squared}
-                onChange={handleCheckboxChange}
+                onChange={handleStartCheckboxChange}
               />
               <StyledCheckboxLabel>Immediately</StyledCheckboxLabel>
             </StyledLabel>
@@ -150,7 +158,17 @@ export const Schedule = ({
           <StyledScheduleTitle>Stop</StyledScheduleTitle>
           <StyledTaskRows>
           <StyledComboInputContainer>
-            <StyledLabel>
+          <StyledLabel>
+              <Checkbox
+                checked={false}
+                indeterminate={false}
+                variant={CheckboxVariant.Primary}
+                size={CheckboxSize.Small}
+                shape={CheckboxShape.Squared}
+                onChange={handleStopCheckboxChange}
+              />
+              <StyledCheckboxLabel>Immediately</StyledCheckboxLabel>
+            </StyledLabel>
               <Checkbox
                 checked={showStopDateTimePicker}
                 onChange={() =>
@@ -164,7 +182,6 @@ export const Schedule = ({
               <StyledLabel>
                 Stop Date/Time <IconCalendar />
               </StyledLabel>
-            </StyledLabel>
             {showStopDateTimePicker && (
               <DateTimePicker
               onChange={(selectedDate) =>

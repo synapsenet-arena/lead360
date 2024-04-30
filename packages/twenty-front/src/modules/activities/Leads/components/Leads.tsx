@@ -7,6 +7,15 @@ import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
 import { Checkbox } from '@/ui/input/components/Checkbox';
 import { capitalize } from '~/utils/string/capitalize';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
+import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
+import { DateDisplay } from '@/ui/field/display/components/DateDisplay';
+import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
+import { TextFieldDisplay } from '@/object-record/record-field/meta-types/display/components/TextFieldDisplay';
+import { useGetIsSomeCellInEditModeState } from '@/object-record/record-table/hooks/internal/useGetIsSomeCellInEditMode';
+import { useMoveSoftFocusToCurrentCellOnHover } from '@/object-record/record-table/record-table-cell/hooks/useMoveSoftFocusToCurrentCellOnHover';
+import { isSoftFocusUsingMouseState } from '@/object-record/record-table/states/isSoftFocusUsingMouseState';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { IconUser } from '@tabler/icons-react';
 
 const StyledInputCard = styled.div`
   align-items: flex-start;
@@ -17,6 +26,23 @@ const StyledInputCard = styled.div`
   justify-content: space-evenly;
   width: 100%;
 `;
+const StyledIcon = styled.div`
+  display: flex;
+
+  & > svg {
+    height: ${({ theme }) => theme.icon.size.md}px;
+    width: ${({ theme }) => theme.icon.size.md}px;
+  }
+`;
+const StyledCellBaseContainer = styled.div`
+  align-items: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  height: 32px;
+  position: relative;
+  user-select: none;
+`;
 
 const StyledCountContainer = styled.div`
   display: flex;
@@ -25,58 +51,59 @@ const StyledCountContainer = styled.div`
     margin-left: ${({ theme }) => theme.spacing(10)};
   }
   margin-top: ${({ theme }) => theme.spacing(10)};
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
   height: auto;
   justify-content: flex-start;
   width: 100%;
   align-items: center;
 `;
 
-const StyledTitleText = styled.span`
-  color: ${({ theme }) => theme.font.color.secondary};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
-  min-width: 150px;
-  margin-right: ${({ theme }) => theme.spacing(2)};
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
-`;
-
-const StyledTable = styled.table`
+const StyledTable = styled.table<{ cursorPointer: boolean }>`
   width: 100%;
   border-collapse: collapse;
   height: 10px;
   margin-bottom: ${({ theme }) => theme.spacing(6)};
+  background-color: ${({ theme }) => theme.background.primary};
+  cursor: ${({ cursorPointer }) => (cursorPointer ? 'pointer' : 'inherit')};
+  font-family: inherit;
+  font-size: inherit;
+
+  font-weight: inherit;
+  max-width: 100%;
+  overflow: hidden;
+  text-decoration: inherit;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const StyledTableRow = styled.tr`
   &:nth-of-type(odd) {
     background-color: ${({ theme }) => theme.background.primary};
   }
-  &:nth-of-type(even) {
-    background-color: ${({ theme }) => theme.background.transparent.blue};
-  }
+  // &:nth-of-type(even) {
+  //   background-color: ${({ theme }) => theme.background.transparent.blue};
+  // }
 `;
 
 const StyledTableCell = styled.td`
   padding: 5px;
-  // border: 1px solid ${({ theme }) => theme.border.color.medium};
-  font-size: ${({ theme }) => theme.font.size.md};
   height: 25px;
+  border: 1px solid ${({ theme }) => theme.border.color.light};
 `;
 
 const StyledTableHeaderCell = styled.td`
   padding: 5px;
   border: 1px solid ${({ theme }) => theme.border.color.medium};
-  font-size: ${({ theme }) => theme.font.size.md};
   height: 25px;
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
 
 const StyledComboInputContainer = styled.div`
   display: flex;
-  justify-content: stretch;
   align-items: center;
-  margin-top: ${({ theme }) => theme.spacing(4)};
-  margin-bottom: ${({ theme }) => theme.spacing(10)};
-  margin-right: ${({ theme }) => theme.spacing(10)};
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(2)};
+  }
 `;
 
 const StyledContainer = styled.div`
@@ -86,6 +113,11 @@ const StyledContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   padding: 8px 24px;
+`;
+
+const StyledLabelContainer = styled.div`
+  color: ${({ theme }) => theme.font.color.tertiary};
+  width: auto;
 `;
 
 export const Leads = ({
@@ -103,6 +135,8 @@ export const Leads = ({
     'comments',
     'createdAt',
   ];
+
+  const icons = [];
 
   const [leadsData, setLeadsData] = useState<any | any[]>([]);
   const [totalLeadsCount, setTotalLeadsCount] = useState<number>(0);
@@ -127,7 +161,9 @@ export const Leads = ({
 
   useEffect(() => {
     if (leadsData.leads && leadsData.leads.edges) {
-      const allLeadIds = leadsData.leads.edges.map((leadEdge: any) => leadEdge.node.id);
+      const allLeadIds = leadsData.leads.edges.map(
+        (leadEdge: any) => leadEdge.node.id,
+      );
       const initialSelectedRows: { [key: string]: boolean } = {};
       const initialUnSelectedRows: { [key: string]: boolean } = {};
       allLeadIds.forEach((leadId: string) => {
@@ -137,34 +173,33 @@ export const Leads = ({
       setunSelectedRows(initialUnSelectedRows);
     }
   }, [leadsData]);
-  
 
   const handleCheckboxChange = (leadId: string) => {
     const updatedSelectedRows = { ...selectedRows };
     updatedSelectedRows[leadId] = !updatedSelectedRows[leadId];
-  
+
     const updatedUnSelectedRows = { ...unSelectedRows };
     if (!updatedSelectedRows[leadId]) {
       updatedUnSelectedRows[leadId] = true;
     } else {
       delete updatedUnSelectedRows[leadId];
     }
-  
+
     const selectedLeadIds = Object.keys(updatedSelectedRows).filter(
-      (leadId) => updatedSelectedRows[leadId]
+      (leadId) => updatedSelectedRows[leadId],
     );
     const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
-  
+
     setCampaignData({
       ...campaignData,
       selectedId: selectedLeadIds,
       unSelectedId: unSelectedLeadIds,
     });
-  
+
     setSelectedRows(updatedSelectedRows);
     setunSelectedRows(updatedUnSelectedRows);
   };
-  
+
   const handleMasterCheckboxChange = () => {
     const updatedSelectedRows: { [key: string]: boolean } = {};
     const updatedUnSelectedRows: { [key: string]: boolean } = {};
@@ -179,21 +214,20 @@ export const Leads = ({
         updatedUnSelectedRows[lead.id] = true;
       });
     }
-  
+
     const selectedLeadIds = Object.keys(updatedSelectedRows);
     const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
-  
+
     setCampaignData({
       ...campaignData,
       selectedId: selectedLeadIds,
       unSelectedId: unSelectedLeadIds,
     });
-  
+
     setSelectedRows(updatedSelectedRows);
     setunSelectedRows(updatedUnSelectedRows);
     setMasterCheckboxChecked(!masterCheckboxChecked);
   };
-  
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -213,9 +247,8 @@ export const Leads = ({
         setTotalLeadsCount(leadsCount);
         setCampaignData({
           ...campaignData,
-          querystamp: new Date()
+          querystamp: new Date(),
         });
-      
       } catch (error) {
         console.error('Error fetching campaign segment filter:', error);
       }
@@ -223,39 +256,57 @@ export const Leads = ({
 
     fetchLeads();
   }, [targetableObject.id, selectedCampaign]);
-
+  
   return (
     <StyledContainer>
       <StyledInputCard>
         {leadsData?.leads?.edges[0] && (
           <>
             <StyledCountContainer>
-              <StyledTitleText>
-                Leads fetched at: {campaignData?.querystamp.toLocaleString()}
-              </StyledTitleText>
-              <StyledTitleText>Total Leads: {totalLeadsCount}</StyledTitleText>
-              <StyledTitleText>
-                Selected Leads: {Object.keys(selectedRows).length}
-              </StyledTitleText>
-              <StyledTitleText>
-                Unselected Leads: {Object.keys(unSelectedRows).length}
-              </StyledTitleText>
+              <StyledComboInputContainer>
+                <StyledLabelContainer>
+                  <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
+                </StyledLabelContainer>
+                <DateDisplay value={campaignData?.querystamp} />
+              </StyledComboInputContainer>
+              <StyledComboInputContainer>
+                <StyledLabelContainer>
+                  <EllipsisDisplay>Total Leads:</EllipsisDisplay>
+                </StyledLabelContainer>
+                <NumberDisplay value={totalLeadsCount} />{' '}
+              </StyledComboInputContainer>
+
+              <StyledComboInputContainer>
+                <StyledLabelContainer>
+                  <EllipsisDisplay>Selected Leads:</EllipsisDisplay>
+                </StyledLabelContainer>
+                <NumberDisplay value={Object.keys(selectedRows).length} />
+              </StyledComboInputContainer>
+
+              <StyledComboInputContainer>
+                <StyledLabelContainer>
+                  <EllipsisDisplay>Unselected Leads:</EllipsisDisplay>
+                </StyledLabelContainer>
+                <NumberDisplay value={Object.keys(selectedRows).length} />
+              </StyledComboInputContainer>
             </StyledCountContainer>
-            <StyledTable>
+
+            <StyledTable cursorPointer={true}>
               <tbody>
                 <StyledTableRow>
                   <StyledTableHeaderCell>
-                    <StyledComboInputContainer>
-                      <Checkbox
-                        checked={masterCheckboxChecked}
-                        onChange={handleMasterCheckboxChange}
-                      />
-                      Select
-                    </StyledComboInputContainer>
+                    <Checkbox
+                      checked={masterCheckboxChecked}
+                      onChange={handleMasterCheckboxChange}
+                    />
                   </StyledTableHeaderCell>
+
                   {fields.map((field: string) => (
                     <StyledTableHeaderCell key={field}>
-                      {capitalize(field)}
+                      <StyledLabelContainer>
+                       <IconUser size={15}/>
+                        {capitalize(field)}
+                      </StyledLabelContainer>
                     </StyledTableHeaderCell>
                   ))}
                 </StyledTableRow>
@@ -274,7 +325,9 @@ export const Leads = ({
                       </StyledTableCell>
                       {fields.map((field: string) => (
                         <StyledTableCell key={field}>
-                          {lead[field]}
+                          <EllipsisDisplay>
+                            {lead[field].toString()}
+                          </EllipsisDisplay>
                         </StyledTableCell>
                       ))}
                     </StyledTableRow>

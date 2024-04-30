@@ -1,4 +1,6 @@
-import { useParams } from 'react-router-dom';
+
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 import { useObjectMetadataItemForSettings } from '@/object-metadata/hooks/useObjectMetadataItemForSettings';
@@ -28,13 +30,33 @@ export const RecordIndexPageHeader = ({
   );
 
   const recordIndexViewType = useRecoilValue(recordIndexViewTypeState);
+  const navigate = useNavigate();
 
+  const [page, setPage] = useState('');
+
+  useEffect(() => {
+    if (objectNamePlural === 'appointmentForms') {
+      setPage('/templatelist');
+    } else if (objectNamePlural === 'campaigns') {
+      setPage('/campaigns');
+    } else if (objectNamePlural === 'segments') {
+      setPage('/segment');
+    } else if (objectNamePlural === 'campaignTriggers') {
+      setPage('/campaignTriggers');
+    }
+  });
+
+  const handleClick = () => {
+    if (page) {
+      navigate(page);
+    }
+  };
   return (
     <PageHeader title={capitalize(objectNamePlural)} Icon={Icon}>
       <PageHotkeysEffect onAddButtonClick={createRecord} />
       {recordIndexViewType === ViewType.Table && (
-        <PageAddButton onClick={createRecord} />
-      )}
+          <PageAddButton onClick={!page ? createRecord : handleClick} />
+        )}
     </PageHeader>
   );
 };

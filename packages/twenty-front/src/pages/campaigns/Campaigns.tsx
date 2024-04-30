@@ -239,7 +239,6 @@ export const Campaigns = () => {
           messageTemplateId: messageTemplateId,
           specialty: specialty,
           subspecialty: subSpecialty,
-          status:'INACTIVE',
           segmentId: campaignData.targetAudience,
           formTemplateId: campaignData.pageUrl
         },
