@@ -37,5 +37,16 @@ export class CampaignController {
       return error;
     }
   }
+  @Post('/lead/register/:id')
+  executeLeadRegistration(@Param() id: any,@Body() data:any){
+    // console.log(id.id)
+    try {
+      console.log(id.id)
+       this.campaignService.triggerLeadRegistrationWorkflow(id.id);
+       return true
+    } catch (error) {
+      return error;
+    }
+  }
 
 }

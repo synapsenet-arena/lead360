@@ -16,6 +16,7 @@ import { response } from 'express';
 
 @Injectable()
 export class CampaignService {
+  
   constructor(
     private createFormResponse: CreateFormResponse,
     private getCampaignTrigger: GetCampaignTrigger,
@@ -23,6 +24,33 @@ export class CampaignService {
     private getLeadData: GetLeadData,
     private getOpportunityData: GetOpportunityData,
   ) {}
+  
+  async triggerLeadRegistrationWorkflow(id: any) {
+    const data={
+      conf:{
+        patient_uuid:id
+      }
+    }
+    try {
+      let response = await fetch(
+        `${process.env.AIRFLOW_HOST}/api/v1/dags/${process.env.DAG_CONTACTED_OPPORTUNITIES}/dagRuns`,
+        {
+          method: 'post',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${process.env.AIRFLOW_AUTH_TOKEN}`,
+          },
+        },
+      );
+
+      response = await response.json();
+      console.log(response)
+      return response;
+    } catch (error) {
+      return error;
+    }  
+  }
 
   async triggerIdentifiedWorkflow(requestBody: any) {
     const data = {

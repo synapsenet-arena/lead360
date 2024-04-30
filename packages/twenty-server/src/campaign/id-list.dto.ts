@@ -5,12 +5,8 @@ import { IdDto } from 'src/campaign/id.dto';
 
 export class IdList {
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => IdDto)
-  selectedID: IdDto[];
+  selectedID: [];
 
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => IdDto)
-  unselectedID: IdDto[];
+  unselectedID: [];
 }
