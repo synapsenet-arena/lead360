@@ -140,6 +140,17 @@ export const RecordShowPage = () => {
       }
 
       console.log(requestBody, 'request body');
+
+      const response = await fetch('http://localhost:3000/campaign/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      const data = await response.json();
+
+      console.log('Response from the API:', data);
     } catch (error) {
       console.error('Error fetching campaign:', error);
     }
