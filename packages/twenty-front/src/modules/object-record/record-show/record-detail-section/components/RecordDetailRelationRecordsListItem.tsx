@@ -13,11 +13,19 @@ import { usePersistField } from '@/object-record/record-field/hooks/usePersistFi
 import { FieldRelationMetadata } from '@/object-record/record-field/types/FieldMetadata';
 import { RecordDetailRecordsListItem } from '@/object-record/record-show/record-detail-section/components/RecordDetailRecordsListItem';
 import { ObjectRecord } from '@/object-record/types/ObjectRecord';
-import { IconDotsVertical, IconTrash, IconUnlink } from '@/ui/display/icon';
+import {
+  IconDotsVertical,
+  IconEye,
+  IconTrash,
+  IconUnlink,
+} from '@/ui/display/icon';
 import { Dropdown } from '@/ui/layout/dropdown/components/Dropdown';
 import { DropdownMenuItemsContainer } from '@/ui/layout/dropdown/components/DropdownMenuItemsContainer';
 import { useDropdown } from '@/ui/layout/dropdown/hooks/useDropdown';
 import { DropdownScope } from '@/ui/layout/dropdown/scopes/DropdownScope';
+import { useParams } from 'react-router-dom';
+import { useTabList } from '@/ui/layout/tab/hooks/useTabList';
+import { TAB_LIST_COMPONENT_ID } from '@/ui/layout/show-page/components/ShowPageRightContainer';
 
 const StyledListItem = styled(RecordDetailRecordsListItem)<{
   isDropdownOpen?: boolean;
@@ -39,7 +47,6 @@ const StyledListItem = styled(RecordDetailRecordsListItem)<{
     }
   }
 `;
-
 type RecordDetailRelationRecordsListItemProps = {
   relationRecord: ObjectRecord;
 };
@@ -48,7 +55,13 @@ export const RecordDetailRelationRecordsListItem = ({
   relationRecord,
 }: RecordDetailRelationRecordsListItemProps) => {
   const { fieldDefinition } = useContext(FieldContext);
-
+  const { objectNameSingular, objectRecordId } = useParams<{
+    objectNameSingular: string;
+    objectRecordId: string;
+  }>();
+  const { getActiveTabIdState, setActiveTabId } = useTabList(
+    TAB_LIST_COMPONENT_ID,
+  );
   const {
     relationFieldMetadataId,
     relationObjectMetadataNameSingular,
@@ -101,6 +114,16 @@ export const RecordDetailRelationRecordsListItem = ({
     await deleteOneRelationRecord(relationRecord.id);
   };
 
+  const handleClick = () => {
+    if (relationRecord.__typename == 'FormTemplate') {
+      setActiveTabId('formTemplate');
+    } else if (relationRecord.__typename == 'MessageTemplate') {
+      setActiveTabId('messageTemplate');
+    } else if (relationRecord.__typename == 'Segment') {
+      setActiveTabId('leads');
+    }
+  };
+
   const isOpportunityCompanyRelation =
     (objectMetadataNameSingular === CoreObjectNameSingular.Opportunity &&
       relationObjectMetadataNameSingular === CoreObjectNameSingular.Company) ||
@@ -120,39 +143,52 @@ export const RecordDetailRelationRecordsListItem = ({
       />
       {/* TODO: temporary to prevent removing a company from an opportunity */}
       {!isOpportunityCompanyRelation && (
-        <DropdownScope dropdownScopeId={dropdownScopeId}>
-          <Dropdown
-            dropdownId={dropdownScopeId}
-            dropdownPlacement="right-start"
-            clickableComponent={
+        <>
+          <DropdownScope dropdownScopeId={dropdownScopeId}>
+            <Dropdown
+              dropdownId={dropdownScopeId}
+              dropdownPlacement="right-start"
+              clickableComponent={
+                <LightIconButton
+                  className="displayOnHover"
+                  Icon={IconDotsVertical}
+                  accent="tertiary"
+                />
+              }
+              dropdownComponents={
+                <DropdownMenuItemsContainer>
+                  <MenuItem
+                    LeftIcon={IconUnlink}
+                    text="Detach"
+                    onClick={handleDetach}
+                  />
+                  {!isAccountOwnerRelation && (
+                    <MenuItem
+                      LeftIcon={IconTrash}
+                      text="Delete"
+                      accent="danger"
+                      onClick={handleDelete}
+                    />
+                  )}
+                </DropdownMenuItemsContainer>
+              }
+              dropdownHotkeyScope={{
+                scope: dropdownScopeId,
+              }}
+            />
+          </DropdownScope>
+          {objectNameSingular == 'campaign' &&
+            (relationRecord.__typename == 'FormTemplate' ||
+              relationRecord.__typename == 'MessageTemplate' ||
+              relationRecord.__typename == 'Segment') && (
               <LightIconButton
                 className="displayOnHover"
-                Icon={IconDotsVertical}
+                Icon={IconEye}
                 accent="tertiary"
+                onClick={handleClick}
               />
-            }
-            dropdownComponents={
-              <DropdownMenuItemsContainer>
-                <MenuItem
-                  LeftIcon={IconUnlink}
-                  text="Detach"
-                  onClick={handleDetach}
-                />
-                {!isAccountOwnerRelation && (
-                  <MenuItem
-                    LeftIcon={IconTrash}
-                    text="Delete"
-                    accent="danger"
-                    onClick={handleDelete}
-                  />
-                )}
-              </DropdownMenuItemsContainer>
-            }
-            dropdownHotkeyScope={{
-              scope: dropdownScopeId,
-            }}
-          />
-        </DropdownScope>
+            )}
+        </>
       )}
     </StyledListItem>
   );

@@ -22,11 +22,18 @@ query FindManyCampaigns($filter: CampaignFilterInput, $orderBy: CampaignOrderByI
         messageTemplate{
             id
             name
+            channelType
+            body
+            status
+            createdAt
         }
         formTemplate{
           id
           name
           value
+          description
+          createdAt
+          status
       }
 
         segmentId

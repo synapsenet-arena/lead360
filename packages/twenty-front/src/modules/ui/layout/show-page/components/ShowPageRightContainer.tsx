@@ -26,6 +26,7 @@ import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
 import { Schedule } from '@/activities/Schedule/components/schedule';
 import { Leads } from '@/activities/Leads/components/Leads';
 import { FormTemplate } from '@/activities/formTemplate/components/formTemplate';
+import { MessageTemplate } from '@/activities/messageTemplate/components/messageTemplate';
 
 const StyledShowPageRightContainer = styled.div`
   display: flex;
@@ -98,7 +99,7 @@ export const ShowPageRightContainer = ({
 
   let TASK_TABS = [];
 
-  if (targetableObject.targetObjectNameSingular === 'campaign') {
+  if (targetableObject.targetObjectNameSingular === 'campaign'|| targetableObject.targetObjectNameSingular === 'campaignTrigger') {
     TASK_TABS = [
       {
         id: 'schedule',
@@ -229,9 +230,9 @@ export const ShowPageRightContainer = ({
       {activeTabId === 'leads' && (
         <Leads targetableObject={targetableObject}/>
       )}
-      {/* {activeTabId === 'messageTemplate' && (
-        <MessageTemplate />
-      )} */}
+      {activeTabId === 'messageTemplate' && (
+        <MessageTemplate targetableObject={targetableObject}/>
+      )}
       {activeTabId === 'formTemplate' && (
         <FormTemplate targetableObject={targetableObject}/>
       )}

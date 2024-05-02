@@ -2,29 +2,25 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 import { Section } from '@react-email/components';
 import { Button, Checkbox, TextInput } from 'tsup.ui.index';
-
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 
-const StyledCard = styled.div`
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  border-radius: ${({ theme }) => theme.border.radius.sm};
-  color: ${({ theme }) => theme.font.color.secondary};
-  box-shadow: ${({ theme }) => theme.boxShadow.strong};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: ${({ theme }) => theme.background.primary};
-  height: 95%;
-  width: 70%;
-  margin: auto;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing(2)};
-  overflow-y: scroll;
-`;
+const StyledDiv = styled.div``;
 
-const StyledFormTitle = styled.h3`
-  color: ${({ theme }) => theme.font.color.primary};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
+const StyledCard = styled.div`
+ border: 1px solid ${({ theme }) => theme.border.color.medium};
+ border-radius: ${({ theme }) => theme.border.radius.sm};
+ color: ${({ theme }) => theme.font.color.secondary};
+ box-shadow: ${({ theme }) => theme.boxShadow.strong};
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ background: ${({ theme }) => theme.background.primary};
+ height: auto;
+ width: 100%;
+ margin: auto;
+ align-items: center;
+ margin-bottom: ${({ theme }) => theme.spacing(2)}
+ overflow-y: scroll;
 `;
 
 const StyledTitleContainer = styled.div`
@@ -39,22 +35,16 @@ const StyledTitle = styled.h2`
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
   padding: ${({ theme }) => theme.spacing(6)};
 `;
+
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100%;
+  height: 1005%;
   justify-content: space-between;
   width: 70%;
   align-items: center;
-  overflow-y: scroll;
-`;
-
-const StyledCheckboxInput = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: ${({ theme }) => theme.spacing(1)};
 `;
 
 const StyledAreaLabel = styled.span`
@@ -64,10 +54,13 @@ const StyledAreaLabel = styled.span`
   margin-bottom: 2%;
   width: 100%;
 `;
-const StyledButton = styled.span`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
+
+const StyledSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+`;
+
+const StyledCheckboxInput = styled.div`
+  margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
 const StyledCheckboxLabel = styled.span`
@@ -82,8 +75,13 @@ const StyledComboInputContainer = styled.div`
   }
 `;
 
-export const Form1 = () => {
+const StyledButton = styled.span`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+`;
 
+export const Form1 = () => {
   const [symptoms, setSymptoms] = useState({
     fever: false,
     cough: false,
@@ -98,156 +96,125 @@ export const Form1 = () => {
   const [contactWithCovid, setContactWithCovid] = useState(false);
 
   return (
-    <>
+    <StyledDiv>
       <StyledCard>
         <StyledTitleContainer>
           <StyledTitle>Health Screening Form</StyledTitle>
         </StyledTitleContainer>
         <StyledInputCard>
-          <Section>
+        <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="First Name" description="Enter your first name" />
             <TextInput
               placeholder={'Enter first name'}
-              value={"firstName"}
+              value={'firstName'}
               name="firstName"
               required
               fullWidth
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          <StyledSection>
             <H2Title title="Last Name" description="Enter your last name" />
             <TextInput
               placeholder={'Enter last name'}
-              value={"lastName"}
+              value={'lastName'}
               name="lastName"
               required
               fullWidth
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          <StyledSection>
             <H2Title title="Email" description="Enter your email address" />
             <TextInput
               placeholder={'Enter email address'}
-              value={"email"}
+              value={'email'}
               name="email"
               required
               fullWidth
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          <StyledSection>
             <H2Title
               title="Contact Number"
               description="Enter your contact number"
             />
             <TextInput
               placeholder={'Enter contact number'}
-              value={"contact"}
+              value={'contact'}
               name="contact"
               required
               fullWidth
             />
-          </Section>
+          </StyledSection>
 
-          <Section>
+          <StyledSection>
             <H2Title title="Age" description="Enter your age" />
             <TextInput
               placeholder={'Enter age'}
-              value={"age"}
+              value={'age'}
               name="age"
               required
               fullWidth
             />
-          </Section>
+          </StyledSection>
 
-          <Section>
+          <StyledSection>
             <H2Title title="Blood Type" description="Enter your blood type" />
             <TextInput
               placeholder={'Enter blood type'}
-              value={"bloodType"}
+              value={'bloodType'}
               name="bloodType"
               required
               fullWidth
             />
-          </Section>
-
+          </StyledSection>
           <StyledAreaLabel>
-            <Section>
+            <StyledSection>
               <H2Title
                 title="Symptoms"
                 description="Check any symptoms you are experiencing"
               />
-            </Section>
-            <StyledComboInputContainer>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.fever}
-                />
-                <StyledCheckboxLabel>Fever</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.cough}
-                />
-                <StyledCheckboxLabel>Cough</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.fatigue}
-                />
-                <StyledCheckboxLabel>Fatigue</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.headache}
-                />
-                <StyledCheckboxLabel>Headache</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-            </StyledComboInputContainer>
+              <StyledComboInputContainer>
+                  <Checkbox checked={symptoms.fever} />
+                  <StyledCheckboxLabel>Fever</StyledCheckboxLabel>
+                  <Checkbox checked={symptoms.cough} />
+                  <StyledCheckboxLabel>Cough</StyledCheckboxLabel>
+                  <Checkbox checked={symptoms.fatigue} />
+                  <StyledCheckboxLabel>Fatigue</StyledCheckboxLabel>
+                  <Checkbox checked={symptoms.headache} />
+                  <StyledCheckboxLabel>Headache</StyledCheckboxLabel>
+              </StyledComboInputContainer>
+            </StyledSection>
           </StyledAreaLabel>
 
           <StyledAreaLabel>
-            <Section>
-              <H2Title
-                title="Travel History"
-                description="Check if you have any recent travel history"
-              />
-            </Section>
-            <StyledComboInputContainer>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={travelHistory.withinCountry}
-                />
-                <StyledCheckboxLabel>Within Country</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={travelHistory.international}
-                />
-                <StyledCheckboxLabel>International</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-            </StyledComboInputContainer>
+          <StyledSection>
+            <H2Title
+              title="Travel History"
+              description="Check if you have any recent travel history"
+            />
+          <StyledComboInputContainer>
+              <Checkbox checked={travelHistory.withinCountry} />
+              <StyledCheckboxLabel>Within Country</StyledCheckboxLabel>
+              <Checkbox checked={travelHistory.international} />
+              <StyledCheckboxLabel>International</StyledCheckboxLabel>
+          </StyledComboInputContainer>
+          </StyledSection>
           </StyledAreaLabel>
-
-          <StyledAreaLabel>
-            <Section>
-              <H2Title
-                title="Contact with COVID Positive Person"
-                description="Check if you have been in contact with someone who tested positive for COVID-19"
-              />
-            </Section>
-            <StyledCheckboxInput>
-              <Checkbox
-                checked={contactWithCovid}
-              />
-              <StyledCheckboxLabel>Yes, I have</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-          </StyledAreaLabel>
-
-          <StyledButton>
-            <Button title="Submit" variant="primary" accent="blue" />
-          </StyledButton>
+          <StyledSection>
+            <H2Title
+              title="Contact with COVID Positive Person"
+              description="Check if you have been in contact with someone who tested positive for COVID-19"
+            />
+          <StyledComboInputContainer>
+            <Checkbox checked={contactWithCovid} />
+            <StyledCheckboxLabel>Yes, I have</StyledCheckboxLabel>
+          </StyledComboInputContainer>
+        
+          </StyledSection>
+        </StyledAreaLabel>
         </StyledInputCard>
       </StyledCard>
-    </>
+    </StyledDiv>
   );
 };

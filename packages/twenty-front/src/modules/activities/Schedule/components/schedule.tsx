@@ -11,29 +11,6 @@ import {
 } from '@/ui/input/components/Checkbox';
 import DateTimePicker from '@/ui/input/components/internal/date/components/DateTimePicker';
 
-const StyledComboInputContainer = styled.div`
-  display: flex;
-  align-items: center;
-  align-self: center;
-  justify-content: start;
-  margin: ${({ theme }) => theme.spacing(10)};
-
-`;
-
-const StyledLabel = styled.span`
-  color: ${({ theme }) => theme.font.color.tertiary};
-  font-size: ${({ theme }) => theme.font.size.xs};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
-  margin-left: ${({ theme }) => theme.spacing(2)};
-  margin-right: ${({ theme }) => theme.spacing(6)};
-  display: flex;
-  align-items: center;
-`;
-
-const StyledCheckboxLabel = styled.span`
-  margin-left: ${({ theme }) => theme.spacing(2)};
-`;
-
 const StyledContainer = styled.div`
   align-items: flex-start;
   align-self: stretch;
@@ -64,17 +41,38 @@ const StyledScheduleTitle = styled.h3`
   font-size:${({ theme }) => theme.font.size.xs}
 `;
 
-
-const StyledCount = styled.span`
-  color: ${({ theme }) => theme.font.color.light};
-  margin-left: ${({ theme }) => theme.spacing(2)};
-`;
-
 const StyledTaskRows = styled.div`
   background-color: ${({ theme }) => theme.background.secondary};
   border: 1px solid ${({ theme }) => theme.border.color.light};
   border-radius: ${({ theme }) => theme.border.radius.md};
   width: 100%;
+`;
+
+const StyledComboInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  align-self: center;
+  justify-content: start;
+  margin: ${({ theme }) => theme.spacing(10)};
+`;
+
+const StyledLabel = styled.span`
+  color: ${({ theme }) => theme.font.color.tertiary};
+  font-size: ${({ theme }) => theme.font.size.xs};
+  font-weight: ${({ theme }) => theme.font.weight.semiBold};
+  margin-left: ${({ theme }) => theme.spacing(2)};
+  margin-right: ${({ theme }) => theme.spacing(6)};
+  display: flex;
+  align-items: center;
+`;
+
+const StyledCheckboxLabel = styled.span`
+  margin-left: ${({ theme }) => theme.spacing(2)};
+`;
+
+const StyledCount = styled.span`
+  color: ${({ theme }) => theme.font.color.light};
+  margin-left: ${({ theme }) => theme.spacing(2)};
 `;
 
 export const Schedule = ({
@@ -108,9 +106,9 @@ export const Schedule = ({
     return (
       <StyledContainer>
         <StyledTitleBar>
-          <StyledTitle>
+          {/* <StyledTitle>
             This Campaign was run<StyledCount>4</StyledCount> times.
-          </StyledTitle>
+          </StyledTitle> */}
         </StyledTitleBar>
 
         <StyledScheduleTitle>Start</StyledScheduleTitle>

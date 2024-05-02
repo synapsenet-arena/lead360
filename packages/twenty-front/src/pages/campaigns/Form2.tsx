@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { Section } from '@react-email/components';
 import {
   Button,
   Checkbox,
@@ -12,6 +11,8 @@ import {
 } from 'tsup.ui.index';
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 
+const StyledDiv = styled.div``;
+
 const StyledCard = styled.div`
   border: 1px solid ${({ theme }) => theme.border.color.medium};
   border-radius: ${({ theme }) => theme.border.radius.sm};
@@ -22,23 +23,6 @@ const StyledCard = styled.div`
   justify-content: center;
   background: ${({ theme }) => theme.background.primary};
   height: 120%%;
-  width: 70%;
-  margin: auto;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing(2)};
-`;
-
-const StyledDiv = styled.div`
-  overflow-y: scroll;
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  border-radius: ${({ theme }) => theme.border.radius.sm};
-  color: ${({ theme }) => theme.font.color.secondary};
-  box-shadow: ${({ theme }) => theme.boxShadow.strong};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: ${({ theme }) => theme.background.primary};
-  height: auto%;
   width: 100%;
   margin: auto;
   align-items: center;
@@ -57,6 +41,7 @@ const StyledTitle = styled.h2`
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
   padding: ${({ theme }) => theme.spacing(6)};
 `;
+
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
   display: flex;
@@ -68,10 +53,6 @@ const StyledInputCard = styled.div`
   align-items: center;
 `;
 
-const StyledCheckboxInput = styled.div`
-  margin-top: ${({ theme }) => theme.spacing(4)};
-`;
-
 const StyledAreaLabel = styled.span`
   align-content: flex-start;
   display: flex;
@@ -79,12 +60,13 @@ const StyledAreaLabel = styled.span`
   margin-bottom: 2%;
   width: 100%;
 `;
-const StyledButton = styled.span`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
+
+const StyledSection = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing(6)};
-  margin-top: ${({ theme }) => theme.spacing(6)};
+`;
+
+const StyledCheckboxInput = styled.div`
+  margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
 const StyledCheckboxLabel = styled.span`
@@ -99,18 +81,26 @@ const StyledComboInputContainer = styled.div`
   }
 `;
 
-  // const generateRandomId = (username: string, formId: string, campaignname: string) => {
-  //   const randomId = `${username}-${formId}-${campaignname}`;
-  //   const encodedRandomId = base64.fromByteArray(new TextEncoder().encode(randomId));
-  //   return encodedRandomId;
-  // }
+const StyledButton = styled.span`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+  margin-top: ${({ theme }) => theme.spacing(6)};
+`;
 
-  // const username = "Ertha Creboe";
-  // const formname = "abc";
-  // const campaignname = "Healthy Lives";
+// const generateRandomId = (username: string, formId: string, campaignname: string) => {
+//   const randomId = `${username}-${formId}-${campaignname}`;
+//   const encodedRandomId = base64.fromByteArray(new TextEncoder().encode(randomId));
+//   return encodedRandomId;
+// }
 
-  // const randomId = generateRandomId(username, formname, campaignname);
-  // console.log("Encoded Random ID:", randomId);
+// const username = "Ertha Creboe";
+// const formname = "abc";
+// const campaignname = "Healthy Lives";
+
+// const randomId = generateRandomId(username, formname, campaignname);
+// console.log("Encoded Random ID:", randomId);
 
 export const Form2 = () => {
   const createOptions = (options: any[]) =>
@@ -122,75 +112,72 @@ export const Form2 = () => {
   ]);
   const apptTypeOptions = createOptions(['Initial Consultation', 'Follow-up']);
 
-
-
-
   return (
     //div id - save id in form
-    <StyledDiv >
+    <StyledDiv>
       <StyledCard>
         <StyledTitleContainer>
           <StyledTitle>Campaign Form</StyledTitle>
         </StyledTitleContainer>
         <StyledInputCard>
-          <Section>
-            <H2Title title="First Name" description="Enter your first name" />
-            <TextInput
-              placeholder={'Enter first name'}
-              value={"firstName"}
-              name="firstName"
-              required
-              fullWidth
-            />
-          </Section>
-          <Section>
-            <H2Title title="Last Name" description="Enter your last name" />
-            <TextInput
-              placeholder={'Enter last name'}
-              value={"lastName"}
-              name="lastName"
-              required
-              fullWidth
-            />
-          </Section>
-          <Section>
-            <H2Title title="Email" description="Enter your email address" />
-            <TextInput
-              placeholder={'Enter email address'}
-              value={"email"}
-              name="email"
-              required
-              fullWidth
-            />
-          </Section>
-
-          <Section>
-            <H2Title
-              title="Contact Number"
-              description="Enter your contact number"
-            />
-            <TextInput
-              placeholder={'Enter contact number'}
-              value={"contact"}
-              name="contact"
-              required
-              fullWidth
-            />
-          </Section>
-
           <StyledAreaLabel>
-            <Section>
+            <StyledSection>
+              <H2Title title="First Name" description="Enter your first name" />
+              <TextInput
+                placeholder={'Enter first name'}
+                value={'firstName'}
+                name="firstName"
+                required
+                fullWidth
+              />
+            </StyledSection>
+            <StyledSection>
+              <H2Title title="Last Name" description="Enter your last name" />
+              <TextInput
+                placeholder={'Enter last name'}
+                value={'lastName'}
+                name="lastName"
+                required
+                fullWidth
+              />
+            </StyledSection>
+            <StyledSection>
+              <H2Title title="Email" description="Enter your email address" />
+              <TextInput
+                placeholder={'Enter email address'}
+                value={'email'}
+                name="email"
+                required
+                fullWidth
+              />
+            </StyledSection>
+
+            <StyledSection>
+              <H2Title
+                title="Contact Number"
+                description="Enter your contact number"
+              />
+              <TextInput
+                placeholder={'Enter contact number'}
+                value={'contact'}
+                name="contact"
+                required
+                fullWidth
+              />
+            </StyledSection>
+            <StyledSection>
               <H2Title
                 title="Reason for Appointment"
                 description="State the reason for your appointment"
               />
-            </Section>
-            <TextArea
-              value={"comments"}
-              placeholder={'State the reason for the apppointment'}
-              minRows={5}
-            />
-            <Section>
+              <TextArea
+                value={'comments'}
+                placeholder={'State the reason for the apppointment'}
+                minRows={5}
+              />
+            </StyledSection>
+
+            <StyledSection>
               <H2Title
                 title="Appointment Type"
                 description="Is this your first consultation or a follow-up?"
@@ -198,11 +185,11 @@ export const Form2 = () => {
               <Select
                 fullWidth
                 dropdownId={'appointmentType'}
-                value={"apptType"}
+                value={'apptType'}
                 options={apptTypeOptions}
               />
-            </Section>
-            <Section>
+            </StyledSection>
+            <StyledSection>
               <H2Title
                 title="Appointment Location"
                 description="Select your appointment location"
@@ -210,12 +197,11 @@ export const Form2 = () => {
               <Select
                 fullWidth
                 dropdownId={'appointmentLocation'}
-                value={"location"}
+                value={'location'}
                 options={locationOptions}
               />
-            </Section>
+            </StyledSection>
 
-            
             <StyledCheckboxInput>
               <H2Title
                 title="Consent*"
@@ -235,11 +221,7 @@ export const Form2 = () => {
               </StyledCheckboxLabel>
             </StyledComboInputContainer>
           </StyledAreaLabel>
-          <StyledButton>
-            <Button title="Submit" variant="primary" accent="blue"/>
-          </StyledButton>
         </StyledInputCard>
-
       </StyledCard>
     </StyledDiv>
   );

@@ -251,6 +251,7 @@ export const Campaigns = () => {
         variant: 'success',
       });
       navigate('/objects/campaigns')
+      window.location.reload();
     } catch (errors: any) {
       console.error('Error adding campaign:', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {

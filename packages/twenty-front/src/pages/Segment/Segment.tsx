@@ -35,7 +35,6 @@ const StyledBoardContainer = styled.div`
   justify-content: flex-start;
   background: ${({ theme }) => theme.background.noisy};
   padding: ${({ theme }) => theme.spacing(2)};
-  overflow-y: scroll;
 `;
 
 
@@ -217,6 +216,7 @@ export const Segment = () => {
         variant: 'success',
       });
       navigate('/objects/segments')
+      // window.location.reload();
     } catch (errors: any) {
       console.log('Error saving segment', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
@@ -333,9 +333,10 @@ export const Segment = () => {
               </div>
             ))}
             <SytledHR />
-            {!loading && data && <PreviewLeadsData data={data} />}
           </StyledInputCard>
         </StyledBoardContainer>
+        {!loading && data && <PreviewLeadsData data={data} />}
+
       </PageContainer>
     </>
   );

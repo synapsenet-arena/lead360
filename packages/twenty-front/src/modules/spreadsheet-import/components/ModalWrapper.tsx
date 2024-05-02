@@ -8,9 +8,8 @@ import { ModalCloseButton } from './ModalCloseButton';
 
 const StyledModal = styled(Modal)`
   height: 61%;
-  overflow: scroll;
-  min-height: 90%;
-  min-width: 90%;
+  min-height: 600px;
+  min-width: 800px;
   position: relative;
   width: 63%;
   @media (max-width: ${MOBILE_VIEWPORT}px) {
@@ -37,7 +36,6 @@ const StyledModal = styled(Modal)`
     border-radius: ${({ theme }) => theme.border.radius.sm};
   }
 `;
-
 
 const StyledRtlLtr = styled.div`
   display: flex;

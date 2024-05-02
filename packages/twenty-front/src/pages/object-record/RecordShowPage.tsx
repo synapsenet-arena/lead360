@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-
 import { useFavorites } from '@/favorites/hooks/useFavorites';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { useFindOneRecord } from '@/object-record/hooks/useFindOneRecord';
@@ -22,8 +21,8 @@ import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { ADD_TRIGGER_CAMPAIGN_RECORD } from '@/users/graphql/queries/addTriggerCampaignRecord';
-import { UPDATE_CAMPAIGNLIST_STATUS } from '@/users/graphql/queries/updateCampaignlistStatus';
-import { UPDATE_LAST_EXECUTION_ID } from '@/users/graphql/queries/updateLastExecutionId';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
+import { ConfirmationModal } from '@/ui/layout/modal/components/ConfirmationModal';
 
 export const RecordShowPage = () => {
   const { objectNameSingular, objectRecordId } = useParams<{
@@ -88,7 +87,6 @@ export const RecordShowPage = () => {
         });
         const fetchedCampaigns = data?.data?.campaigns?.edges ?? [];
         setCampaigns(fetchedCampaigns);
-        console.log('Fetched campaign:', fetchedCampaigns);
       } catch (error) {
         console.error('Error fetching campaign:', error);
       }
@@ -100,7 +98,11 @@ export const RecordShowPage = () => {
   const { campaignData, setCampaignData } = useCampaign();
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
-  const handleRuncampaign = async () => {
+  const { enqueueSnackBar } = useSnackBar();
+  const navigate = useNavigate();
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  const handleConfirmRun = async () => {
     try {
       const { data: addTriggerData } = await addTriggerCampaignRecord({
         variables: {
@@ -151,9 +153,21 @@ export const RecordShowPage = () => {
       const data = await response.json();
 
       console.log('Response from the API:', data);
+      enqueueSnackBar('Campaign added successfully', {
+        variant: 'success',
+      });
+      navigate('/objects/campaignTriggers');
+      window.location.reload();
     } catch (error) {
-      console.error('Error fetching campaign:', error);
+      console.error('Error in running campaign:', error);
+      enqueueSnackBar('Campaign added successfully', {
+        variant: 'error',
+      });
     }
+  };
+
+  const handleRuncampaign = async () => {
+    setIsConfirmModalOpen(true);
   };
 
   const labelIdentifierFieldValue =
@@ -200,7 +214,22 @@ export const RecordShowPage = () => {
             <RunCampaignButton onClick={handleRuncampaign} />
           </>
         )}
+
       </PageHeader>
+      <ConfirmationModal
+          confirmationPlaceholder={''}
+          isOpen={isConfirmModalOpen}
+          setIsOpen={setIsConfirmModalOpen}
+          title="Run Campaign"
+          subtitle={
+            <>
+              Are you sure you want to trigger this campaign? <br /> Triggering
+              this campaign will send notifications to all subscribed users.
+            </>
+          }
+          onConfirmClick={handleConfirmRun}
+          deleteButtonText="Run Campaign"
+        />
       <PageBody>
         <RecordShowContainer
           objectNameSingular={objectNameSingular}

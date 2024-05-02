@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 import styled from '@emotion/styled';
-import { Section } from '@react-email/components';
 import {
   Button,
   Checkbox,
@@ -13,6 +11,8 @@ import {
 
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 
+const StyledDiv = styled.div``;
+
 const StyledCard = styled.div`
  border: 1px solid ${({ theme }) => theme.border.color.medium};
  border-radius: ${({ theme }) => theme.border.radius.sm};
@@ -22,17 +22,12 @@ const StyledCard = styled.div`
  flex-direction: column;
  justify-content: center;
  background: ${({ theme }) => theme.background.primary};
- height: 95%;
- width: 70%;
+ height: auto;
+ width: 100%;
  margin: auto;
  align-items: center;
  margin-bottom: ${({ theme }) => theme.spacing(2)}
  overflow-y: scroll;
-`;
-
-const StyledFormTitle = styled.h3`
-  color: ${({ theme }) => theme.font.color.primary};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
 `;
 
 const StyledTitleContainer = styled.div`
@@ -47,6 +42,8 @@ const StyledTitle = styled.h2`
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
   padding: ${({ theme }) => theme.spacing(6)};
 `;
+
+
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
   display: flex;
@@ -58,8 +55,39 @@ const StyledInputCard = styled.div`
   align-items: center;
 `;
 
+
+const StyledAreaLabel = styled.span`
+  align-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2%;
+  width: 100%;
+`;
+
+const StyledSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+`;
+
 const StyledCheckboxInput = styled.div`
   margin-top: ${({ theme }) => theme.spacing(4)};
+`;
+
+const StyledCheckboxLabel = styled.span`
+  margin-left: ${({ theme }) => theme.spacing(2)};
+`;
+
+const StyledComboInputContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(4)};
+  }
+`;
+
+const StyledButton = styled.span`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 interface PreexistingConditions {
@@ -77,30 +105,8 @@ interface PreexistingDiseases {
   other: boolean;
 }
 
-const StyledAreaLabel = styled.span`
-  align-content: flex-start;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 2%;
-  width: 100%;
-`;
-const StyledButton = styled.span`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-`;
 
-const StyledCheckboxLabel = styled.span`
-  margin-left: ${({ theme }) => theme.spacing(2)};
-`;
 
-const StyledComboInputContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(4)};
-  }
-`;
 
 export const Form3 = () => {
 
@@ -123,13 +129,16 @@ export const Form3 = () => {
 
 
   return (
-    <>
+    <StyledDiv>
+
       <StyledCard>
         <StyledTitleContainer>
           <StyledTitle>Medical Fitness Form</StyledTitle>
         </StyledTitleContainer>
         <StyledInputCard>
-          <Section>
+
+        <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="First Name" description="Enter your first name" />
             <TextInput
               placeholder={'Enter first name'}
@@ -138,8 +147,8 @@ export const Form3 = () => {
               required
               fullWidth
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          <StyledSection>
             <H2Title title="Last Name" description="Enter your last name" />
             <TextInput
               placeholder={'Enter last name'}
@@ -148,8 +157,8 @@ export const Form3 = () => {
               required
               fullWidth
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          <StyledSection>
             <H2Title title="Email" description="Enter your email address" />
             <TextInput
               placeholder={'Enter email address'}
@@ -158,8 +167,8 @@ export const Form3 = () => {
               required
               fullWidth
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          <StyledSection>
             <H2Title
               title="Contact Number"
               description="Enter your contact number"
@@ -171,9 +180,9 @@ export const Form3 = () => {
               required
               fullWidth
             />
-          </Section>
-
-          <Section>
+          </StyledSection>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="Gender" description="Select your Gender" />
             <StyledComboInputContainer>
               <Checkbox
@@ -201,9 +210,9 @@ export const Form3 = () => {
               />
               <StyledCheckboxLabel>Others</StyledCheckboxLabel>
             </StyledComboInputContainer>
-          </Section>
-          <StyledAreaLabel>
-            <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+            <StyledSection>
               <H2Title
                 title="Height"
                 description="Enter your height in centimeters"
@@ -215,11 +224,8 @@ export const Form3 = () => {
                 required
                 fullWidth
               />
-            </Section>
-          </StyledAreaLabel>
-
-          <StyledAreaLabel>
-            <Section>
+            </StyledSection>
+            <StyledSection>
               <H2Title
                 title="Weight"
                 description="Enter your weight in kilograms"
@@ -231,90 +237,76 @@ export const Form3 = () => {
                 required
                 fullWidth
               />
-            </Section>
-          </StyledAreaLabel>
-
-          <StyledAreaLabel>
-            <Section>
+            </StyledSection>
+            <StyledAreaLabel>
+            <StyledSection>
               <H2Title
                 title="Preexisting Conditions"
                 description="Check any preexisting conditions"
               />
-            </Section>
-            <StyledCheckboxInput>
+             <StyledComboInputContainer>
               <Checkbox
                 checked={preexistingConditions.diabetes}
               />
               <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-            <StyledCheckboxInput>
               <Checkbox
                 checked={preexistingConditions.asthma}
               />
               <StyledCheckboxLabel>Asthma</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-            <StyledCheckboxInput>
               <Checkbox
                 checked={preexistingConditions.seizures}
               />
               <StyledCheckboxLabel>Seizures</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-            <StyledCheckboxInput>
               <Checkbox
                 checked={preexistingConditions.seizures}
               />
               <StyledCheckboxLabel>BloodPressure</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-          </StyledAreaLabel>
+            </StyledComboInputContainer>
+            </StyledSection>
+            </StyledAreaLabel>
 
-          <StyledAreaLabel>
-            <Section>
+
+            <StyledAreaLabel>
+            <StyledSection>
               <H2Title
                 title="Preexisting Diseases"
                 description="Check any preexisting diseases"
               />
-            </Section>
-            <StyledCheckboxInput>
+            
+            <StyledComboInputContainer>
               <Checkbox
                 checked={preexistingDiseases.cardiovascular}
               />
-              <StyledCheckboxLabel>Cardiovascular</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-            <StyledCheckboxInput>
+              <StyledCheckboxLabel>Hypertension</StyledCheckboxLabel>
+            
               <Checkbox
                 checked={preexistingDiseases.respiratory}
               />
-              <StyledCheckboxLabel>Respiratory</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-            <StyledCheckboxInput>
+              <StyledCheckboxLabel>Arthritis</StyledCheckboxLabel>
+           
               <Checkbox
                 checked={preexistingDiseases.genitourinary}
               />
               <StyledCheckboxLabel>Genitourinary</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-            <StyledCheckboxInput>
+            
               <Checkbox
                 checked={preexistingDiseases.cns}
               />
               <StyledCheckboxLabel>
-                CNS (Central Nervous System)
+                Diabetes
               </StyledCheckboxLabel>
-            </StyledCheckboxInput>
-            <StyledCheckboxInput>
               <Checkbox
                 checked={preexistingDiseases.other}
               />
               <StyledCheckboxLabel>Other</StyledCheckboxLabel>
-            </StyledCheckboxInput>
-          </StyledAreaLabel>
-
-          <StyledAreaLabel>
-            <Section>
+            </StyledComboInputContainer>
+            </StyledSection>
+            </StyledAreaLabel>
+            <StyledSection>
               <H2Title
                 title="Consent*"
                 description="Read the terms and conditions before agreeing."
               />
-            </Section>
             <StyledComboInputContainer>
               <Checkbox
                 checked={false}
@@ -327,12 +319,10 @@ export const Form3 = () => {
                 I agree to the terms and conditions.
               </StyledCheckboxLabel>
             </StyledComboInputContainer>
+            </StyledSection>
           </StyledAreaLabel>
-          <StyledButton>
-            <Button title="Submit" variant="primary" accent="blue" />
-          </StyledButton>
         </StyledInputCard>
       </StyledCard>
-    </>
+    </StyledDiv>
   );
 };

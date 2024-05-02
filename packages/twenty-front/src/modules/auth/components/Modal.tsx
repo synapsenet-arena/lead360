@@ -5,17 +5,13 @@ import { Modal as UIModal } from '@/ui/layout/modal/components/Modal';
 
 const StyledContent = styled(UIModal.Content)`
   align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spacing(0)};
-  width: 100%;
+  width: calc(400px - ${({ theme }) => theme.spacing(10 * 2)});
 `;
 
 type AuthModalProps = { children: React.ReactNode };
 
 export const AuthModal = ({ children }: AuthModalProps) => (
-  <UIModal isOpen={true} padding={'none'} size="extralarge">
+  <UIModal isOpen={true}>
     <StyledContent>{children}</StyledContent>
   </UIModal>
 );
