@@ -1,12 +1,12 @@
 import { ReactNode } from 'react';
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useIcons } from 'twenty-ui';
 
 import { ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
 import { useFindManyRecords } from '@/object-record/hooks/useFindManyRecords';
 import { SettingsDataModelObjectTypeTag } from '@/settings/data-model/objects/SettingsDataModelObjectTypeTag';
 import { getObjectTypeLabel } from '@/settings/data-model/utils/getObjectTypeLabel';
-import { useIcons } from '@/ui/display/icon/hooks/useIcons';
 import { TableCell } from '@/ui/layout/table/components/TableCell';
 import { TableRow } from '@/ui/layout/table/components/TableRow';
 
@@ -39,7 +39,6 @@ export const SettingsObjectItemTableRow = ({
 
   const { totalCount } = useFindManyRecords({
     objectNameSingular: objectItem.nameSingular,
-    depth: 0,
   });
   const { getIcon } = useIcons();
   const Icon = getIcon(objectItem.icon);

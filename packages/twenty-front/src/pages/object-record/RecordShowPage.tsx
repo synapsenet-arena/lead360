@@ -1,14 +1,15 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
+import { useIcons } from 'twenty-ui';
 
 import { useFavorites } from '@/favorites/hooks/useFavorites';
 import { useLabelIdentifierFieldMetadataItem } from '@/object-metadata/hooks/useLabelIdentifierFieldMetadataItem';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { useFindOneRecord } from '@/object-record/hooks/useFindOneRecord';
 import { RecordShowContainer } from '@/object-record/record-show/components/RecordShowContainer';
+import { findOneRecordForShowPageOperationSignatureFactory } from '@/object-record/record-show/graphql/operations/factories/findOneRecordForShowPageOperationSignatureFactory';
 import { recordStoreFamilyState } from '@/object-record/record-store/states/recordStoreFamilyState';
-import { useIcons } from '@/ui/display/icon/hooks/useIcons';
 import { PageBody } from '@/ui/layout/page/PageBody';
 import { PageContainer } from '@/ui/layout/page/PageContainer';
 import { PageFavoriteButton } from '@/ui/layout/page/PageFavoriteButton';
@@ -18,6 +19,7 @@ import { ShowPageMoreButton } from '@/ui/layout/show-page/components/ShowPageMor
 import { PageTitle } from '@/ui/utilities/page-title/PageTitle';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
 import { isDefined } from '~/utils/isDefined';
+import { capitalize } from '~/utils/string/capitalize';
 
 export const RecordShowPage = () => {
   const { objectNameSingular, objectRecordId } = useParams<{
@@ -52,9 +54,13 @@ export const RecordShowPage = () => {
 
   const headerIcon = getIcon(objectMetadataItem?.icon);
 
+  const FIND_ONE_RECORD_FOR_SHOW_PAGE_OPERATION_SIGNATURE =
+    findOneRecordForShowPageOperationSignatureFactory({ objectMetadataItem });
+
   const { record, loading } = useFindOneRecord({
     objectRecordId,
     objectNameSingular,
+    recordGqlFields: FIND_ONE_RECORD_FOR_SHOW_PAGE_OPERATION_SIGNATURE.fields,
   });
 
   useEffect(() => {
@@ -80,22 +86,24 @@ export const RecordShowPage = () => {
 
   const labelIdentifierFieldValue =
     record?.[labelIdentifierFieldMetadataItem?.name ?? ''];
+
   const pageName =
     labelIdentifierFieldMetadataItem?.type === FieldMetadataType.FullName
       ? [
           labelIdentifierFieldValue?.firstName,
           labelIdentifierFieldValue?.lastName,
         ].join(' ')
-      : `${labelIdentifierFieldValue}`;
+      : isDefined(labelIdentifierFieldValue)
+        ? `${labelIdentifierFieldValue}`
+        : '';
 
-  // Temporarily since we don't have relations for remote objects yet
-  if (objectMetadataItem.isRemote) {
-    return null;
-  }
+  const pageTitle = pageName.trim()
+    ? `${pageName} - ${capitalize(objectNameSingular)}`
+    : capitalize(objectNameSingular);
 
   return (
     <PageContainer>
-      <PageTitle title={pageName} />
+      <PageTitle title={pageTitle} />
       <PageHeader
         title={pageName ?? ''}
         hasBackButton

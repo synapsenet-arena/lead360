@@ -1,5 +1,8 @@
 import { useContext } from 'react';
 
+import { LinksFieldDisplay } from '@/object-record/record-field/meta-types/display/components/LinksFieldDisplay';
+import { isFieldLinks } from '@/object-record/record-field/types/guards/isFieldLinks';
+
 import { FieldContext } from '../contexts/FieldContext';
 import { AddressFieldDisplay } from '../meta-types/display/components/AddressFieldDisplay';
 import { ChipFieldDisplay } from '../meta-types/display/components/ChipFieldDisplay';
@@ -24,7 +27,7 @@ import { isFieldDateTime } from '../types/guards/isFieldDateTime';
 import { isFieldEmail } from '../types/guards/isFieldEmail';
 import { isFieldFullName } from '../types/guards/isFieldFullName';
 import { isFieldLink } from '../types/guards/isFieldLink';
-import { isFieldMultiSelect } from '../types/guards/isFieldMultiSelect.ts';
+import { isFieldMultiSelect } from '../types/guards/isFieldMultiSelect';
 import { isFieldNumber } from '../types/guards/isFieldNumber';
 import { isFieldPhone } from '../types/guards/isFieldPhone';
 import { isFieldRawJson } from '../types/guards/isFieldRawJson';
@@ -62,6 +65,8 @@ export const FieldDisplay = () => {
     <NumberFieldDisplay />
   ) : isFieldLink(fieldDefinition) ? (
     <LinkFieldDisplay />
+  ) : isFieldLinks(fieldDefinition) ? (
+    <LinksFieldDisplay />
   ) : isFieldCurrency(fieldDefinition) ? (
     <CurrencyFieldDisplay />
   ) : isFieldFullName(fieldDefinition) ? (
