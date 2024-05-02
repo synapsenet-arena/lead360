@@ -14,4 +14,14 @@ export enum CustomPath {
   CampaignsPage = '/campaigns',
 
   DatePickerPage = '/datepicker',
+
+  CampaignForm = '/campaign/:userid',
+  CampaignForm2 = '/campaign2/:userid',
+  CampaignForm3 = '/campaign3/:userid',
+
+  RunCampaign = '/runcampaign',
+
+  SegmentPage = '/segment',
+
+  CampaignTriggersPage = '/objects/campaignTriggers',
 }

@@ -6,6 +6,7 @@ import {
   IconChevronDown,
   IconComponent,
   IconDotsVertical,
+  IconEye,
   IconTrash,
   IconUnlink,
 } from 'twenty-ui';
@@ -38,7 +39,9 @@ import { useDropdown } from '@/ui/layout/dropdown/hooks/useDropdown';
 import { DropdownScope } from '@/ui/layout/dropdown/scopes/DropdownScope';
 import { MenuItem } from '@/ui/navigation/menu-item/components/MenuItem';
 import { AnimatedEaseInOut } from '@/ui/utilities/animation/components/AnimatedEaseInOut';
-
+import { TAB_LIST_COMPONENT_ID } from '@/ui/layout/show-page/components/ShowPageRightContainer';
+import { useTabList } from '@/ui/layout/tab/hooks/useTabList';
+import { useParams } from 'react-router-dom';
 const StyledListItem = styled(RecordDetailRecordsListItem)<{
   isDropdownOpen?: boolean;
 }>`
@@ -83,6 +86,13 @@ export const RecordDetailRelationRecordsListItem = ({
   relationRecord,
 }: RecordDetailRelationRecordsListItemProps) => {
   const { fieldDefinition } = useContext(FieldContext);
+  const { objectNameSingular, objectRecordId } = useParams<{
+    objectNameSingular: string;
+    objectRecordId: string;
+  }>();
+  const { getActiveTabIdState, setActiveTabId } = useTabList(
+    TAB_LIST_COMPONENT_ID,
+  );
 
   const {
     relationFieldMetadataId,
@@ -155,7 +165,15 @@ export const RecordDetailRelationRecordsListItem = ({
     closeDropdown();
     await deleteOneRelationRecord(relationRecord.id);
   };
-
+  const handleView = () => {
+    if (relationRecord.__typename == 'FormTemplate') {
+      setActiveTabId('formTemplate');
+    } else if (relationRecord.__typename == 'MessageTemplate') {
+      setActiveTabId('messageTemplate');
+    } else if (relationRecord.__typename == 'Segment') {
+      setActiveTabId('leads');
+    }
+  };
   const useUpdateOneObjectRecordMutation: RecordUpdateHook = () => {
     const updateEntity = ({ variables }: RecordUpdateHookParams) => {
       updateOneRelationRecord?.({
@@ -239,6 +257,17 @@ export const RecordDetailRelationRecordsListItem = ({
             dropdownHotkeyScope={{ scope: dropdownScopeId }}
           />
         </DropdownScope>
+        {objectNameSingular == 'campaign' &&
+            (relationRecord.__typename == 'FormTemplate' ||
+              relationRecord.__typename == 'MessageTemplate' ||
+              relationRecord.__typename == 'Segment') && (
+              <LightIconButton
+                className="displayOnHover"
+                Icon={IconEye}
+                accent="tertiary"
+                onClick={handleView}
+              />
+            )}
       </StyledListItem>
       <AnimatedEaseInOut isOpen={isExpanded}>
         <PropertyBox>

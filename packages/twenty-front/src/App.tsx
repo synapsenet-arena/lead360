@@ -52,6 +52,12 @@ import { SettingsWorkspace } from '~/pages/settings/SettingsWorkspace';
 import { SettingsWorkspaceMembers } from '~/pages/settings/SettingsWorkspaceMembers';
 import { Tasks } from '~/pages/tasks/Tasks';
 import { getPageTitleFromPath } from '~/utils/title-utils';
+import { CustomPath } from '@/types/CustomPath';
+import { CampaignForm } from '~/pages/campaigns/CampaignForm';
+import { CampaignForm2 } from '~/pages/campaigns/CampaignForm2';
+import { CampaignForm3 } from '~/pages/campaigns/CampaignForm3';
+import { Campaigns } from '~/pages/campaigns/Campaigns';
+import { Segment } from '~/pages/Segment/Segment';
 
 export const App = () => {
   const billing = useRecoilValue(billingState);
@@ -215,6 +221,16 @@ export const App = () => {
         <Route element={<BlankLayout />}>
           <Route path={AppPath.Authorize} element={<Authorize />} />
         </Route>
+          
+
+        <Route path={CustomPath.CampaignsPage} element={<Campaigns />} />
+          <Route path={CustomPath.CampaignForm} element={<CampaignForm />} />
+          <Route path={CustomPath.CampaignForm2} element={<CampaignForm2 />} />
+          <Route path={CustomPath.CampaignForm3} element={<CampaignForm3 />} />
+
+
+          <Route path={CustomPath.SegmentPage} element={<Segment />} />
+
       </Routes>
     </>
   );

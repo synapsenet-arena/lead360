@@ -23,6 +23,12 @@ import { TabList } from '@/ui/layout/tab/components/TabList';
 import { useTabList } from '@/ui/layout/tab/hooks/useTabList';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
 import { useIsFeatureEnabled } from '@/workspace/hooks/useIsFeatureEnabled';
+import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
+import { IconClock, IconUsersGroup, IconMessage, IconDeviceTabletQuestion } from '@tabler/icons-react';
+import { Schedule } from '@/activities/Schedule/components/schedule';
+import { Leads } from '@/activities/Leads/components/Leads';
+import { MessageTemplate } from '@/activities/messageTemplate/components/messageTemplate';
+import { FormTemplate } from '@/activities/formTemplate/components/formTemplate';
 
 const StyledShowPageRightContainer = styled.div`
   display: flex;
@@ -64,7 +70,10 @@ export const ShowPageRightContainer = ({
 }: ShowPageRightContainerProps) => {
   const { activeTabIdState } = useTabList(TAB_LIST_COMPONENT_ID);
   const activeTabId = useRecoilValue(activeTabIdState);
-
+  const { objectMetadataItem: targetableObjectMetadataItem } =
+    useObjectMetadataItem({
+      objectNameSingular: targetableObject.targetObjectNameSingular,
+    });
   const shouldDisplayCalendarTab =
     useIsFeatureEnabled('IS_CALENDAR_ENABLED') &&
     (targetableObject.targetObjectNameSingular ===
@@ -78,52 +87,89 @@ export const ShowPageRightContainer = ({
       targetableObject.targetObjectNameSingular ===
         CoreObjectNameSingular.Company) ||
     targetableObject.targetObjectNameSingular === CoreObjectNameSingular.Person;
+    let TASK_TABS = [];
 
-  const TASK_TABS = [
-    {
-      id: 'timeline',
-      title: 'Timeline',
-      Icon: IconTimelineEvent,
-      hide: !timeline,
-    },
-    {
-      id: 'tasks',
-      title: 'Tasks',
-      Icon: IconCheckbox,
-      hide: !tasks,
-    },
-    {
-      id: 'notes',
-      title: 'Notes',
-      Icon: IconNotes,
-      hide: !notes,
-    },
-    {
-      id: 'files',
-      title: 'Files',
-      Icon: IconPaperclip,
-      hide: !notes,
-    },
-    {
-      id: 'emails',
-      title: 'Emails',
-      Icon: IconMail,
-      hide: !shouldDisplayEmailsTab,
-    },
-    {
-      id: 'calendar',
-      title: 'Calendar',
-      Icon: IconCalendarEvent,
-      hide: !shouldDisplayCalendarTab,
-    },
-    {
-      id: 'logs',
-      title: 'Logs',
-      Icon: IconTimelineEvent,
-      hide: !shouldDisplayLogTab,
-      hasBetaPill: true,
-    },
-  ];
+    if (targetableObject.targetObjectNameSingular === 'campaign'|| targetableObject.targetObjectNameSingular === 'campaignTrigger') {
+      TASK_TABS = [
+        {
+          id: 'schedule',
+          title: 'Schedule',
+          Icon: IconClock,
+          hide: !timeline,
+        },
+        {
+          id: 'leads',
+          title: 'Leads',
+          Icon: IconUsersGroup,
+          hide: !tasks,
+        },
+        {
+          id: 'messageTemplate',
+          title: 'Message Template',
+          Icon: IconMessage,
+          hide: !notes,
+        },
+        {
+          id: 'formTemplate',
+          title: 'Form Template',
+          Icon: IconDeviceTabletQuestion,
+          hide: !notes,
+        },
+        {
+          id: 'emails',
+          title: 'Emails',
+          Icon: IconMail,
+          hide: !shouldDisplayEmailsTab,
+          hasBetaPill: true,
+        },
+      ];
+    }else{   TASK_TABS = [
+      {
+        id: 'timeline',
+        title: 'Timeline',
+        Icon: IconTimelineEvent,
+        hide: !timeline,
+      },
+      {
+        id: 'tasks',
+        title: 'Tasks',
+        Icon: IconCheckbox,
+        hide: !tasks,
+      },
+      {
+        id: 'notes',
+        title: 'Notes',
+        Icon: IconNotes,
+        hide: !notes,
+      },
+      {
+        id: 'files',
+        title: 'Files',
+        Icon: IconPaperclip,
+        hide: !notes,
+      },
+      {
+        id: 'emails',
+        title: 'Emails',
+        Icon: IconMail,
+        hide: !shouldDisplayEmailsTab,
+      },
+      {
+        id: 'calendar',
+        title: 'Calendar',
+        Icon: IconCalendarEvent,
+        hide: !shouldDisplayCalendarTab,
+      },
+      {
+        id: 'logs',
+        title: 'Logs',
+        Icon: IconTimelineEvent,
+        hide: !shouldDisplayLogTab,
+        hasBetaPill: true,
+      },
+    ];}
+
+
 
   return (
     <StyledShowPageRightContainer>
@@ -151,6 +197,19 @@ export const ShowPageRightContainer = ({
       )}
       {activeTabId === 'logs' && (
         <TimelineActivities targetableObject={targetableObject} />
+      )}
+
+{activeTabId === 'schedule' && (
+        <Schedule targetableObject={targetableObject} />
+      )}
+      {activeTabId === 'leads' && (
+        <Leads targetableObject={targetableObject}/>
+      )}
+      {activeTabId === 'messageTemplate' && (
+        <MessageTemplate targetableObject={targetableObject}/>
+      )}
+      {activeTabId === 'formTemplate' && (
+        <FormTemplate targetableObject={targetableObject}/>
       )}
     </StyledShowPageRightContainer>
   );
