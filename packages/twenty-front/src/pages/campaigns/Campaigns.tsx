@@ -477,7 +477,7 @@ export const Campaigns = () => {
               size="medium"
               title="Save"
               variant="primary"
-              // accent="dark"
+              accent="dark"
               onClick={handleSave}
             />
           </StyledButton>

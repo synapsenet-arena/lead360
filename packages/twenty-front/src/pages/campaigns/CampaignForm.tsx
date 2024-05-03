@@ -19,37 +19,19 @@ import { Select } from '@/ui/input/components/Select';
 import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { AnimatedPlaceholderEmptyTextContainer } from '@/ui/layout/animated-placeholder/components/EmptyPlaceholderStyled';
-const StyledCard = styled.div`
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  border-radius: ${({ theme }) => theme.border.radius.sm};
-  color: ${({ theme }) => theme.font.color.secondary};
-  box-shadow: ${({ theme }) => theme.boxShadow.strong};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: ${({ theme }) => theme.background.primary};
-  height: 120%%;
-  width: 70%;
-  margin: auto;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing(2)};
-`;
 
-const StyledDiv = styled.div`
-  overflow-y: scroll;
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  border-radius: ${({ theme }) => theme.border.radius.sm};
+const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
-  box-shadow: ${({ theme }) => theme.boxShadow.strong};
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: ${({ theme }) => theme.background.primary};
-  height: auto%;
-  width: 100%;
-  margin: auto;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing(2)};
+  width:100%;
+`;
+const StyledDiv = styled.div`
+`;
+const StyledSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
 `;
 
 const StyledTitleContainer = styled.div`
@@ -64,16 +46,7 @@ const StyledTitle = styled.h2`
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
   padding: ${({ theme }) => theme.spacing(6)};
 `;
-const StyledInputCard = styled.div`
-  color: ${({ theme }) => theme.font.color.secondary};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 1005%;
-  justify-content: space-between;
-  width: 70%;
-  align-items: center;
-`;
+
 
 const StyledCheckboxInput = styled.div`
   margin-top: ${({ theme }) => theme.spacing(4)};
@@ -228,13 +201,12 @@ if (loading && errorType === 'formexpired') {
 
   return (
     //div id - save id in form
-    <StyledDiv >
-      <StyledCard>
+    <StyledInputCard>
         <StyledTitleContainer>
           <StyledTitle>Campaign Form</StyledTitle>
         </StyledTitleContainer>
-        <StyledInputCard>
-          <Section>
+        <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="First Name" description="Enter your first name" />
             <TextInput
               placeholder={'Enter first name'}
@@ -244,8 +216,10 @@ if (loading && errorType === 'formexpired') {
               fullWidth
               onChange={(e) => setFirstName(e)}
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="Last Name" description="Enter your last name" />
             <TextInput
               placeholder={'Enter last name'}
@@ -255,8 +229,10 @@ if (loading && errorType === 'formexpired') {
               fullWidth
               onChange={(e) => setLastName(e)}
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="Email" description="Enter your email address" />
             <TextInput
               placeholder={'Enter email address'}
@@ -266,9 +242,10 @@ if (loading && errorType === 'formexpired') {
               fullWidth
               onChange={(e) => setEmail(e)}
             />
-          </Section>
-
-          <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title
               title="Contact Number"
               description="Enter your contact number"
@@ -281,22 +258,23 @@ if (loading && errorType === 'formexpired') {
               fullWidth
               onChange={(e) => setContact(e)}
             />
-          </Section>
-
+          </StyledSection>
+          </StyledAreaLabel>
           <StyledAreaLabel>
-            <Section>
+            <StyledSection>
               <H2Title
                 title="Reason for Appointment"
                 description="State the reason for your appointment"
               />
-            </Section>
-            <TextArea
+               <TextArea
               value={comments}
               placeholder={'State the reason for the apppointment'}
               minRows={5}
               onChange={(e) => setComments(e)}
             />
-            <Section>
+            </StyledSection>
+           
+            <StyledSection>
               <H2Title
                 title="Appointment Type"
                 description="Is this your first consultation or a follow-up?"
@@ -308,8 +286,8 @@ if (loading && errorType === 'formexpired') {
                 onChange={(e) => setApptType(e)}
                 options={apptTypeOptions}
               />
-            </Section>
-            <Section>
+            </StyledSection>
+            <StyledSection>
               <H2Title
                 title="Appointment Location"
                 description="Select your appointment location"
@@ -321,7 +299,7 @@ if (loading && errorType === 'formexpired') {
                 onChange={(e) => setLocation(e)}
                 options={locationOptions}
               />
-            </Section>
+            </StyledSection>
 
             
             <StyledCheckboxInput>
@@ -347,8 +325,5 @@ if (loading && errorType === 'formexpired') {
             <Button title="Submit" variant="primary" accent="blue"  onClick={handleSubmit}/>
           </StyledButton>
         </StyledInputCard>
-
-      </StyledCard>
-    </StyledDiv>
   );
 };

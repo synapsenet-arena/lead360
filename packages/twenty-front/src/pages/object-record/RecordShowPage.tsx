@@ -27,6 +27,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 import { ConfirmationModal } from '@/ui/layout/modal/components/ConfirmationModal';
 import { RunCampaignButton } from '@/ui/layout/page/RunCampaignButton';
+import { useDialogManager } from '@/ui/feedback/dialog-manager/hooks/useDialogManager';
 
 export const RecordShowPage = () => {
   const { objectNameSingular, objectRecordId } = useParams<{
@@ -119,6 +120,7 @@ const [campaigns, setCampaigns] = useState<any[]>([]);
 const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
 const { enqueueSnackBar } = useSnackBar();
 const navigate = useNavigate();
+const { enqueueDialog } = useDialogManager();
 const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
 const handleConfirmRun = async () => {
@@ -186,7 +188,20 @@ const handleConfirmRun = async () => {
 };
 
 const handleRuncampaign = async () => {
-  setIsConfirmModalOpen(true);
+  enqueueDialog({
+    title: ' Are you sure you want to trigger this campaign?',
+    message:
+      'Triggering this campaign will send notifications to all subscribed users.',
+    buttons: [
+      { title: 'Cancel' },
+      {
+        title: 'Run',
+        variant: 'primary',
+        onClick: handleConfirmRun,
+        role: 'confirm',
+      },
+    ],
+  });
 };
 
 
@@ -243,7 +258,8 @@ const handleRuncampaign = async () => {
           </>
         )}
       </PageHeader>
-      <ConfirmationModal
+
+      {/* <ConfirmationModal
           confirmationPlaceholder={''}
           isOpen={isConfirmModalOpen}
           setIsOpen={setIsConfirmModalOpen}
@@ -256,7 +272,7 @@ const handleRuncampaign = async () => {
           }
           onConfirmClick={handleConfirmRun}
           deleteButtonText="Run Campaign"
-        />
+        /> */}
       <PageBody>
         <RecordShowContainer
           objectNameSingular={objectNameSingular}

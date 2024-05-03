@@ -1,12 +1,15 @@
 import React from 'react';
 import { css, useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
-import { IconComponent, Pill } from 'twenty-ui';
+import { IconComponent } from '@ui/display/icon/types/IconComponent';
+import { Pill } from '@ui/components/Pill/Pill';
+
+
 
 export type ButtonSize = 'medium' | 'small';
 export type ButtonPosition = 'standalone' | 'left' | 'middle' | 'right';
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
-export type ButtonAccent = 'default' | 'blue' | 'danger';
+export type ButtonAccent = 'default' | 'blue' | 'danger' | 'dark';
 
 export type ButtonProps = {
   className?: string;
@@ -18,22 +21,15 @@ export type ButtonProps = {
   position?: ButtonPosition;
   accent?: ButtonAccent;
   soon?: boolean;
-  justify?: 'center' | 'flex-start' | 'flex-end';
   disabled?: boolean;
   focus?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-} & React.ComponentProps<'button'>;
+};
 
 const StyledButton = styled.button<
   Pick<
     ButtonProps,
-    | 'fullWidth'
-    | 'variant'
-    | 'size'
-    | 'position'
-    | 'accent'
-    | 'focus'
-    | 'justify'
+    'fullWidth' | 'variant' | 'size' | 'position' | 'accent' | 'focus'
   >
 >`
   align-items: center;
@@ -117,6 +113,30 @@ const StyledButton = styled.button<
                     }
                   `}
             `;
+          case 'dark':
+            return css`
+              background: ${theme.color.black};
+              border-color: ${!disabled
+                ? focus
+                  ? theme.color.black
+                  : theme.background.transparent.light
+                : 'transparent'};
+              border-width: ${!disabled && focus ? '1px 1px !important' : 0};
+              box-shadow: ${!disabled && focus
+                ? `0 0 0 3px ${theme.color.gray70}`
+                : 'none'};
+              color: ${theme.grayScale.gray0};
+              opacity: ${disabled ? 0.24 : 1};
+
+              ${disabled
+                ? ''
+                : css`
+                    &:hover,
+                    &:active {
+                      background: ${theme.color.gray50};
+                    }
+                  `}
+            `;
         }
         break;
       case 'secondary':
@@ -182,7 +202,9 @@ const StyledButton = styled.button<
             `;
           case 'danger':
             return css`
-              background: transparent;
+              background: ${!disabled
+                ? theme.background.transparent.primary
+                : 'transparent'};
               border-color: ${variant === 'secondary'
                 ? focus
                   ? theme.color.red
@@ -213,13 +235,13 @@ const StyledButton = styled.button<
   border-radius: ${({ position, theme }) => {
     switch (position) {
       case 'left':
-        return `${theme.border.radius.sm} 0px 0px ${theme.border.radius.sm}`;
+        return `${theme.border.radius.md} 0px 0px ${theme.border.radius.md}`;
       case 'right':
-        return `0px ${theme.border.radius.sm} ${theme.border.radius.sm} 0px`;
+        return `0px ${theme.border.radius.md} ${theme.border.radius.md} 0px`;
       case 'middle':
         return '0px';
       case 'standalone':
-        return theme.border.radius.sm;
+        return theme.border.radius.md;
     }
   }};
   border-style: solid;
@@ -239,9 +261,8 @@ const StyledButton = styled.button<
   font-weight: 500;
   gap: ${({ theme }) => theme.spacing(1)};
   height: ${({ size }) => (size === 'small' ? '24px' : '32px')};
-  justify-content: ${({ justify }) => justify};
   padding: ${({ theme }) => {
-    return `0 ${theme.spacing(2)}`;
+    return `0 ${theme.spacing(8)}`;
   }};
 
   transition: background 0.1s ease;
@@ -270,7 +291,6 @@ export const Button = ({
   position = 'standalone',
   soon = false,
   disabled = false,
-  justify = 'flex-start',
   focus = false,
   onClick,
 }: ButtonProps) => {
@@ -284,7 +304,6 @@ export const Button = ({
       position={position}
       disabled={soon || disabled}
       focus={focus}
-      justify={justify}
       accent={accent}
       className={className}
       onClick={onClick}

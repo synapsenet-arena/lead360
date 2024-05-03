@@ -42,7 +42,7 @@ const StyledInputCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 1005%;
+  height: 100%;
   justify-content: space-between;
   width: 70%;
   align-items: center;
@@ -83,19 +83,6 @@ const StyledButton = styled.span`
   margin-bottom: ${({ theme }) => theme.spacing(6)};
   margin-top: ${({ theme }) => theme.spacing(6)};
 `;
-
-// const generateRandomId = (username: string, formId: string, campaignname: string) => {
-//   const randomId = `${username}-${formId}-${campaignname}`;
-//   const encodedRandomId = base64.fromByteArray(new TextEncoder().encode(randomId));
-//   return encodedRandomId;
-// }
-
-// const username = "Ertha Creboe";
-// const formname = "abc";
-// const campaignname = "Healthy Lives";
-
-// const randomId = generateRandomId(username, formname, campaignname);
-// console.log("Encoded Random ID:", randomId);
 
 export const Form2 = () => {
   const createOptions = (options: any[]) =>
