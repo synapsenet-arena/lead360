@@ -41,10 +41,8 @@ export const RecordIndexPageHeader = ({
       setPage('/campaigns');
     } else if (objectNamePlural === 'segments') {
       setPage('/segment');
-    } else if (objectNamePlural === 'campaignTriggers') {
-      setPage('/campaignTriggers');
     }
-  });
+  },[objectNamePlural]);
 
   const handleClick = () => {
     if (page) {

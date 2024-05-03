@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_MESSAGE_TEMPLATES = gql`
-query FindManyMessageTemplates($filter: MessageTemplateFilterInput, $orderBy: MessageTemplateOrderByInput, $lastCursor: String, $limit: Float) {
+query FindManyMessageTemplates($filter: MessageTemplateFilterInput, $orderBy: MessageTemplateOrderByInput, $lastCursor: String, $limit: Int) {
   messageTemplates(
     filter: $filter
     orderBy: $orderBy

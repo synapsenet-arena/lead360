@@ -72,7 +72,8 @@ export const App = () => {
       <Routes>
         <Route element={<DefaultLayout />}>
           <Route path={AppPath.Verify} element={<VerifyEffect />} />
-          <Route path={AppPath.SignInUp} element={<SignInUp />} />
+          <Route path={AppPath.SignIn} element={<SignInUp />} />
+          <Route path={AppPath.SignUp} element={<SignInUp />} />
           <Route path={AppPath.Invite} element={<SignInUp />} />
           <Route path={AppPath.ResetPassword} element={<PasswordReset />} />
           <Route path={AppPath.CreateWorkspace} element={<CreateWorkspace />} />
@@ -221,7 +222,7 @@ export const App = () => {
         <Route element={<BlankLayout />}>
           <Route path={AppPath.Authorize} element={<Authorize />} />
         </Route>
-          
+        <Route element={<DefaultLayout />}>
 
         <Route path={CustomPath.CampaignsPage} element={<Campaigns />} />
           <Route path={CustomPath.CampaignForm} element={<CampaignForm />} />
@@ -230,8 +231,10 @@ export const App = () => {
 
 
           <Route path={CustomPath.SegmentPage} element={<Segment />} />
+      </Route>
 
       </Routes>
+
     </>
   );
 };

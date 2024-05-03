@@ -24,6 +24,7 @@ import { isDefined } from '~/utils/isDefined';
 import { isUndefinedOrNull } from '~/utils/isUndefinedOrNull';
 
 import { useIsMatchingLocation } from '../hooks/useIsMatchingLocation';
+import { CustomPath } from '@/types/CustomPath';
 
 // TODO: break down into smaller functions and / or hooks
 export const PageChangeEffect = () => {
@@ -59,7 +60,7 @@ export const PageChangeEffect = () => {
 
   useEffect(() => {
     const isMatchingOngoingUserCreationRoute =
-      isMatchingLocation(AppPath.SignInUp) ||
+      isMatchingLocation(AppPath.SignIn) ||
       isMatchingLocation(AppPath.Invite) ||
       isMatchingLocation(AppPath.Verify);
 
@@ -74,16 +75,25 @@ export const PageChangeEffect = () => {
       enqueueSnackBar('workspace does not exist', {
         variant: 'error',
       });
-      navigate(AppPath.SignInUp);
+      navigate(AppPath.SignUp);
     };
-
     if (
+      isMatchingLocation(CustomPath.CampaignForm) ||
+      isMatchingLocation(CustomPath.CampaignForm2) ||
+      isMatchingLocation(CustomPath.CampaignForm3)
+    ) {
+      console.log('Path Location:', location.pathname);
+      navigate(location.pathname);
+      return;
+    } 
+    else if (
       onboardingStatus === OnboardingStatus.OngoingUserCreation &&
       !isMatchingOngoingUserCreationRoute &&
       !isMatchingLocation(AppPath.ResetPassword)
     ) {
       navigate(AppPath.SignInUp);
-    } else if (
+    }
+   else if (
       isDefined(onboardingStatus) &&
       onboardingStatus === OnboardingStatus.Incomplete &&
       !isMatchingLocation(AppPath.PlanRequired)
@@ -169,6 +179,28 @@ export const PageChangeEffect = () => {
         });
         break;
       }
+      case isMatchingLocation(CustomPath.CampaignForm): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+      case isMatchingLocation(CustomPath.CampaignForm2): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+      case isMatchingLocation(CustomPath.CampaignForm3): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+
       case isMatchingLocation(AppPath.OpportunitiesPage): {
         setHotkeyScope(PageHotkeyScope.OpportunitiesPage, {
           goto: true,

@@ -198,19 +198,19 @@ export const CampaignForm = () => {
     fetchUserDetails();
   }, [userid]);
 
-  // if (loading) {
-  //   return (
-  //     <>
-  //       <AnimatedPlaceholderErrorContainer>
-  //         <AnimatedPlaceholderEmptyTextContainer>
-  //           <AnimatedPlaceholderErrorTitle>
-  //             Collecting form data...
-  //           </AnimatedPlaceholderErrorTitle>
-  //         </AnimatedPlaceholderEmptyTextContainer>
-  //       </AnimatedPlaceholderErrorContainer>
-  //     </>
-  //   );
-  // } else 
+    // if (loading) {
+    //   return (
+    //     <>
+    //       <AnimatedPlaceholderErrorContainer>
+    //         <AnimatedPlaceholderEmptyTextContainer>
+    //           <AnimatedPlaceholderErrorTitle>
+    //             Collecting form data...
+    //           </AnimatedPlaceholderErrorTitle>
+    //         </AnimatedPlaceholderEmptyTextContainer>
+    //       </AnimatedPlaceholderErrorContainer>
+    //     </>
+    //   );
+    // } else 
 if (loading && errorType === 'formexpired') {
     return (
       <>
