@@ -26,6 +26,7 @@ import { WorkspaceCacheVersionModule } from 'src/engine/metadata-modules/workspa
 
 import { CoreEngineModule } from './engine/core-modules/core-engine.module';
 import { IntegrationsModule } from './engine/integrations/integrations.module';
+import { CampaignModule } from 'src/campaign/campaign.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { IntegrationsModule } from './engine/integrations/integrations.module';
     }),
     // Integrations module, contains all the integrations with other services
     IntegrationsModule,
+    CampaignModule,
     // Core engine module, contains all the core modules
     CoreEngineModule,
     // Modules module, contains all business logic modules
