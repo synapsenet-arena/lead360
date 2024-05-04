@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class GetLeadData {
   queryLeadData(id: string) {
     const queryLeadDataExists = {
-      query: `query FindManyLeads($filter: LeadFilterInput, $orderBy: LeadOrderByInput, $lastCursor: String, $limit: Float) {
+      query: `query FindManyLeads($filter: LeadFilterInput, $orderBy: LeadOrderByInput, $lastCursor: String, $limit: Int) {
         leads(filter: $filter, orderBy: $orderBy, first: $limit, after: $lastCursor) {
           edges {
             node {  

@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class GetCampaignTrigger {
   queryCampaignTrigger(id: string) {
     const queryCampaignTriggerData = {
-      query: `query FindManyCampaignTriggers($filter: CampaignTriggerFilterInput, $orderBy: CampaignTriggerOrderByInput, $lastCursor: String, $limit: Float) {
+      query: `query FindManyCampaignTriggers($filter: CampaignTriggerFilterInput, $orderBy: CampaignTriggerOrderByInput, $lastCursor: String, $limit: Int) {
         campaignTriggers(
           filter: $filter
           orderBy: $orderBy

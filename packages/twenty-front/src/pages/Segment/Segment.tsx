@@ -1,11 +1,11 @@
-/* eslint-disable no-restricted-imports */
 import styled from '@emotion/styled';
-import {  Section } from '@react-email/components';
+import { Section } from '@react-email/components';
 import { Button } from '@/ui/input/button/components/Button';
 import { GRAY_SCALE } from '@/ui/theme/constants/GrayScale';
 import { useMutation } from '@apollo/client';
 import { v4 as uuidv4 } from 'uuid';
 import {
+  IconLoader,
   IconPlayerPlay,
   IconPlus,
   IconUsersGroup,
@@ -36,7 +36,6 @@ const StyledBoardContainer = styled.div`
   padding: ${({ theme }) => theme.spacing(2)};
 `;
 
-
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -44,10 +43,9 @@ const PageContainer = styled.div`
   overflow-y: scroll;
   scrollbar-color: ${({ theme }) => theme.border.color.strong};
   scrollbar-width: thin;
-  
-   *::-webkit-scrollbar {
+  *::-webkit-scrollbar {
     height: 8px;
-    width: 8px; 
+    width: 8px;
   }
 
   *::-webkit-scrollbar-corner {
@@ -55,11 +53,10 @@ const PageContainer = styled.div`
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: ${({ theme }) => theme.border.color.strong}; 
+    background-color: ${({ theme }) => theme.border.color.strong};
     border-radius: ${({ theme }) => theme.border.radius.sm};
   }
 `;
-
 
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
@@ -100,17 +97,21 @@ const SytledHR = styled.hr`
 `;
 
 export const Segment = () => {
-  const { setLeadData, leadData } = useCampaign();
+  const [leadData, setLeadData] = useState<any | any[]>([]);
   const [selectedFilterOptions, setSelectedFilterOptions] = useState<
     Record<string, string>
   >({});
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const [filterDivs, setFilterDivs] = useState<string[]>([]);
   const [segmentName, setSegmentName] = useState('');
   const [segmentDescription, setSegmentDescription] = useState('');
   const { enqueueSnackBar } = useSnackBar();
-  const [filterString, setFilterString] = useState("");
+  const [filterString, setFilterString] = useState('');
+  const [filter, setFilter] = useState('');
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [filterLoading, setFilterLoading] = useState<boolean>(false);
+
   const handleFilterButtonClick = () => {
     const key = `filter-${filterDivs.length + 1}`;
     setFilterDivs([...filterDivs, key]);
@@ -154,7 +155,7 @@ export const Segment = () => {
   const [addSegment] = useMutation(ADD_SEGMENT);
 
   const handleRunQuery = async () => {
-    const filter:any= {};
+    const filter: any = {};
 
     filterDivs.forEach((key) => {
       const condition = selectedFilterOptions[`${key}-conditions`];
@@ -173,31 +174,44 @@ export const Segment = () => {
         });
       }
     });
-    // const filterJson =  await filter.json()
-    
+    setFilter(filter);
     let filterString = `{ "filter": ${JSON.stringify(filter)} }`;
 
     console.log('This is the filter:', filterString);
 
     const orderBy = { position: 'AscNullsFirst' };
     try {
-      const result = await filterleads({ variables: { filter, orderBy } });
+      const result = await filterleads({ variables: { filter } });
       console.log('Data:', result.data);
 
-      setLeadData({ ...leadData, data: result });
-      result.data.leads.edges.forEach((edge: { node: any }) => {
-        const lead = edge.node;
-        console.log('Lead ID:', lead.id);
-        console.log('Lead Email:', lead.email);
-        console.log('Lead Age:', lead.age);
-        console.log('Lead Advertisement Name:', lead.advertisementName);
-      });
+      setLeadData(result.data.leads.edges);
+      setCursor(result.data.leads.pageInfo.endCursor);
+      if (result.data.leads.pageInfo.hasNextPage == true) {
+        setFilterLoading(true);
+      }
+      // result.data.leads.edges.forEach((edge: { node: any }) => {
+      // const lead = edge.node;
+      // });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-    setFilterString(filterString)
+    setFilterString(filterString);
   };
 
+  const loadMore = async () => {
+    if (filterLoading) {
+      const result = await filterleads({
+        variables: {
+          filter,
+          lastCursor: cursor,
+        },
+      });
+      setCursor(result.data.leads.pageInfo.endCursor);
+      console.log(result.data, 'new DATA');
+      const newData = result.data.leads.edges;
+      setLeadData([...leadData, ...newData]);
+    }
+  };
   const handlesave = async () => {
     try {
       const variables = {
@@ -214,15 +228,14 @@ export const Segment = () => {
       enqueueSnackBar('Segment saved successfully', {
         variant: 'success',
       });
-      navigate('/objects/segments')
-      // window.location.reload();
+      navigate('/objects/segments');
+      window.location.reload();
     } catch (errors: any) {
       console.log('Error saving segment', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
         variant: 'error',
       });
     }
-    
   };
 
   return (
@@ -334,10 +347,17 @@ export const Segment = () => {
             <SytledHR />
           </StyledInputCard>
         </StyledBoardContainer>
-        {!loading && data && <PreviewLeadsData data={data} />}
-
+        {!loading && data && <PreviewLeadsData data={leadData} />}
+        {filterLoading && (
+          <Button
+            Icon={IconLoader}
+            title="Load More"
+            variant="tertiary"
+            accent="default"
+            onClick={loadMore}
+          />
+        )}
       </PageContainer>
     </>
   );
 };
-

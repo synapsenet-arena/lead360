@@ -1,490 +1,418 @@
-/* eslint-disable @nx/workspace-styled-components-prefixed-with-styled */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable no-restricted-imports */
-import { useState } from 'react';
-import { useLazyQuery } from '@apollo/client';
+import { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { IconArrowRight, IconPlus } from '@tabler/icons-react';
-import {
-  IconArrowBadgeRight,
-  IconArrowLeft,
-  IconCalendar,
-  IconEqual,
-  IconSpeakerphone,
-  IconTrash,
-  IconUsersGroup,
-} from '@tabler/icons-react';
-import { MenuItemMultiSelectAvatar, TextInput } from 'tsup.ui.index';
-
-import { ModalWrapper } from '@/spreadsheet-import/components/ModalWrapper';
-import { H2Title } from '@/ui/display/typography/components/H2Title';
-import { Button } from '@/ui/input/button/components/Button';
-import DateTimePicker from '@/ui/input/components/internal/date/components/DateTimePicker';
-import { Dropdown } from '@/ui/layout/dropdown/components/Dropdown';
-import { DropdownMenuItemsContainer } from '@/ui/layout/dropdown/components/DropdownMenuItemsContainer';
-import { Section } from '@/ui/layout/section/components/Section';
+import { ActivityTargetableObject } from '@/activities/types/ActivityTargetableEntity';
+import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
+import { GET_CAMPAIGN_TRIGGER } from '@/users/graphql/queries/getOneCampaignTrigger';
+import { useLazyQuery } from '@apollo/client';
 import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
+import { Checkbox } from '@/ui/input/components/Checkbox';
+import { capitalize } from '~/utils/string/capitalize';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
-import { PreviewLeadsData } from '~/pages/campaigns/PreviewLeadsData';
-
-const StyledCard = styled.div`
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  border-radius: ${({ theme }) => theme.border.radius.sm};
-  color: ${({ theme }) => theme.font.color.secondary};
-  box-shadow: ${({ theme }) => theme.boxShadow.strong};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: ${({ theme }) => theme.background.primary};
-  height: 90%;
-  width: 70%;
-  margin: auto;
-  align-items: center;
-  overflow: scroll;
-`;
+import { formatToHumanReadableDate } from '~/utils';
+import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
+import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
+import {
+  IconRefresh,
+  IconUser,
+  IconListNumbers,
+  IconLocation,
+  IconBrandCampaignmonitor,
+  IconDeviceTv,
+  IconSpeakerphone,
+  IconTextCaption,
+  IconCalendar,
+  IconLoader,
+} from '@tabler/icons-react';
+import { IconButton } from '@/ui/input/button/components/IconButton';
+import { TextDisplay } from '@/ui/field/display/components/TextDisplay';
+import { Button } from '@/ui/input/button/components/Button';
 
 const StyledInputCard = styled.div`
-  align-items: center;
-  color: ${({ theme }) => theme.font.color.secondary};
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
-  height: 65%;
-  justify-content: space-between;
-  width: 70%;
+  height: auto;
+  justify-content: space-evenly;
+  width: 100%;
 `;
 
-const StyledTitleCard = styled.div`
-  align-items: center;
-  color: ${({ theme }) => theme.font.color.secondary};
+const StyledButtonContainer = styled.div`
+  display: inline-flex;
+  justify-content: flex-end;
+  margin-top: ${({ theme }) => theme.spacing(2)};
+`;
+
+const StyledCountContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  height: 10%;
-  width: 70%;
+  flex-direction: row;
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(10)};
+  }
+  margin-top: ${({ theme }) => theme.spacing(2)};
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+  height: auto;
   justify-content: flex-start;
-`;
-
-const StyledButton = styled.span`
-  display: flex;
-  justify-content: space-between;
   width: 100%;
-`;
-
-const StyledAreaLabel = styled.span`
-  align-content: center;
-  display: flex;
-  flex-direction: column;
-  background: ${({ theme }) => theme.background.noisy};
-  justify-content: center;
-  width: 100%;
-`;
-
-const StyledTitle = styled.h3`
-  color: ${({ theme }) => theme.font.color.secondary};
-  font-weight: ${({ theme }) => theme.font.weight.medium};
-  font-size: ${({ theme }) => theme.font.size.md};
-`;
-
-const TextContainer = styled.div`
   align-items: center;
-  background: ${({ theme }) => theme.background.primary};
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
+`;
 
-  border-radius: ${({ theme }) => theme.border.radius.md};
-  display: flex;
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
-  margin-top: ${({ theme }) => theme.spacing(4)};
-  padding-bottom: ${({ theme }) => theme.spacing(2)};
-  padding-left: ${({ theme }) => theme.spacing(5)};
-  padding-right: ${({ theme }) => theme.spacing(5)};
-  padding-top: ${({ theme }) => theme.spacing(2)};
+const StyledTable = styled.table<{ cursorPointer: boolean }>`
+  width: 100%;
+  border-collapse: collapse;
+  height: 10px;
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+  background-color: ${({ theme }) => theme.background.primary};
+  cursor: ${({ cursorPointer }) => (cursorPointer ? 'pointer' : 'inherit')};
+  font-family: inherit;
+  font-size: inherit;
+
+  font-weight: ${({ theme }) => theme.font.weight.regular};
+  max-width: 100%;
+  overflow: hidden;
+  text-decoration: inherit;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
-const StyledFilter = styled(Section)`
-  margin-left: ${({ theme }) => theme.spacing(2)};
+
+const StyledTableRow = styled.tr`
+  &:nth-of-type(odd) {
+    background-color: ${({ theme }) => theme.background.primary};
+  }
 `;
+
+const StyledTableCell = styled.td`
+  padding: 5px;
+  height: 25px;
+  border: 1px solid ${({ theme }) => theme.border.color.light};
+  font-weight: ${({ theme }) => theme.font.weight.regular};
+  &:hover {
+    background-color: ${({ theme }) => theme.background.tertiary};
+  }
+`;
+
+const StyledTableHeaderCell = styled.td`
+  padding: 5px;
+  border: 1px solid ${({ theme }) => theme.border.color.medium};
+  height: 25px;
+`;
+
 const StyledComboInputContainer = styled.div`
   display: flex;
-  flex-direction: row;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(4)};
-  }
   align-items: center;
-  justify-content: space-around;
-`;
-
-const StyledComboInputContainer1 = styled.div`
-  display: flex;
-  flex-direction: row;
   > * + * {
-    margin-left: ${({ theme }) => theme.spacing(4)};
+    margin-left: ${({ theme }) => theme.spacing(2)};
   }
-  align-items: center;
 `;
-const StyledFilterCard = styled.div`
+
+const StyledContainer = styled.div`
+  align-items: flex-start;
+  align-self: stretch;
   display: flex;
-  flex-direction: row;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(4)};
-  }
-  width: 100%;
-  justify-content: space-between;
-`;
-const Section2 = styled.div`
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
 `;
 
-export const Lead = () => {
-  const {
-    setCurrentStep,
-    currentStep,
-    setLeadData,
-    leadData,
-    campaignData,
-    setCampaignData,
-  } = useCampaign();
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [selectedFilterOptions, setSelectedFilterOptions] = useState<
-    Record<string, boolean>
-  >({});
-  const [leadSourceValue, setLeadSourceValue] = useState('');
-  const [campaignNameValue, setCampaignNameValue] = useState('');
-  const [locationValue, setLocationValue] = useState('');
-  const [ageValue, setAgeValue] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
+const StyledLabelContainer = styled.div`
+  color: ${({ theme }) => theme.font.color.tertiary};
+  width: auto;
+`;
 
-  const handleLeadSourceChange = (event: any) => {
-    setLeadSourceValue(event.target.value);
-  };
+export const Leads = ({
+  targetableObject,
+}: {
+  targetableObject: ActivityTargetableObject;
+}) => {
+  const fields = [
+    { name: 'name', icon: IconUser },
+    { name: 'age', icon: IconListNumbers },
+    { name: 'location', icon: IconLocation },
+    { name: 'advertisementSource', icon: IconBrandCampaignmonitor },
+    { name: 'advertisementName', icon: IconDeviceTv },
+    { name: 'campaignName', icon: IconSpeakerphone },
+    { name: 'comments', icon: IconTextCaption },
+    { name: 'createdAt', icon: IconCalendar },
+  ];
 
-  const handleCampaignNameChange = (event: any) => {
-    setCampaignNameValue(event.target.value);
-  };
+  const [leadsData, setLeadsData] = useState<any | any[]>([]);
+  const [totalLeadsCount, setTotalLeadsCount] = useState<number>(0);
+  const [selectedRows, setSelectedRows] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+  
+  const [filter, setFilter] = useState('');
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
 
-  const handleLocationChange = (event: any) => {
-    setLocationValue(event.target.value);
-  };
+  const [unSelectedRows, setunSelectedRows] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [masterCheckboxChecked, setMasterCheckboxChecked] = useState(true);
 
-  const handleAgeChange = (event: any) => {
-    setAgeValue(event.target.value);
-  };
+  const { campaignData, setCampaignData } = useCampaign();
 
-  const [filterleads, { loading, error, data }] = useLazyQuery(FILTER_LEADS, {
+  let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
+    GET_CAMPAIGN_LISTS,
+    {
+      fetchPolicy: 'network-only',
+    },
+  );
+
+  let [selectedCampaignTrigger, { data: selectedCampaignTriggerData }] =
+    useLazyQuery(GET_CAMPAIGN_TRIGGER, {
+      fetchPolicy: 'network-only',
+    });
+
+  let [filterleads, { data: filterLeadsData }] = useLazyQuery(FILTER_LEADS, {
     fetchPolicy: 'network-only',
   });
 
-  const filterOptions = [
-    { id: '1', name: 'Lead Source' },
-    { id: '2', name: 'Campaign Name' },
-    { id: '3', name: 'Select Date' },
-    { id: '4', name: 'Location' },
-    { id: '5', name: 'Age' },
-  ];
+  const handleCheckboxChange = (leadId: string) => {
+    const updatedSelectedRows = { ...selectedRows };
+    updatedSelectedRows[leadId] = !updatedSelectedRows[leadId];
 
-  const handleSubmit = async () => {
-    const filter: Record<string, any> = {};
-    if (selectedFilterOptions['1']) {
-      filter['advertisementSource'] = { ilike: `%${leadSourceValue}%` };
+    const updatedUnSelectedRows = { ...unSelectedRows };
+    if (!updatedSelectedRows[leadId]) {
+      updatedUnSelectedRows[leadId] = true;
+      delete updatedSelectedRows[leadId];
+    } else {
+      delete updatedUnSelectedRows[leadId];
     }
-    if (selectedFilterOptions['2']) {
-      filter['campaignName'] = { ilike: `%${campaignNameValue}%` };
+
+    const selectedLeadIds = Object.keys(updatedSelectedRows);
+    const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
+
+    setCampaignData({
+      ...campaignData,
+      selectedId: selectedLeadIds,
+      unSelectedId: unSelectedLeadIds,
+    });
+
+    setSelectedRows(updatedSelectedRows);
+    setunSelectedRows(updatedUnSelectedRows);
+  };
+
+  const handleMasterCheckboxChange = () => {
+    const updatedSelectedRows: { [key: string]: boolean } = {};
+    const updatedUnSelectedRows: { [key: string]: boolean } = {};
+    if (!masterCheckboxChecked) {
+      leadsData?.leads?.edges.forEach((leadEdge: any) => {
+        const lead = leadEdge?.node;
+        updatedSelectedRows[lead.id] = true;
+      });
+    } else {
+      leadsData?.leads?.edges.forEach((leadEdge: any) => {
+        const lead = leadEdge?.node;
+        updatedUnSelectedRows[lead.id] = true;
+      });
     }
-    if (selectedFilterOptions['4']) {
-      filter['location'] = { ilike: `%${locationValue}%` };
-    }
-    if (selectedFilterOptions['5']) {
-      filter['age'] = { ilike: `%${ageValue}%` };
-    }
+
+    const selectedLeadIds = Object.keys(updatedSelectedRows);
+    const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
+
+    setCampaignData({
+      ...campaignData,
+      selectedId: selectedLeadIds,
+      unSelectedId: unSelectedLeadIds,
+    });
+
+    setSelectedRows(updatedSelectedRows);
+    setunSelectedRows(updatedUnSelectedRows);
+    setMasterCheckboxChecked(!masterCheckboxChecked);
+  };
+  let campaignId = '';
+
+  const fetchLeads = async () => {
     try {
-      console.log(filter, '----------');
-      const data = await filterleads({ variables: { filter: filter } });
-      setModalOpen(true);
-      console.log('---------=====', data?.data?.leads?.totalCount);
-      setCampaignData({
-        ...campaignData,
-        leads: data?.data?.leads?.totalCount,
+      if (targetableObject.targetObjectNameSingular === 'campaignTrigger') {
+        const data = await selectedCampaignTrigger({
+          variables: {
+            objectRecordId: targetableObject.id,
+          },
+        });
+
+        campaignId = data.data.campaignTrigger.campaignId;
+        console.log(campaignId, 'campaignId');
+      } else if (targetableObject.targetObjectNameSingular === 'campaign') {
+        campaignId = targetableObject.id;
+      }
+
+      const data = await selectedCampaign({
+        variables: {
+          filter: {
+            id: { eq: campaignId },
+          },
+        },
       });
 
-      if (data) {
-        console.log(data);
-        setLeadData({ ...leadData, data: data });
+      const filter = JSON.parse(
+        data.data.campaigns.edges[0].node.segment.filters,
+      );
+      setFilter(filter);
+
+      const result = await filterleads({ variables: filter });
+      const leadsCount = result.data?.leads?.totalCount || 0;
+      setTotalLeadsCount(leadsCount);
+      setLeadsData(result.data.leads.edges);
+
+      const initialSelectedRows: { [key: string]: boolean } = {};
+      result.data.leads.edges.forEach((leadEdge: any) => {
+        const lead = leadEdge?.node;
+        initialSelectedRows[lead.id] = true;
+      });
+      setSelectedRows(initialSelectedRows);
+
+      const currentTime = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const currentDate = formatToHumanReadableDate(new Date());
+      const querystamp = `${currentDate} ${currentTime}`;
+      setCursor(result.data.leads.pageInfo.endCursor);
+      if (result.data.leads.pageInfo.hasNextPage == true) {
+        setLoading(true);
       }
+      setCampaignData({
+        ...campaignData,
+        querystamp: querystamp,
+      });
     } catch (error) {
-      console.error('Error sending data to API:', error);
+      console.error('Error fetching campaign segment filter:', error);
     }
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  const removeFilterOption = (id: string) => {
-    setSelectedFilterOptions((previous) => ({
-      ...previous,
-      [id]: false,
-    }));
-    switch (id) {
-      case '1':
-        setLeadSourceValue('');
-        break;
-      case '2':
-        setCampaignNameValue('');
-        break;
-      case '4':
-        setLocationValue('');
-        break;
-      case '5':
-        setAgeValue('');
-        break;
-      default:
-        break;
+  const loadMore = async () => {
+    if (loading) {
+      const result = await filterleads({
+        variables: {
+          lastCursor: cursor,
+        },
+      });
+      setSelectedRows((prevSelectedRows) => {
+        const newSelectedRows: { [key: string]: boolean } = {
+          ...prevSelectedRows,
+        };
+        result.data.leads.edges.forEach((leadEdge: any) => {
+          const lead = leadEdge?.node;
+          newSelectedRows[lead.id] = true;
+        });
+        return newSelectedRows;
+      });
+      setCursor(result.data.leads.pageInfo.endCursor);
+      const newLeadsData = result.data.leads.edges;
+      console.log(result.data, 'RESULT DATA');
+      setLeadsData([...leadsData, ...newLeadsData]);
     }
+
+    console.log(leadsData, 'new Leads Data');
   };
 
-  const displayFilterSection = () => {
-    return filterOptions.map((item) => {
-      if (selectedFilterOptions[item.id]) {
-        switch (item.id) {
-          case '1':
-            return (
-              <StyledFilterCard>
-                <StyledAreaLabel>
-                  <StyledComboInputContainer>
-                    <TextContainer>
-                      <IconUsersGroup />{' '}
-                      <StyledFilter>Lead Source</StyledFilter>
-                    </TextContainer>
-                    <TextContainer>
-                      <IconEqual /> <StyledFilter>is equal to</StyledFilter>
-                    </TextContainer>
-                    <TextInput
-                      value={leadSourceValue}
-                      placeholder={'Enter name of lead  source'}
-                      name="leadSrcInput"
-                      required
-                      onChange={() => handleLeadSourceChange(event)}
-                    />
-                  </StyledComboInputContainer>
-                </StyledAreaLabel>
-                <Section2>
-                  <Button
-                    Icon={IconTrash}
-                    title="Remove"
-                    variant="secondary"
-                    accent="danger"
-                    onClick={() => removeFilterOption(item.id)}
-                  />
-                </Section2>
-              </StyledFilterCard>
-            );
-          case '2':
-            return (
-              <StyledFilterCard>
-                <StyledAreaLabel>
-                  <StyledComboInputContainer>
-                    <TextContainer>
-                      <IconSpeakerphone />{' '}
-                      <StyledFilter>Campaign Name</StyledFilter>
-                    </TextContainer>
-                    <TextContainer>
-                      <IconEqual /> <StyledFilter>is equal to</StyledFilter>
-                    </TextContainer>
-                    <TextInput
-                      value={campaignNameValue}
-                      placeholder={'Enter name of campaign'}
-                      name="leadCampaignInput"
-                      required
-                      onChange={() => handleCampaignNameChange(event)}
-                    />
-                  </StyledComboInputContainer>
-                </StyledAreaLabel>
-                <Section2>
-                  <Button
-                    Icon={IconTrash}
-                    title="Remove"
-                    variant="secondary"
-                    accent="danger"
-                    onClick={() => removeFilterOption(item.id)}
-                  />
-                </Section2>
-              </StyledFilterCard>
-            );
-          case '3':
-            return (
-              <StyledFilterCard>
-                <StyledAreaLabel>
-                  <StyledComboInputContainer>
-                    <TextContainer>
-                      <IconCalendar /> <StyledFilter>Select Date</StyledFilter>
-                    </TextContainer>
-                    <DateTimePicker
-                      onChange={(startDate) => setStartDate(startDate)}
-                      minDate={new Date()}
-                    />
-                    {/* <TextInput value={'to'} disabled /> */}
-                    <TextContainer>
-                      <IconArrowBadgeRight /> <StyledFilter>to</StyledFilter>
-                    </TextContainer>
-
-                    <DateTimePicker
-                      onChange={(endDate) => setEndDate(endDate)}
-                      minDate={startDate}
-                    />
-                  </StyledComboInputContainer>
-                </StyledAreaLabel>
-                <Section2>
-                  <Button
-                    Icon={IconTrash}
-                    title="Remove"
-                    variant="secondary"
-                    accent="danger"
-                    onClick={() => removeFilterOption(item.id)}
-                  />
-                </Section2>
-              </StyledFilterCard>
-            );
-          case '4':
-            return (
-              <StyledFilterCard>
-                <StyledAreaLabel>
-                  <StyledComboInputContainer>
-                    <TextContainer>
-                      <IconUsersGroup /> <StyledFilter>Location</StyledFilter>
-                    </TextContainer>
-                    <TextContainer>
-                      <IconEqual /> <StyledFilter>is equal to</StyledFilter>
-                    </TextContainer>
-                    <TextInput
-                      value={locationValue}
-                      placeholder={'Enter lead location'}
-                      name="leadLocationInput"
-                      required
-                      onChange={() => handleLocationChange(event)}
-                    />
-                  </StyledComboInputContainer>
-                </StyledAreaLabel>
-                <Section2>
-                  <Button
-                    Icon={IconTrash}
-                    title="Remove"
-                    variant="secondary"
-                    accent="danger"
-                    onClick={() => removeFilterOption(item.id)}
-                  />
-                </Section2>
-              </StyledFilterCard>
-            );
-
-          case '5':
-            return (
-              <StyledFilterCard>
-                <StyledAreaLabel>
-                  <StyledComboInputContainer>
-                    <TextContainer>
-                      <IconUsersGroup /> <StyledFilter>Age</StyledFilter>
-                    </TextContainer>
-                    <TextContainer>
-                      <IconEqual /> <StyledFilter>is equal to</StyledFilter>
-                    </TextContainer>
-                    <TextInput
-                      value={ageValue}
-                      placeholder={'Enter lead age'}
-                      name="leadAgeInput"
-                      required
-                      onChange={() => handleAgeChange(event)}
-                    />
-                  </StyledComboInputContainer>
-                </StyledAreaLabel>
-                <Section2>
-                  <Button
-                    Icon={IconTrash}
-                    title="Remove"
-                    variant="secondary"
-                    accent="danger"
-                    onClick={() => removeFilterOption(item.id)}
-                  />
-                </Section2>
-              </StyledFilterCard>
-            );
-
-          default:
-            return null;
-        }
-      }
-      return null;
-    });
-  };
+  useEffect(() => {
+    fetchLeads();
+  }, [targetableObject.id, selectedCampaign]);
 
   return (
     <>
-      <StyledCard>
-        <StyledTitleCard>
-          <StyledTitle></StyledTitle>
-        </StyledTitleCard>
+      <StyledButtonContainer>
+        
+      </StyledButtonContainer>
+      <StyledContainer>
         <StyledInputCard>
-          <Section>
-            <StyledComboInputContainer1>
-              <H2Title
-                title="Extract Leads"
-                description="Filter out the Leads for your campaign"
-              />
-            </StyledComboInputContainer1>
-            <StyledComboInputContainer1>
-              <Dropdown
-                dropdownId={'dropdownId'}
-                clickableComponent={
-                  <Button title="Add Filters" Icon={IconPlus} />
-                }
-                dropdownComponents={
-                  <DropdownMenuItemsContainer hasMaxHeight>
-                    {filterOptions.map((item) => (
-                      <MenuItemMultiSelectAvatar
-                        key={item.id}
-                        selected={selectedFilterOptions[item.id]}
-                        onSelectChange={(checked) =>
-                          setSelectedFilterOptions((previous) => ({
-                            ...previous,
-                            [item.id]: checked,
-                          }))
-                        }
-                        avatar={undefined}
-                        text={item.name}
+          {leadsData[0] && (
+            <>
+              <StyledCountContainer>
+                <StyledComboInputContainer>
+                  <StyledLabelContainer>
+                    <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
+                  </StyledLabelContainer>
+                  <TextDisplay text={campaignData.querystamp} />
+                </StyledComboInputContainer>
+                <StyledComboInputContainer>
+                  <StyledLabelContainer>
+                    <EllipsisDisplay>Total Leads:</EllipsisDisplay>
+                  </StyledLabelContainer>
+                  <NumberDisplay value={totalLeadsCount} />{' '}
+                </StyledComboInputContainer>
+
+                <StyledComboInputContainer>
+                  <StyledLabelContainer>
+                    <EllipsisDisplay>Selected Leads:</EllipsisDisplay>
+                  </StyledLabelContainer>
+                  <NumberDisplay value={Object.keys(selectedRows).length} />
+                </StyledComboInputContainer>
+
+                <StyledComboInputContainer>
+                  <StyledLabelContainer>
+                    <EllipsisDisplay>Unselected Leads:</EllipsisDisplay>
+                  </StyledLabelContainer>
+                  <NumberDisplay value={Object.keys(unSelectedRows).length} />
+                </StyledComboInputContainer>
+              </StyledCountContainer>
+
+              <StyledTable cursorPointer={true}>
+                <tbody>
+                  <StyledTableRow>
+                    <StyledTableHeaderCell>
+                      <Checkbox
+                        checked={masterCheckboxChecked}
+                        onChange={handleMasterCheckboxChange}
                       />
+                    </StyledTableHeaderCell>
+
+                    {fields.map(({ name, icon: Icon }) => (
+                      <StyledTableHeaderCell key={name}>
+                        <StyledLabelContainer>
+                          {Icon && <Icon size={15} />}
+                          {capitalize(name)}
+                        </StyledLabelContainer>
+                      </StyledTableHeaderCell>
                     ))}
-                  </DropdownMenuItemsContainer>
-                }
-                dropdownHotkeyScope={{
-                  scope: 'dropdownId',
-                }}
-              />
-            </StyledComboInputContainer1>
-            <Button title="Submit" variant="tertiary" onClick={handleSubmit} />
-          </Section>
-
-          {displayFilterSection()}
-
-          <StyledButton>
-            <Button
-              Icon={IconArrowLeft}
-              title="Previous"
-              variant="secondary"
-              onClick={() => setCurrentStep(currentStep - 1)}
-            />
-            <Button
-              Icon={IconArrowRight}
-              title="Next"
-              variant="primary"
-              accent="blue"
-              onClick={() => setCurrentStep(currentStep + 1)}
-            />
-          </StyledButton>
+                  </StyledTableRow>
+                  {leadsData.map((leadEdge: any) => {
+                    const lead = leadEdge?.node;
+                    return (
+                      <StyledTableRow
+                        key={lead.id}
+                        onClick={() => handleCheckboxChange(lead.id)}
+                      >
+                        <StyledTableCell>
+                          <Checkbox
+                            checked={selectedRows[lead.id]}
+                            onChange={() => handleCheckboxChange(lead.id)}
+                          />
+                        </StyledTableCell>
+                        {fields.map(({ name }) => (
+                          <StyledTableCell key={name}>
+                            <EllipsisDisplay>
+                              {lead[name].toString()}
+                            </EllipsisDisplay>
+                          </StyledTableCell>
+                        ))}
+                      </StyledTableRow>
+                    );
+                  })}
+                  <StyledTableRow ref={lastLeadRef}>
+                    <td style={{ visibility: 'hidden' }}>End of Table</td>
+                  </StyledTableRow>
+                  {loading && (
+                    <StyledButtonContainer>
+                      <Button
+                        Icon={IconLoader}
+                        title="Load More"
+                        variant="tertiary"
+                        accent="default"
+                        onClick={loadMore}
+                      />
+                    </StyledButtonContainer>
+                  )}
+                </tbody>
+              </StyledTable>
+            </>
+          )}
         </StyledInputCard>
-      </StyledCard>
-
-      <ModalWrapper isOpen={modalOpen} onClose={handleCloseModal}>
-        {!loading && data && <PreviewLeadsData data={data} />}
-      </ModalWrapper>
+      </StyledContainer>
     </>
   );
 };
+

@@ -24,6 +24,7 @@ import {
 import { usePreviousHotkeyScope } from '@/ui/utilities/hotkey/hooks/usePreviousHotkeyScope';
 import { useScopedHotkeys } from '@/ui/utilities/hotkey/hooks/useScopedHotkeys';
 import { isDefined } from '~/utils/isDefined';
+import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 
 const StyledEditableTitleInput = styled.input<{
   completed: boolean;
@@ -78,7 +79,8 @@ export const ActivityTitle = ({ activityId }: ActivityTitleProps) => {
   );
 
   const { upsertActivity } = useUpsertActivity();
-
+  const {campaignData}=useCampaign();
+  const value=`Lead stage changed from [ ${campaignData.draftValue} to  ${campaignData.fieldValue} ]`
   const {
     setHotkeyScopeAndMemorizePreviousScope,
     goBackToPreviousHotkeyScope,
@@ -187,7 +189,7 @@ export const ActivityTitle = ({ activityId }: ActivityTitleProps) => {
         autoComplete="off"
         autoFocus
         ref={titleInputRef}
-        placeholder={`${activity.type} title`}
+        placeholder={campaignData.draftValue?value:`${activity.type} title`}
         onChange={(event) => handleTitleChange(event.target.value)}
         value={activityTitle}
         completed={completed}

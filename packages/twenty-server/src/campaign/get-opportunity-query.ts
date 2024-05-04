@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class GetOpportunityData {
   queryOpportunityId(data: any) {
     const queryOpportunityIdExists = {
-      query: `query FindManyOpportunities($filter: OpportunityFilterInput, $orderBy: OpportunityOrderByInput, $lastCursor: String, $limit: Float) {
+      query: `query FindManyOpportunities($filter: OpportunityFilterInput, $orderBy: OpportunityOrderByInput, $lastCursor: String, $limit: Int) {
         opportunities(
           filter: $filter
           orderBy: $orderBy

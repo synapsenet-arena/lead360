@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class GetFormTemplate {
   queryFormTemplate(id: string) {
     const queryFormTemplateExists = {
-      query: `query FindManyFormTemplates($filter: FormTemplateFilterInput, $orderBy: FormTemplateOrderByInput, $lastCursor: String, $limit: Float) {
+      query: `query FindManyFormTemplates($filter: FormTemplateFilterInput, $orderBy: FormTemplateOrderByInput, $lastCursor: String, $limit: Int) {
             formTemplates(
               filter: $filter
               orderBy: $orderBy

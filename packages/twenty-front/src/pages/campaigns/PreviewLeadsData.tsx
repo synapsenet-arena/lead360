@@ -77,7 +77,7 @@ export const PreviewLeadsData = ({ data }) => {
             <StyledLabelContainer>Advertisement Name</StyledLabelContainer>
           </StyledTableHeaderCell>
         </StyledTableRow>
-        {data?.leads?.edges.map((leads: any) => (
+        {data.map((leads: any) => (
           <StyledTableRow key={leads.node.id}>
             <StyledTableCell>
               <EllipsisDisplay>{leads.node?.name}</EllipsisDisplay>
