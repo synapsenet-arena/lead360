@@ -37,6 +37,23 @@ const StyledShowPageRightContainer = styled.div`
   justify-content: start;
   overflow: ${() => (useIsMobile() ? 'none' : 'hidden')};
   width: calc(100% + 4px);
+  overflow-y: scroll;
+  scrollbar-color: ${({ theme }) => theme.border.color.strong};
+  scrollbar-width: thin;
+  
+   *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px; 
+  }
+
+  *::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.border.color.strong}; 
+    border-radius: ${({ theme }) => theme.border.radius.sm};
+  }
 `;
 
 const StyledTabListContainer = styled.div`

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { ActivityTargetableObject } from '@/activities/types/ActivityTargetableEntity';
 import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
@@ -10,13 +10,7 @@ import { capitalize } from '~/utils/string/capitalize';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 import { formatToHumanReadableDate } from '~/utils';
 import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
-import { DateDisplay } from '@/ui/field/display/components/DateDisplay';
 import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
-import { TextFieldDisplay } from '@/object-record/record-field/meta-types/display/components/TextFieldDisplay';
-import { useGetIsSomeCellInEditModeState } from '@/object-record/record-table/hooks/internal/useGetIsSomeCellInEditMode';
-import { useMoveSoftFocusToCurrentCellOnHover } from '@/object-record/record-table/record-table-cell/hooks/useMoveSoftFocusToCurrentCellOnHover';
-import { isSoftFocusUsingMouseState } from '@/object-record/record-table/states/isSoftFocusUsingMouseState';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   IconRefresh,
   IconUser,
@@ -28,9 +22,11 @@ import {
   IconTextCaption,
   IconCalendar,
   IconNumbers,
+  IconLoader,
 } from '@tabler/icons-react';
 import { IconButton } from '@/ui/input/button/components/IconButton';
 import { TextDisplay } from '@/ui/field/display/components/TextDisplay';
+import { Button } from '@/ui/input/button/components/Button';
 
 const StyledInputCard = styled.div`
   align-items: flex-start;
@@ -144,8 +140,12 @@ export const Leads = ({
   const [selectedRows, setSelectedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
-  const [pageSize, setPageSize] = useState(10);
-  const [cursor, setCursor] = useState(null);
+  
+  const [filter, setFilter] = useState('');
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
+
   const [unSelectedRows, setunSelectedRows] = useState<{
     [key: string]: boolean;
   }>({});
@@ -153,37 +153,21 @@ export const Leads = ({
 
   const { campaignData, setCampaignData } = useCampaign();
 
-  let [selectedCampaign, { data: selectedCampaignData }] =
-    useLazyQuery(GET_CAMPAIGN_LISTS, {
+  let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
+    GET_CAMPAIGN_LISTS,
+    {
       fetchPolicy: 'network-only',
-    });
+    },
+  );
 
-    let [selectedCampaignTrigger, { data: selectedCampaignTriggerData }] =
+  let [selectedCampaignTrigger, { data: selectedCampaignTriggerData }] =
     useLazyQuery(GET_CAMPAIGN_TRIGGER, {
       fetchPolicy: 'network-only',
     });
 
   let [filterleads, { data: filterLeadsData }] = useLazyQuery(FILTER_LEADS, {
     fetchPolicy: 'network-only',
-    onCompleted: (data) => {
-      setLeadsData(data);
-    },
   });
-
-  useEffect(() => {
-    if (leadsData.leads && leadsData.leads.edges) {
-      const allLeadIds = leadsData.leads.edges.map(
-        (leadEdge: any) => leadEdge.node.id,
-      );
-      const initialSelectedRows: { [key: string]: boolean } = {};
-      const initialUnSelectedRows: { [key: string]: boolean } = {};
-      allLeadIds.forEach((leadId: string) => {
-        initialSelectedRows[leadId] = true;
-      });
-      setSelectedRows(initialSelectedRows);
-      setunSelectedRows(initialUnSelectedRows);
-    }
-  }, [leadsData]);
 
   const handleCheckboxChange = (leadId: string) => {
     const updatedSelectedRows = { ...selectedRows };
@@ -238,22 +222,21 @@ export const Leads = ({
     setunSelectedRows(updatedUnSelectedRows);
     setMasterCheckboxChecked(!masterCheckboxChecked);
   };
-  let campaignId = "";
+  let campaignId = '';
 
   const fetchLeads = async () => {
     try {
-      if(targetableObject.targetObjectNameSingular === 'campaignTrigger'){
+      if (targetableObject.targetObjectNameSingular === 'campaignTrigger') {
         const data = await selectedCampaignTrigger({
           variables: {
-            objectRecordId: targetableObject.id ,
+            objectRecordId: targetableObject.id,
           },
         });
 
         campaignId = data.data.campaignTrigger.campaignId;
-        console.log(campaignId, "campaignId")
-      }
-      else if(targetableObject.targetObjectNameSingular === 'campaign'){
-        campaignId = targetableObject.id
+        console.log(campaignId, 'campaignId');
+      } else if (targetableObject.targetObjectNameSingular === 'campaign') {
+        campaignId = targetableObject.id;
       }
 
       const data = await selectedCampaign({
@@ -267,14 +250,30 @@ export const Leads = ({
       const filter = JSON.parse(
         data.data.campaigns.edges[0].node.segment.filters,
       );
+      setFilter(filter);
 
       const result = await filterleads({ variables: filter });
       const leadsCount = result.data?.leads?.totalCount || 0;
       setTotalLeadsCount(leadsCount);
-      setLeadsData(result.data);
-      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setLeadsData(result.data.leads.edges);
+
+      const initialSelectedRows: { [key: string]: boolean } = {};
+      result.data.leads.edges.forEach((leadEdge: any) => {
+        const lead = leadEdge?.node;
+        initialSelectedRows[lead.id] = true;
+      });
+      setSelectedRows(initialSelectedRows);
+
+      const currentTime = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
       const currentDate = formatToHumanReadableDate(new Date());
       const querystamp = `${currentDate} ${currentTime}`;
+      setCursor(result.data.leads.pageInfo.endCursor);
+      if (result.data.leads.pageInfo.hasNextPage == true) {
+        setLoading(true);
+      }
       setCampaignData({
         ...campaignData,
         querystamp: querystamp,
@@ -284,18 +283,36 @@ export const Leads = ({
     }
   };
 
+  const loadMore = async () => {
+    if (loading) {
+      const result = await filterleads({
+        variables: {
+          lastCursor: cursor,
+        },
+      });
+      setSelectedRows((prevSelectedRows) => {
+        const newSelectedRows: { [key: string]: boolean } = {
+          ...prevSelectedRows,
+        };
+        result.data.leads.edges.forEach((leadEdge: any) => {
+          const lead = leadEdge?.node;
+          newSelectedRows[lead.id] = true;
+        });
+        return newSelectedRows;
+      });
+      setCursor(result.data.leads.pageInfo.endCursor);
+      const newLeadsData = result.data.leads.edges;
+      console.log(result.data, 'RESULT DATA');
+      setLeadsData([...leadsData, ...newLeadsData]);
+    }
+
+    console.log(leadsData, 'new Leads Data');
+  };
+
   useEffect(() => {
     fetchLeads();
   }, [targetableObject.id, selectedCampaign]);
 
-  const handleLoadMore = () => {
-    if (
-      leadsData?.leads?.pageInfo?.hasNextPage &&
-      leadsData?.leads?.pageInfo?.endCursor
-    ) {
-      setCursor(leadsData.leads.pageInfo.endCursor);
-    }
-  };
   return (
     <>
       <StyledButtonContainer>
@@ -304,20 +321,10 @@ export const Leads = ({
           Icon={IconRefresh}
           onClick={fetchLeads}
         />
-
-        {leadsData?.leads?.pageInfo?.hasNextPage && (
-          <StyledButtonContainer>
-            <IconButton
-              variant="tertiary"
-              Icon={IconNumbers}
-              onClick={handleLoadMore}
-            />
-          </StyledButtonContainer>
-        )}
       </StyledButtonContainer>
       <StyledContainer>
         <StyledInputCard>
-          {leadsData?.leads?.edges[0] && (
+          {leadsData[0] && (
             <>
               <StyledCountContainer>
                 <StyledComboInputContainer>
@@ -367,7 +374,7 @@ export const Leads = ({
                       </StyledTableHeaderCell>
                     ))}
                   </StyledTableRow>
-                  {leadsData?.leads?.edges.map((leadEdge: any) => {
+                  {leadsData.map((leadEdge: any) => {
                     const lead = leadEdge?.node;
                     return (
                       <StyledTableRow
@@ -390,6 +397,20 @@ export const Leads = ({
                       </StyledTableRow>
                     );
                   })}
+                  <StyledTableRow ref={lastLeadRef}>
+                    <td style={{ visibility: 'hidden' }}>End of Table</td>
+                  </StyledTableRow>
+                  {loading && (
+                    <StyledButtonContainer>
+                      <Button
+                        Icon={IconLoader}
+                        title="Load More"
+                        variant="tertiary"
+                        accent="default"
+                        onClick={loadMore}
+                      />
+                    </StyledButtonContainer>
+                  )}
                 </tbody>
               </StyledTable>
             </>
