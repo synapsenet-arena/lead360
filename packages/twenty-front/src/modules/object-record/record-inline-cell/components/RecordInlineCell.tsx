@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useRef, useState } from 'react';
 
 import { FieldDisplay } from '@/object-record/record-field/components/FieldDisplay';
 import { FieldInput } from '@/object-record/record-field/components/FieldInput';
@@ -14,6 +14,13 @@ import { useIcons } from '@/ui/display/icon/hooks/useIcons';
 import { useInlineCell } from '../hooks/useInlineCell';
 
 import { RecordInlineCellContainer } from './RecordInlineCellContainer';
+import { useSelectField } from '@/object-record/record-field/meta-types/hooks/useSelectField';
+import { ActivityEditor } from '@/activities/components/ActivityEditor';
+import { viewableActivityIdState } from '@/activities/states/viewableActivityIdState';
+import { useRecoilValue } from 'recoil';
+import { useOpenCreateActivityDrawer } from '@/activities/hooks/useOpenCreateActivityDrawer';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
+import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 
 export const RecordInlineCell = () => {
   const { fieldDefinition, entityId } = useContext(FieldContext);
@@ -34,6 +41,23 @@ export const RecordInlineCell = () => {
   const handleSubmit: FieldInputEvent = (persistField) => {
     persistField();
     closeInlineCell();
+  };
+  const openCreateActivity = useOpenCreateActivityDrawer();
+  const { enqueueSnackBar } = useSnackBar();
+  const handleStageChange: FieldInputEvent = (persistField) => {
+    persistField();
+    closeInlineCell();
+    openCreateActivity({
+      type: 'Note',
+      targetableObjects: [{
+        id: entityId,
+        targetObjectNameSingular: fieldDefinition.metadata.objectMetadataNameSingular,
+      }],
+    })
+    
+    enqueueSnackBar('Changed Opportunity Stage', {
+      variant: 'success',
+    });
   };
 
   const handleCancel = () => {
@@ -58,11 +82,12 @@ export const RecordInlineCell = () => {
     persistField();
     closeInlineCell();
   };
+  const viewableActivityId = useRecoilValue(viewableActivityIdState);
 
   const { getIcon } = useIcons();
+  return (<>
 
-  return (
-    <RecordInlineCellContainer
+{fieldDefinition.metadata.fieldName!=='stage' && <RecordInlineCellContainer
       buttonIcon={buttonIcon}
       customEditHotkeyScope={
         isFieldRelation(fieldDefinition)
@@ -93,6 +118,40 @@ export const RecordInlineCell = () => {
       isDisplayModeContentEmpty={isFieldEmpty}
       isDisplayModeFixHeight
       editModeContentOnly={isFieldInputOnly}
-    />
+    />}
+    {fieldDefinition.metadata.fieldName==='stage' && <RecordInlineCellContainer
+      // buttonIcon={buttonIcon}
+      customEditHotkeyScope={
+        isFieldRelation(fieldDefinition)
+          ? {
+              scope: RelationPickerHotkeyScope.RelationPicker,
+            }
+          : undefined
+      }
+      IconLabel={
+        fieldDefinition.iconName ? getIcon(fieldDefinition.iconName) : undefined
+      }
+      label={fieldDefinition.label}
+      labelWidth={fieldDefinition.labelWidth}
+      showLabel={fieldDefinition.showLabel}
+      editModeContent={
+        <FieldInput
+          recordFieldInputdId={`${entityId}-${fieldDefinition?.metadata?.fieldName}`}
+          onSubmit={handleStageChange}
+        />
+      }
+      displayModeContent={<FieldDisplay />}
+      isDisplayModeContentEmpty={isFieldEmpty}
+      isDisplayModeFixHeight
+      editModeContentOnly={isFieldInputOnly}
+    />}
+      {/* {modal && <ActivityEditor  activityId={}
+
+    showComment = {true}
+    fillTitleFromBody = {false}
+  />} */}
+
+  </>
+    
   );
 };

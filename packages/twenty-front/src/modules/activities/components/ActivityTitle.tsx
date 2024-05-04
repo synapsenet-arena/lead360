@@ -23,6 +23,7 @@ import {
 import { usePreviousHotkeyScope } from '@/ui/utilities/hotkey/hooks/usePreviousHotkeyScope';
 import { useScopedHotkeys } from '@/ui/utilities/hotkey/hooks/useScopedHotkeys';
 import { isNonNullable } from '~/utils/isNonNullable';
+import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 
 const StyledEditableTitleInput = styled.input<{
   completed: boolean;
@@ -167,7 +168,8 @@ export const ActivityTitle = ({ activityId }: ActivityTitleProps) => {
   };
 
   const completed = isNonNullable(activity.completedAt);
-
+  const {campaignData}=useCampaign();
+  const value=`Lead stage changed from [ ${campaignData.draftValue} to  ${campaignData.fieldValue} ]`
   return (
     <StyledContainer>
       {activity.type === 'Task' && (
@@ -182,7 +184,7 @@ export const ActivityTitle = ({ activityId }: ActivityTitleProps) => {
         autoComplete="off"
         autoFocus
         ref={titleInputRef}
-        placeholder={`${activity.type} title`}
+        placeholder={campaignData.draftValue?value:`${activity.type} title`}
         onChange={(event) => handleTitleChange(event.target.value)}
         value={activityTitle}
         completed={completed}
