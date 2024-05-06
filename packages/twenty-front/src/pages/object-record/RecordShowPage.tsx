@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { useIcons } from 'twenty-ui';
-
 import { useFavorites } from '@/favorites/hooks/useFavorites';
 import { useLabelIdentifierFieldMetadataItem } from '@/object-metadata/hooks/useLabelIdentifierFieldMetadataItem';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
@@ -25,7 +24,6 @@ import { ADD_TRIGGER_CAMPAIGN_RECORD } from '@/users/graphql/queries/addTriggerC
 import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
-import { ConfirmationModal } from '@/ui/layout/modal/components/ConfirmationModal';
 import { RunCampaignButton } from '@/ui/layout/page/RunCampaignButton';
 import { useDialogManager } from '@/ui/feedback/dialog-manager/hooks/useDialogManager';
 
@@ -121,7 +119,6 @@ const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
 const { enqueueSnackBar } = useSnackBar();
 const navigate = useNavigate();
 const { enqueueDialog } = useDialogManager();
-const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
 const handleConfirmRun = async () => {
   try {
@@ -137,10 +134,6 @@ const handleConfirmRun = async () => {
       },
     });
 
-    console.log(
-      'Response from ADD_TRIGGER_CAMPAIGN_RECORD:',
-      addTriggerData.createCampaignTrigger.id,
-    );
 
     let requestBody: {
       campaignId: string;
@@ -174,14 +167,14 @@ const handleConfirmRun = async () => {
     const data = await response.json();
 
     console.log('Response from the API:', data);
-    enqueueSnackBar('Campaign added successfully', {
+    enqueueSnackBar('Campaign running successfully', {
       variant: 'success',
     });
-    navigate('/objects/campaignTriggers');
-    window.location.reload();
+   
+    navigate(`/object/campaignTrigger/${addTriggerData?.createCampaignTrigger?.id}`);
   } catch (error) {
     console.error('Error in running campaign:', error);
-    enqueueSnackBar('Campaign added successfully', {
+    enqueueSnackBar('Failed to run Campaign', {
       variant: 'error',
     });
   }

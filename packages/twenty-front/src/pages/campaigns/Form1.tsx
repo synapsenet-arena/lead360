@@ -112,6 +112,7 @@ export const Form1 = () => {
               name="firstName"
               required
               fullWidth
+              disabled
             />
           </StyledSection>
           <StyledSection>
@@ -122,6 +123,7 @@ export const Form1 = () => {
               name="lastName"
               required
               fullWidth
+              disabled
             />
           </StyledSection>
           <StyledSection>
@@ -132,6 +134,7 @@ export const Form1 = () => {
               name="email"
               required
               fullWidth
+              disabled
             />
           </StyledSection>
           <StyledSection>
@@ -145,6 +148,7 @@ export const Form1 = () => {
               name="contact"
               required
               fullWidth
+              disabled
             />
           </StyledSection>
 
@@ -156,6 +160,7 @@ export const Form1 = () => {
               name="age"
               required
               fullWidth
+              disabled
             />
           </StyledSection>
 
@@ -167,6 +172,7 @@ export const Form1 = () => {
               name="bloodType"
               required
               fullWidth
+              disabled
             />
           </StyledSection>
           <StyledAreaLabel>

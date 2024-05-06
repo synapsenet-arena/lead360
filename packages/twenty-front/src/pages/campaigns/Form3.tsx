@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 
-
 import { H2Title } from '@/ui/display/typography/components/H2Title';
-import { Checkbox, CheckboxVariant, CheckboxSize, CheckboxShape } from '@/ui/input/components/Checkbox';
+import {
+  Checkbox,
+  CheckboxVariant,
+  CheckboxSize,
+  CheckboxShape,
+} from '@/ui/input/components/Checkbox';
 import { TextInput } from '@/ui/input/components/TextInput';
 
 const StyledDiv = styled.div``;
@@ -38,7 +42,6 @@ const StyledTitle = styled.h2`
   padding: ${({ theme }) => theme.spacing(6)};
 `;
 
-
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
   display: flex;
@@ -49,7 +52,6 @@ const StyledInputCard = styled.div`
   width: 70%;
   align-items: center;
 `;
-
 
 const StyledAreaLabel = styled.span`
   align-content: flex-start;
@@ -100,11 +102,7 @@ interface PreexistingDiseases {
   other: boolean;
 }
 
-
-
-
 export const Form3 = () => {
-
   const [preexistingConditions, setPreexistingConditions] =
     useState<PreexistingConditions>({
       diabetes: false,
@@ -122,91 +120,92 @@ export const Form3 = () => {
       other: false,
     });
 
-
   return (
     <StyledDiv>
-
       <StyledCard>
         <StyledTitleContainer>
           <StyledTitle>Medical Fitness Form</StyledTitle>
         </StyledTitleContainer>
         <StyledInputCard>
-
-        <StyledAreaLabel>
-          <StyledSection>
-            <H2Title title="First Name" description="Enter your first name" />
-            <TextInput
-              placeholder={'Enter first name'}
-              value={"firstName"}
-              name="firstName"
-              required
-              fullWidth
-            />
-          </StyledSection>
-          <StyledSection>
-            <H2Title title="Last Name" description="Enter your last name" />
-            <TextInput
-              placeholder={'Enter last name'}
-              value={"lastName"}
-              name="lastName"
-              required
-              fullWidth
-            />
-          </StyledSection>
-          <StyledSection>
-            <H2Title title="Email" description="Enter your email address" />
-            <TextInput
-              placeholder={'Enter email address'}
-              value={"email"}
-              name="email"
-              required
-              fullWidth
-            />
-          </StyledSection>
-          <StyledSection>
-            <H2Title
-              title="Contact Number"
-              description="Enter your contact number"
-            />
-            <TextInput
-              placeholder={'Enter contact number'}
-              value={"contact"}
-              name="contact"
-              required
-              fullWidth
-            />
-          </StyledSection>
           <StyledAreaLabel>
-          <StyledSection>
-            <H2Title title="Gender" description="Select your Gender" />
-            <StyledComboInputContainer>
-              <Checkbox
-                checked={false}
-                indeterminate={false}
-                variant={CheckboxVariant.Primary}
-                size={CheckboxSize.Small}
-                shape={CheckboxShape.Squared}
+            <StyledSection>
+              <H2Title title="First Name" description="Enter your first name" />
+              <TextInput
+                placeholder={'Enter first name'}
+                value={'firstName'}
+                name="firstName"
+                required
+                fullWidth
+                disabled
               />
-              <StyledCheckboxLabel>Male</StyledCheckboxLabel>
-              <Checkbox
-                checked={false}
-                indeterminate={false}
-                variant={CheckboxVariant.Primary}
-                size={CheckboxSize.Small}
-                shape={CheckboxShape.Squared}
+            </StyledSection>
+            <StyledSection>
+              <H2Title title="Last Name" description="Enter your last name" />
+              <TextInput
+                placeholder={'Enter last name'}
+                value={'lastName'}
+                name="lastName"
+                required
+                fullWidth
+                disabled
               />
-              <StyledCheckboxLabel>Female</StyledCheckboxLabel>
-              <Checkbox
-                checked={false}
-                indeterminate={false}
-                variant={CheckboxVariant.Primary}
-                size={CheckboxSize.Small}
-                shape={CheckboxShape.Squared}
+            </StyledSection>
+            <StyledSection>
+              <H2Title title="Email" description="Enter your email address" />
+              <TextInput
+                placeholder={'Enter email address'}
+                value={'email'}
+                name="email"
+                required
+                fullWidth
+                disabled
               />
-              <StyledCheckboxLabel>Others</StyledCheckboxLabel>
-            </StyledComboInputContainer>
-          </StyledSection>
-          </StyledAreaLabel>
+            </StyledSection>
+            <StyledSection>
+              <H2Title
+                title="Contact Number"
+                description="Enter your contact number"
+              />
+              <TextInput
+                placeholder={'Enter contact number'}
+                value={'contact'}
+                name="contact"
+                required
+                fullWidth
+                disabled
+              />
+            </StyledSection>
+            <StyledAreaLabel>
+              <StyledSection>
+                <H2Title title="Gender" description="Select your Gender" />
+                <StyledComboInputContainer>
+                  <Checkbox
+                    checked={false}
+                    indeterminate={false}
+                    variant={CheckboxVariant.Primary}
+                    size={CheckboxSize.Small}
+                    shape={CheckboxShape.Squared}
+                  />
+                  <StyledCheckboxLabel>Male</StyledCheckboxLabel>
+                  <Checkbox
+                    checked={false}
+                    indeterminate={false}
+                    variant={CheckboxVariant.Primary}
+                    size={CheckboxSize.Small}
+                    shape={CheckboxShape.Squared}
+                  />
+                  <StyledCheckboxLabel>Female</StyledCheckboxLabel>
+                  <Checkbox
+                    checked={false}
+                    indeterminate={false}
+                    variant={CheckboxVariant.Primary}
+                    size={CheckboxSize.Small}
+                    shape={CheckboxShape.Squared}
+                  />
+                  <StyledCheckboxLabel>Others</StyledCheckboxLabel>
+                </StyledComboInputContainer>
+              </StyledSection>
+            </StyledAreaLabel>
             <StyledSection>
               <H2Title
                 title="Height"
@@ -214,10 +213,11 @@ export const Form3 = () => {
               />
               <TextInput
                 placeholder={'Enter height'}
-                value={"height"}
+                value={'height'}
                 name="height"
                 required
                 fullWidth
+                disabled
               />
             </StyledSection>
             <StyledSection>
@@ -227,93 +227,73 @@ export const Form3 = () => {
               />
               <TextInput
                 placeholder={'Enter weight'}
-                value={"weight"}
+                value={'weight'}
                 name="weight"
                 required
                 fullWidth
+                disabled
               />
             </StyledSection>
             <StyledAreaLabel>
-            <StyledSection>
-              <H2Title
-                title="Preexisting Conditions"
-                description="Check any preexisting conditions"
-              />
-             <StyledComboInputContainer>
-              <Checkbox
-                checked={preexistingConditions.diabetes}
-              />
-              <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
-              <Checkbox
-                checked={preexistingConditions.asthma}
-              />
-              <StyledCheckboxLabel>Asthma</StyledCheckboxLabel>
-              <Checkbox
-                checked={preexistingConditions.seizures}
-              />
-              <StyledCheckboxLabel>Seizures</StyledCheckboxLabel>
-              <Checkbox
-                checked={preexistingConditions.seizures}
-              />
-              <StyledCheckboxLabel>BloodPressure</StyledCheckboxLabel>
-            </StyledComboInputContainer>
-            </StyledSection>
+              <StyledSection>
+                <H2Title
+                  title="Preexisting Conditions"
+                  description="Check any preexisting conditions"
+                />
+                <StyledComboInputContainer>
+                  <Checkbox checked={preexistingConditions.diabetes} />
+                  <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
+                  <Checkbox checked={preexistingConditions.asthma} />
+                  <StyledCheckboxLabel>Asthma</StyledCheckboxLabel>
+                  <Checkbox checked={preexistingConditions.seizures} />
+                  <StyledCheckboxLabel>Seizures</StyledCheckboxLabel>
+                  <Checkbox checked={preexistingConditions.seizures} />
+                  <StyledCheckboxLabel>BloodPressure</StyledCheckboxLabel>
+                </StyledComboInputContainer>
+              </StyledSection>
             </StyledAreaLabel>
 
-
             <StyledAreaLabel>
-            <StyledSection>
-              <H2Title
-                title="Preexisting Diseases"
-                description="Check any preexisting diseases"
-              />
-            
-            <StyledComboInputContainer>
-              <Checkbox
-                checked={preexistingDiseases.cardiovascular}
-              />
-              <StyledCheckboxLabel>Hypertension</StyledCheckboxLabel>
-            
-              <Checkbox
-                checked={preexistingDiseases.respiratory}
-              />
-              <StyledCheckboxLabel>Arthritis</StyledCheckboxLabel>
-           
-              <Checkbox
-                checked={preexistingDiseases.genitourinary}
-              />
-              <StyledCheckboxLabel>Genitourinary</StyledCheckboxLabel>
-            
-              <Checkbox
-                checked={preexistingDiseases.cns}
-              />
-              <StyledCheckboxLabel>
-                Diabetes
-              </StyledCheckboxLabel>
-              <Checkbox
-                checked={preexistingDiseases.other}
-              />
-              <StyledCheckboxLabel>Other</StyledCheckboxLabel>
-            </StyledComboInputContainer>
-            </StyledSection>
+              <StyledSection>
+                <H2Title
+                  title="Preexisting Diseases"
+                  description="Check any preexisting diseases"
+                />
+
+                <StyledComboInputContainer>
+                  <Checkbox checked={preexistingDiseases.cardiovascular} />
+                  <StyledCheckboxLabel>Hypertension</StyledCheckboxLabel>
+
+                  <Checkbox checked={preexistingDiseases.respiratory} />
+                  <StyledCheckboxLabel>Arthritis</StyledCheckboxLabel>
+
+                  <Checkbox checked={preexistingDiseases.genitourinary} />
+                  <StyledCheckboxLabel>Genitourinary</StyledCheckboxLabel>
+
+                  <Checkbox checked={preexistingDiseases.cns} />
+                  <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
+                  <Checkbox checked={preexistingDiseases.other} />
+                  <StyledCheckboxLabel>Other</StyledCheckboxLabel>
+                </StyledComboInputContainer>
+              </StyledSection>
             </StyledAreaLabel>
             <StyledSection>
               <H2Title
                 title="Consent*"
                 description="Read the terms and conditions before agreeing."
               />
-            <StyledComboInputContainer>
-              <Checkbox
-                checked={false}
-                indeterminate={false}
-                variant={CheckboxVariant.Primary}
-                size={CheckboxSize.Small}
-                shape={CheckboxShape.Squared}
-              />
-              <StyledCheckboxLabel>
-                I agree to the terms and conditions.
-              </StyledCheckboxLabel>
-            </StyledComboInputContainer>
+              <StyledComboInputContainer>
+                <Checkbox
+                  checked={false}
+                  indeterminate={false}
+                  variant={CheckboxVariant.Primary}
+                  size={CheckboxSize.Small}
+                  shape={CheckboxShape.Squared}
+                />
+                <StyledCheckboxLabel>
+                  I agree to the terms and conditions.
+                </StyledCheckboxLabel>
+              </StyledComboInputContainer>
             </StyledSection>
           </StyledAreaLabel>
         </StyledInputCard>

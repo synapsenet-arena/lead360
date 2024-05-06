@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { Section } from '@react-email/components';
 import { Button } from '@/ui/input/button/components/Button';
-import base64 from 'base64-js';
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { useNavigate, useParams } from 'react-router-dom';
 import AnimatedPlaceholder from '@/ui/layout/animated-placeholder/components/AnimatedPlaceholder';
@@ -10,7 +8,6 @@ import {
   AnimatedPlaceholderErrorContainer,
   AnimatedPlaceholderErrorTitle,
 } from '@/ui/layout/animated-placeholder/components/ErrorPlaceholderStyled';
-import { addTracingExtensions } from '@sentry/react';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import axios from 'axios';
 import { AppPath } from '@/types/AppPath';
@@ -19,6 +16,35 @@ import { Select } from '@/ui/input/components/Select';
 import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { AnimatedPlaceholderEmptyTextContainer } from '@/ui/layout/animated-placeholder/components/EmptyPlaceholderStyled';
+import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
+
+
+const StyledDiv = styled.div`
+display: flex;
+flex: 1 0 0;
+flex-direction: column;
+justify-content: start;
+align-items: center;
+overflow: ${() => (useIsMobile() ? 'none' : 'hidden')};
+width: calc(100% + 4px);
+overflow-y: scroll;
+scrollbar-color: ${({ theme }) => theme.border.color.strong};
+scrollbar-width: thin;
+
+ *::-webkit-scrollbar {
+  height: 8px;
+  width: 8px; 
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: ${({ theme }) => theme.border.color.strong}; 
+  border-radius: ${({ theme }) => theme.border.radius.sm};
+}
+`;
 
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
@@ -26,10 +52,9 @@ const StyledInputCard = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width:100%;
+  width:70%;
 `;
-const StyledDiv = styled.div`
-`;
+
 const StyledSection = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing(6)};
 `;
@@ -201,6 +226,7 @@ if (loading && errorType === 'formexpired') {
 
   return (
     //div id - save id in form
+    <StyledDiv>
     <StyledInputCard>
         <StyledTitleContainer>
           <StyledTitle>Campaign Form</StyledTitle>
@@ -325,5 +351,6 @@ if (loading && errorType === 'formexpired') {
             <Button title="Submit" variant="primary" accent="blue"  onClick={handleSubmit}/>
           </StyledButton>
         </StyledInputCard>
+        </StyledDiv>
   );
 };

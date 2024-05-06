@@ -1,33 +1,50 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { Section } from '@react-email/components';
 import { Button } from '@/ui/input/button/components/Button';
-
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { Checkbox } from '@/ui/input/components/Checkbox';
 import { TextInput } from '@/ui/input/components/TextInput';
+import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
 
-const StyledCard = styled.div`
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
+const StyledDiv = styled.div`
+display: flex;
+flex: 1 0 0;
+flex-direction: column;
+justify-content: start;
+align-items: center;
+overflow: ${() => (useIsMobile() ? 'none' : 'hidden')};
+width: calc(100% + 4px);
+overflow-y: scroll;
+scrollbar-color: ${({ theme }) => theme.border.color.strong};
+scrollbar-width: thin;
+
+ *::-webkit-scrollbar {
+  height: 8px;
+  width: 8px; 
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: ${({ theme }) => theme.border.color.strong}; 
   border-radius: ${({ theme }) => theme.border.radius.sm};
+}
+`;
+
+const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
-  box-shadow: ${({ theme }) => theme.boxShadow.strong};
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: ${({ theme }) => theme.background.primary};
-  height: 95%;
-  width: 70%;
-  margin: auto;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing(2)};
-  overflow-y: scroll;
+  width:70%;
 `;
 
-const StyledFormTitle = styled.h3`
-  color: ${({ theme }) => theme.font.color.primary};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
+const StyledSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
 `;
 
 const StyledTitleContainer = styled.div`
@@ -42,22 +59,10 @@ const StyledTitle = styled.h2`
   font-weight: ${({ theme }) => theme.font.weight.semiBold};
   padding: ${({ theme }) => theme.spacing(6)};
 `;
-const StyledInputCard = styled.div`
-  color: ${({ theme }) => theme.font.color.secondary};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-  justify-content: space-between;
-  width: 70%;
-  align-items: center;
-  overflow-y: scroll;
-`;
+
 
 const StyledCheckboxInput = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: ${({ theme }) => theme.spacing(1)};
+  margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
 const StyledAreaLabel = styled.span`
@@ -71,6 +76,8 @@ const StyledButton = styled.span`
   display: flex;
   justify-content: space-between;
   width: 100%;
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+  margin-top: ${({ theme }) => theme.spacing(6)};
 `;
 
 const StyledCheckboxLabel = styled.span`
@@ -84,7 +91,6 @@ const StyledComboInputContainer = styled.div`
     margin-left: ${({ theme }) => theme.spacing(4)};
   }
 `;
-
 export const CampaignForm2 = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -152,13 +158,14 @@ export const CampaignForm2 = () => {
   };
 
   return (
-    <>
-      <StyledCard>
+    <StyledDiv>
+      <StyledInputCard>
         <StyledTitleContainer>
           <StyledTitle>Health Screening Form</StyledTitle>
         </StyledTitleContainer>
         <StyledInputCard>
-          <Section>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="First Name" description="Enter your first name" />
             <TextInput
               placeholder={'Enter first name'}
@@ -168,8 +175,10 @@ export const CampaignForm2 = () => {
               fullWidth
               onChange={(e) => setFirstName(e)}
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="Last Name" description="Enter your last name" />
             <TextInput
               placeholder={'Enter last name'}
@@ -179,8 +188,10 @@ export const CampaignForm2 = () => {
               fullWidth
               onChange={(e) => setLastName(e)}
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="Email" description="Enter your email address" />
             <TextInput
               placeholder={'Enter email address'}
@@ -190,8 +201,10 @@ export const CampaignForm2 = () => {
               fullWidth
               onChange={(e) => setEmail(e)}
             />
-          </Section>
-          <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title
               title="Contact Number"
               description="Enter your contact number"
@@ -204,9 +217,11 @@ export const CampaignForm2 = () => {
               fullWidth
               onChange={(e) => setContact(e)}
             />
-          </Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
 
-          <Section>
+          <StyledSection>
             <H2Title title="Age" description="Enter your age" />
             <TextInput
               placeholder={'Enter age'}
@@ -216,9 +231,10 @@ export const CampaignForm2 = () => {
               fullWidth
               onChange={(e) => setAge(e)}
             />
-          </Section>
-
-          <Section>
+          </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
             <H2Title title="Blood Type" description="Enter your blood type" />
             <TextInput
               placeholder={'Enter blood type'}
@@ -228,83 +244,47 @@ export const CampaignForm2 = () => {
               fullWidth
               onChange={(e) => setBloodType(e)}
             />
-          </Section>
-
+          </StyledSection>
+          </StyledAreaLabel>
           <StyledAreaLabel>
-            <Section>
+            <StyledSection>
               <H2Title
                 title="Symptoms"
                 description="Check any symptoms you are experiencing"
               />
-            </Section>
-            <StyledComboInputContainer>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.fever}
-                  onChange={() => handleSymptomCheckboxChange('fever')}
-                />
-                <StyledCheckboxLabel>Fever</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.cough}
-                  onChange={() => handleSymptomCheckboxChange('cough')}
-                />
-                <StyledCheckboxLabel>Cough</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.fatigue}
-                  onChange={() => handleSymptomCheckboxChange('fatigue')}
-                />
-                <StyledCheckboxLabel>Fatigue</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={symptoms.headache}
-                  onChange={() => handleSymptomCheckboxChange('headache')}
-                />
-                <StyledCheckboxLabel>Headache</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-            </StyledComboInputContainer>
+              <StyledComboInputContainer>
+                  <Checkbox checked={symptoms.fever} />
+                  <StyledCheckboxLabel>Fever</StyledCheckboxLabel>
+                  <Checkbox checked={symptoms.cough} />
+                  <StyledCheckboxLabel>Cough</StyledCheckboxLabel>
+                  <Checkbox checked={symptoms.fatigue} />
+                  <StyledCheckboxLabel>Fatigue</StyledCheckboxLabel>
+                  <Checkbox checked={symptoms.headache} />
+                  <StyledCheckboxLabel>Headache</StyledCheckboxLabel>
+              </StyledComboInputContainer>
+            </StyledSection>
+          </StyledAreaLabel>
+          <StyledAreaLabel>
+          <StyledSection>
+            <H2Title
+              title="Travel History"
+              description="Check if you have any recent travel history"
+            />
+          <StyledComboInputContainer>
+              <Checkbox checked={travelHistory.withinCountry} />
+              <StyledCheckboxLabel>Within Country</StyledCheckboxLabel>
+              <Checkbox checked={travelHistory.international} />
+              <StyledCheckboxLabel>International</StyledCheckboxLabel>
+          </StyledComboInputContainer>
+          </StyledSection>
           </StyledAreaLabel>
 
           <StyledAreaLabel>
-            <Section>
-              <H2Title
-                title="Travel History"
-                description="Check if you have any recent travel history"
-              />
-            </Section>
-            <StyledComboInputContainer>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={travelHistory.withinCountry}
-                  onChange={() =>
-                    handleTravelHistoryCheckboxChange('withinCountry')
-                  }
-                />
-                <StyledCheckboxLabel>Within Country</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-              <StyledCheckboxInput>
-                <Checkbox
-                  checked={travelHistory.international}
-                  onChange={() =>
-                    handleTravelHistoryCheckboxChange('international')
-                  }
-                />
-                <StyledCheckboxLabel>International</StyledCheckboxLabel>
-              </StyledCheckboxInput>
-            </StyledComboInputContainer>
-          </StyledAreaLabel>
-
-          <StyledAreaLabel>
-            <Section>
+            <StyledSection>
               <H2Title
                 title="Contact with COVID Positive Person"
                 description="Check if you have been in contact with someone who tested positive for COVID-19"
               />
-            </Section>
             <StyledCheckboxInput>
               <Checkbox
                 checked={contactWithCovid}
@@ -312,13 +292,15 @@ export const CampaignForm2 = () => {
               />
               <StyledCheckboxLabel>Yes, I have</StyledCheckboxLabel>
             </StyledCheckboxInput>
+
+            </StyledSection>
           </StyledAreaLabel>
 
           <StyledButton>
             <Button title="Submit" variant="primary" accent="blue" />
           </StyledButton>
         </StyledInputCard>
-      </StyledCard>
-    </>
+      </StyledInputCard>
+    </StyledDiv>
   );
 };

@@ -111,6 +111,7 @@ export const Form2 = () => {
                 name="firstName"
                 required
                 fullWidth
+                disabled
               />
             </StyledSection>
             <StyledSection>
@@ -121,6 +122,7 @@ export const Form2 = () => {
                 name="lastName"
                 required
                 fullWidth
+                disabled
               />
             </StyledSection>
             <StyledSection>
@@ -131,6 +133,7 @@ export const Form2 = () => {
                 name="email"
                 required
                 fullWidth
+                disabled
               />
             </StyledSection>
 
@@ -145,6 +148,7 @@ export const Form2 = () => {
                 name="contact"
                 required
                 fullWidth
+                disabled
               />
             </StyledSection>
             <StyledSection>
@@ -156,6 +160,7 @@ export const Form2 = () => {
                 value={'comments'}
                 placeholder={'State the reason for the apppointment'}
                 minRows={5}
+                disabled
               />
             </StyledSection>
 
@@ -169,6 +174,7 @@ export const Form2 = () => {
                 dropdownId={'appointmentType'}
                 value={'apptType'}
                 options={apptTypeOptions}
+                disabled
               />
             </StyledSection>
             <StyledSection>
@@ -181,6 +187,7 @@ export const Form2 = () => {
                 dropdownId={'appointmentLocation'}
                 value={'location'}
                 options={locationOptions}
+                disabled
               />
             </StyledSection>
 

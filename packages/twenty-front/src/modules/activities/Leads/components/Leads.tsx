@@ -27,6 +27,9 @@ import {
 import { IconButton } from '@/ui/input/button/components/IconButton';
 import { TextDisplay } from '@/ui/field/display/components/TextDisplay';
 import { Button } from '@/ui/input/button/components/Button';
+import { formatNumber } from '~/utils/format/number';
+import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
+import { boolean } from 'zod';
 
 const StyledInputCard = styled.div`
   align-items: flex-start;
@@ -118,7 +121,9 @@ const StyledLabelContainer = styled.div`
   color: ${({ theme }) => theme.font.color.tertiary};
   width: auto;
 `;
-
+interface CheckboxState {
+  [key: string]: boolean;
+}
 export const Leads = ({
   targetableObject,
 }: {
@@ -140,17 +145,20 @@ export const Leads = ({
   const [selectedRows, setSelectedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
-  
+
   const [filter, setFilter] = useState('');
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
+  const [selectedID, setSelectedID] = useState(new Set());
+  const [unselectedID, setUnselectedID] = useState(new Set());
 
   const [unSelectedRows, setunSelectedRows] = useState<{
     [key: string]: boolean;
   }>({});
   const [masterCheckboxChecked, setMasterCheckboxChecked] = useState(true);
-
+  const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [checkbox,setCheckbox]=useState<CheckboxState>({});
   const { campaignData, setCampaignData } = useCampaign();
 
   let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
@@ -169,59 +177,120 @@ export const Leads = ({
     fetchPolicy: 'network-only',
   });
 
-  const handleCheckboxChange = (leadId: string) => {
-    const updatedSelectedRows = { ...selectedRows };
-    updatedSelectedRows[leadId] = !updatedSelectedRows[leadId];
+  // const handleCheckboxChange = (leadId: string) => {
+  //   const updatedSelectedRows = { ...selectedRows };
+  //   updatedSelectedRows[leadId] = !updatedSelectedRows[leadId];
 
-    const updatedUnSelectedRows = { ...unSelectedRows };
-    if (!updatedSelectedRows[leadId]) {
-      updatedUnSelectedRows[leadId] = true;
-      delete updatedSelectedRows[leadId];
+  //   const updatedUnSelectedRows = { ...unSelectedRows };
+  //   if (!updatedSelectedRows[leadId]) {
+  //     updatedUnSelectedRows[leadId] = true;
+  //     delete updatedSelectedRows[leadId];
+  //   } else {
+  //     delete updatedUnSelectedRows[leadId];
+  //   }
+
+  //   const selectedLeadIds = Object.keys(updatedSelectedRows);
+  //   const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
+
+  //   setCampaignData({
+  //     ...campaignData,
+  //     selectedId: selectedLeadIds,
+  //     unSelectedId: unSelectedLeadIds,
+  //   });
+
+  //   setSelectedRows(updatedSelectedRows);
+  //   setunSelectedRows(updatedUnSelectedRows);
+  // };
+
+  // const handleMasterCheckboxChange = () => {
+  //   const updatedSelectedRows = { ...selectedRows };
+  //   const updatedUnSelectedRows = { ...unSelectedRows };
+  //   let allSelected = true;
+
+  //   leadsData?.leads?.edges.forEach((leadEdge: any) => {
+  //     const lead = leadEdge?.node;
+  //     if (!masterCheckboxChecked) {
+  //       updatedSelectedRows[lead.id] = true;
+  //       delete updatedUnSelectedRows[lead.id];
+  //     } else {
+  //       // Check if the lead is currently unselected
+  //       if (!updatedSelectedRows[lead.id]) allSelected = false;
+  //       // Update both selected and unselected rows
+  //       updatedSelectedRows[lead.id] = !updatedSelectedRows[lead.id];
+  //       updatedUnSelectedRows[lead.id] = !updatedUnSelectedRows[lead.id];
+  //     }
+  //     if(masterCheckboxChecked){
+  //       allSelected = true;
+  //     }
+  //   });
+
+  //   const selectedLeadIds = Object.keys(updatedSelectedRows);
+  //   const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
+
+  //   setCampaignData({
+  //     ...campaignData,
+  //     selectedId: selectedLeadIds,
+  //     unSelectedId: unSelectedLeadIds,
+  //   });
+
+  //   // If all were selected, now deselect all, else select all
+  //   setSelectedRows(allSelected ? {} : updatedSelectedRows);
+  //   setunSelectedRows(allSelected ? {} : updatedUnSelectedRows);
+  //   setMasterCheckboxChecked(!masterCheckboxChecked);
+  // };
+
+  const handleCheckboxChange = (event: any, leadId: string): boolean => {
+    const { checked } = event.target;
+    if (checked) {
+      setSelectedID(selectedID.add(leadId));
+      unselectedID.delete(leadId);
+      setUnselectedID(unselectedID);
+      setCheckbox({
+        ...checkbox,
+        leadId:true
+      })
+      return true;
     } else {
-      delete updatedUnSelectedRows[leadId];
+      selectedID.delete(leadId);
+      setSelectedID(selectedID);
+      setUnselectedID(unselectedID.add(leadId));
+      setCheckbox({
+        ...checkbox,
+        leadId:false
+      })
     }
+    setIsChecked(checked)
+    console.log(selectedID)
+    return false;
 
-    const selectedLeadIds = Object.keys(updatedSelectedRows);
-    const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
+  };
+  const handleMasterCheckboxChange = (event: any) => {
+    const { checked } = event.target;
+    if (checked) {
+      for (const id of unselectedID.keys()) {
+        setSelectedID(selectedID.add(id));
+        unselectedID.delete(id);
+        setUnselectedID(unselectedID);
+        setCheckbox({
+          ...checkbox,
+          leadId:true
+        })
+      }
+    } else {
+      for (const id of selectedID.keys()) {
+        selectedID.delete(id);
+        setSelectedID(selectedID);
+        setUnselectedID(unselectedID.add(id));
+        setCheckbox({
+          ...checkbox,
+          leadId:false
+        })
+      }
+    }
+    console.log(selectedID, 'selectedID');
 
-    setCampaignData({
-      ...campaignData,
-      selectedId: selectedLeadIds,
-      unSelectedId: unSelectedLeadIds,
-    });
-
-    setSelectedRows(updatedSelectedRows);
-    setunSelectedRows(updatedUnSelectedRows);
   };
 
-  const handleMasterCheckboxChange = () => {
-    const updatedSelectedRows: { [key: string]: boolean } = {};
-    const updatedUnSelectedRows: { [key: string]: boolean } = {};
-    if (!masterCheckboxChecked) {
-      leadsData?.leads?.edges.forEach((leadEdge: any) => {
-        const lead = leadEdge?.node;
-        updatedSelectedRows[lead.id] = true;
-      });
-    } else {
-      leadsData?.leads?.edges.forEach((leadEdge: any) => {
-        const lead = leadEdge?.node;
-        updatedUnSelectedRows[lead.id] = true;
-      });
-    }
-
-    const selectedLeadIds = Object.keys(updatedSelectedRows);
-    const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
-
-    setCampaignData({
-      ...campaignData,
-      selectedId: selectedLeadIds,
-      unSelectedId: unSelectedLeadIds,
-    });
-
-    setSelectedRows(updatedSelectedRows);
-    setunSelectedRows(updatedUnSelectedRows);
-    setMasterCheckboxChecked(!masterCheckboxChecked);
-  };
   let campaignId = '';
 
   const fetchLeads = async () => {
@@ -257,19 +326,23 @@ export const Leads = ({
       setTotalLeadsCount(leadsCount);
       setLeadsData(result.data.leads.edges);
 
-      const initialSelectedRows: { [key: string]: boolean } = {};
+      // const initialSelectedRows: { [key: string]: boolean } = {};
+      // result.data.leads.edges.forEach((leadEdge: any) => {
+      //   const lead = leadEdge?.node;
+      //   initialSelectedRows[lead.id] = true;
+      // });
+      // setSelectedRows(initialSelectedRows);
       result.data.leads.edges.forEach((leadEdge: any) => {
         const lead = leadEdge?.node;
-        initialSelectedRows[lead.id] = true;
+        setSelectedID(selectedID.add(lead.id));
+        const leadId=lead.id
+        setCheckbox({
+          ...checkbox,
+          leadId:true
+        })
       });
-      setSelectedRows(initialSelectedRows);
-
-      const currentTime = new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-      const currentDate = formatToHumanReadableDate(new Date());
-      const querystamp = `${currentDate} ${currentTime}`;
+      console.log(selectedID, 'selectedID');
+      const querystamp = new Date().toISOString();
       setCursor(result.data.leads.pageInfo.endCursor);
       if (result.data.leads.pageInfo.hasNextPage == true) {
         setLoading(true);
@@ -290,16 +363,21 @@ export const Leads = ({
           lastCursor: cursor,
         },
       });
-      setSelectedRows((prevSelectedRows) => {
-        const newSelectedRows: { [key: string]: boolean } = {
-          ...prevSelectedRows,
-        };
-        result.data.leads.edges.forEach((leadEdge: any) => {
-          const lead = leadEdge?.node;
-          newSelectedRows[lead.id] = true;
-        });
-        return newSelectedRows;
+      // setSelectedRows((prevSelectedRows) => {
+      //   const newSelectedRows: { [key: string]: boolean } = {
+      //     ...prevSelectedRows,
+      //   };
+      result.data.leads.edges.forEach((leadEdge: any) => {
+        const lead = leadEdge?.node;
+        setSelectedID(selectedID.add(lead.id));
+        const leadId=lead.id
+        setCheckbox({
+          ...checkbox,
+          leadId:true
+        })
       });
+      //   return newSelectedRows;
+      // });
       setCursor(result.data.leads.pageInfo.endCursor);
       const newLeadsData = result.data.leads.edges;
       console.log(result.data, 'RESULT DATA');
@@ -310,8 +388,40 @@ export const Leads = ({
   };
 
   useEffect(() => {
+    if (unselectedID.size > 0) {
+      setMasterCheckboxChecked(false);
+    } else {
+      setMasterCheckboxChecked(true);
+    }
     fetchLeads();
-  }, [targetableObject.id, selectedCampaign]);
+  }, [targetableObject.id, selectedCampaign,unselectedID,selectedID]);
+
+  const date = new Date(campaignData.querystamp.toString());
+  console.log(date, 'formated date');
+
+  const onIntersection = async (entries: any) => {
+    const firstEntry = entries[0];
+
+    if (firstEntry.isIntersecting && cursor) {
+      loadMore();
+    }
+  };
+  const handleCheck=(leadId: string | number)=>{
+    return checkbox[leadId];
+  }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(onIntersection);
+    if (observer && lastLeadRef.current) {
+      observer.observe(lastLeadRef.current);
+    }
+
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [leadsData]);
 
   return (
     <>
@@ -331,7 +441,7 @@ export const Leads = ({
                   <StyledLabelContainer>
                     <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
                   </StyledLabelContainer>
-                  <TextDisplay text={campaignData.querystamp} />
+                  <DateTimeDisplay value={date} />
                 </StyledComboInputContainer>
                 <StyledComboInputContainer>
                   <StyledLabelContainer>
@@ -361,7 +471,7 @@ export const Leads = ({
                     <StyledTableHeaderCell>
                       <Checkbox
                         checked={masterCheckboxChecked}
-                        onChange={handleMasterCheckboxChange}
+                        onChange={() => (handleMasterCheckboxChange(event))}
                       />
                     </StyledTableHeaderCell>
 
@@ -379,12 +489,18 @@ export const Leads = ({
                     return (
                       <StyledTableRow
                         key={lead.id}
-                        onClick={() => handleCheckboxChange(lead.id)}
+                        onClick={(event) =>
+                          {handleCheckboxChange(event, lead.id);
+                          }
+                        }
+                        // checked={() => handleCheckboxChange(event, lead.id)}
                       >
                         <StyledTableCell>
                           <Checkbox
-                            checked={selectedRows[lead.id]}
-                            onChange={() => handleCheckboxChange(lead.id)}
+                            checked={checkbox[lead.id]}
+                            onChange={() =>
+                              handleCheckboxChange(event, lead.id)
+                            }
                           />
                         </StyledTableCell>
                         {fields.map(({ name }) => (
@@ -397,19 +513,10 @@ export const Leads = ({
                       </StyledTableRow>
                     );
                   })}
-                  <StyledTableRow ref={lastLeadRef}>
-                    <td style={{ visibility: 'hidden' }}>End of Table</td>
-                  </StyledTableRow>
-                  {loading && (
-                    <StyledButtonContainer>
-                      <Button
-                        Icon={IconLoader}
-                        title="Load More"
-                        variant="tertiary"
-                        accent="default"
-                        onClick={loadMore}
-                      />
-                    </StyledButtonContainer>
+                  {cursor && (
+                    <StyledTableRow ref={lastLeadRef}>
+                      <td>Loading more...</td>
+                    </StyledTableRow>
                   )}
                 </tbody>
               </StyledTable>
