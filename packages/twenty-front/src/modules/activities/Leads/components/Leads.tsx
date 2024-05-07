@@ -8,7 +8,6 @@ import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
 import { Checkbox } from '@/ui/input/components/Checkbox';
 import { capitalize } from '~/utils/string/capitalize';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
-import { formatToHumanReadableDate } from '~/utils';
 import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
 import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
 import {
@@ -21,15 +20,9 @@ import {
   IconSpeakerphone,
   IconTextCaption,
   IconCalendar,
-  IconNumbers,
-  IconLoader,
 } from '@tabler/icons-react';
 import { IconButton } from '@/ui/input/button/components/IconButton';
-import { TextDisplay } from '@/ui/field/display/components/TextDisplay';
-import { Button } from '@/ui/input/button/components/Button';
-import { formatNumber } from '~/utils/format/number';
 import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
-import { boolean } from 'zod';
 
 const StyledInputCard = styled.div`
   align-items: flex-start;
@@ -160,7 +153,7 @@ export const Leads = ({
   const [isChecked, setIsChecked] = useState<boolean>(true);
   const [checkbox,setCheckbox]=useState<CheckboxState>({});
   const { campaignData, setCampaignData } = useCampaign();
-
+  const allLeadId={}
   let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
     GET_CAMPAIGN_LISTS,
     {
@@ -177,67 +170,6 @@ export const Leads = ({
     fetchPolicy: 'network-only',
   });
 
-  // const handleCheckboxChange = (leadId: string) => {
-  //   const updatedSelectedRows = { ...selectedRows };
-  //   updatedSelectedRows[leadId] = !updatedSelectedRows[leadId];
-
-  //   const updatedUnSelectedRows = { ...unSelectedRows };
-  //   if (!updatedSelectedRows[leadId]) {
-  //     updatedUnSelectedRows[leadId] = true;
-  //     delete updatedSelectedRows[leadId];
-  //   } else {
-  //     delete updatedUnSelectedRows[leadId];
-  //   }
-
-  //   const selectedLeadIds = Object.keys(updatedSelectedRows);
-  //   const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
-
-  //   setCampaignData({
-  //     ...campaignData,
-  //     selectedId: selectedLeadIds,
-  //     unSelectedId: unSelectedLeadIds,
-  //   });
-
-  //   setSelectedRows(updatedSelectedRows);
-  //   setunSelectedRows(updatedUnSelectedRows);
-  // };
-
-  // const handleMasterCheckboxChange = () => {
-  //   const updatedSelectedRows = { ...selectedRows };
-  //   const updatedUnSelectedRows = { ...unSelectedRows };
-  //   let allSelected = true;
-
-  //   leadsData?.leads?.edges.forEach((leadEdge: any) => {
-  //     const lead = leadEdge?.node;
-  //     if (!masterCheckboxChecked) {
-  //       updatedSelectedRows[lead.id] = true;
-  //       delete updatedUnSelectedRows[lead.id];
-  //     } else {
-  //       // Check if the lead is currently unselected
-  //       if (!updatedSelectedRows[lead.id]) allSelected = false;
-  //       // Update both selected and unselected rows
-  //       updatedSelectedRows[lead.id] = !updatedSelectedRows[lead.id];
-  //       updatedUnSelectedRows[lead.id] = !updatedUnSelectedRows[lead.id];
-  //     }
-  //     if(masterCheckboxChecked){
-  //       allSelected = true;
-  //     }
-  //   });
-
-  //   const selectedLeadIds = Object.keys(updatedSelectedRows);
-  //   const unSelectedLeadIds = Object.keys(updatedUnSelectedRows);
-
-  //   setCampaignData({
-  //     ...campaignData,
-  //     selectedId: selectedLeadIds,
-  //     unSelectedId: unSelectedLeadIds,
-  //   });
-
-  //   // If all were selected, now deselect all, else select all
-  //   setSelectedRows(allSelected ? {} : updatedSelectedRows);
-  //   setunSelectedRows(allSelected ? {} : updatedUnSelectedRows);
-  //   setMasterCheckboxChecked(!masterCheckboxChecked);
-  // };
 
   const handleCheckboxChange = (event: any, leadId: string): boolean => {
     const { checked } = event.target;
@@ -245,49 +177,57 @@ export const Leads = ({
       setSelectedID(selectedID.add(leadId));
       unselectedID.delete(leadId);
       setUnselectedID(unselectedID);
+      // allLeadId[leadId]=true
       setCheckbox({
         ...checkbox,
-        leadId:true
+        [leadId]:true,
       })
       return true;
     } else {
       selectedID.delete(leadId);
       setSelectedID(selectedID);
       setUnselectedID(unselectedID.add(leadId));
+      // allLeadId[leadId]=false
       setCheckbox({
         ...checkbox,
-        leadId:false
+        [leadId]:false
       })
     }
+    
     setIsChecked(checked)
-    console.log(selectedID)
+    
     return false;
 
   };
   const handleMasterCheckboxChange = (event: any) => {
     const { checked } = event.target;
     if (checked) {
+      
       for (const id of unselectedID.keys()) {
         setSelectedID(selectedID.add(id));
         unselectedID.delete(id);
         setUnselectedID(unselectedID);
-        setCheckbox({
-          ...checkbox,
-          leadId:true
-        })
       }
+      for (const id of selectedID .keys()) {
+        allLeadId[id]=true
+      }
+      
     } else {
       for (const id of selectedID.keys()) {
         selectedID.delete(id);
         setSelectedID(selectedID);
         setUnselectedID(unselectedID.add(id));
-        setCheckbox({
-          ...checkbox,
-          leadId:false
-        })
       }
+      for (const id of unselectedID.keys()) {
+        allLeadId[id]=false
+      }
+
     }
-    console.log(selectedID, 'selectedID');
+
+    setCheckbox({
+      ...checkbox,
+      ...allLeadId
+    })
 
   };
 
@@ -303,7 +243,6 @@ export const Leads = ({
         });
 
         campaignId = data.data.campaignTrigger.campaignId;
-        console.log(campaignId, 'campaignId');
       } else if (targetableObject.targetObjectNameSingular === 'campaign') {
         campaignId = targetableObject.id;
       }
@@ -325,23 +264,20 @@ export const Leads = ({
       const leadsCount = result.data?.leads?.totalCount || 0;
       setTotalLeadsCount(leadsCount);
       setLeadsData(result.data.leads.edges);
-
-      // const initialSelectedRows: { [key: string]: boolean } = {};
-      // result.data.leads.edges.forEach((leadEdge: any) => {
-      //   const lead = leadEdge?.node;
-      //   initialSelectedRows[lead.id] = true;
-      // });
-      // setSelectedRows(initialSelectedRows);
       result.data.leads.edges.forEach((leadEdge: any) => {
         const lead = leadEdge?.node;
         setSelectedID(selectedID.add(lead.id));
-        const leadId=lead.id
-        setCheckbox({
-          ...checkbox,
-          leadId:true
-        })
+        let leadId=lead.id
       });
-      console.log(selectedID, 'selectedID');
+
+      for (const id of selectedID.keys()) {
+        allLeadId[id]=true
+      }
+      setCheckbox({
+        ...checkbox,
+        ...allLeadId
+      })
+
       const querystamp = new Date().toISOString();
       setCursor(result.data.leads.pageInfo.endCursor);
       if (result.data.leads.pageInfo.hasNextPage == true) {
@@ -363,41 +299,34 @@ export const Leads = ({
           lastCursor: cursor,
         },
       });
-      // setSelectedRows((prevSelectedRows) => {
-      //   const newSelectedRows: { [key: string]: boolean } = {
-      //     ...prevSelectedRows,
-      //   };
       result.data.leads.edges.forEach((leadEdge: any) => {
         const lead = leadEdge?.node;
         setSelectedID(selectedID.add(lead.id));
         const leadId=lead.id
-        setCheckbox({
-          ...checkbox,
-          leadId:true
-        })
+        allLeadId[leadId]=true
+
       });
-      //   return newSelectedRows;
-      // });
+      setCheckbox({
+        ...checkbox,
+        ...allLeadId
+      })
+
+
       setCursor(result.data.leads.pageInfo.endCursor);
       const newLeadsData = result.data.leads.edges;
-      console.log(result.data, 'RESULT DATA');
       setLeadsData([...leadsData, ...newLeadsData]);
     }
 
-    console.log(leadsData, 'new Leads Data');
   };
 
+
   useEffect(() => {
-    if (unselectedID.size > 0) {
-      setMasterCheckboxChecked(false);
-    } else {
-      setMasterCheckboxChecked(true);
-    }
+
+
     fetchLeads();
-  }, [targetableObject.id, selectedCampaign,unselectedID,selectedID]);
+  }, [targetableObject.id, selectedCampaign,]);
 
   const date = new Date(campaignData.querystamp.toString());
-  console.log(date, 'formated date');
 
   const onIntersection = async (entries: any) => {
     const firstEntry = entries[0];
@@ -454,14 +383,14 @@ export const Leads = ({
                   <StyledLabelContainer>
                     <EllipsisDisplay>Selected Leads:</EllipsisDisplay>
                   </StyledLabelContainer>
-                  <NumberDisplay value={Object.keys(selectedRows).length} />
+                  <NumberDisplay value={selectedID.size} />
                 </StyledComboInputContainer>
 
                 <StyledComboInputContainer>
                   <StyledLabelContainer>
                     <EllipsisDisplay>Unselected Leads:</EllipsisDisplay>
                   </StyledLabelContainer>
-                  <NumberDisplay value={Object.keys(unSelectedRows).length} />
+                  <NumberDisplay value={unselectedID.size} />
                 </StyledComboInputContainer>
               </StyledCountContainer>
 
@@ -470,7 +399,7 @@ export const Leads = ({
                   <StyledTableRow>
                     <StyledTableHeaderCell>
                       <Checkbox
-                        checked={masterCheckboxChecked}
+                        checked={unselectedID.size==0}
                         onChange={() => (handleMasterCheckboxChange(event))}
                       />
                     </StyledTableHeaderCell>
@@ -489,11 +418,6 @@ export const Leads = ({
                     return (
                       <StyledTableRow
                         key={lead.id}
-                        onClick={(event) =>
-                          {handleCheckboxChange(event, lead.id);
-                          }
-                        }
-                        // checked={() => handleCheckboxChange(event, lead.id)}
                       >
                         <StyledTableCell>
                           <Checkbox

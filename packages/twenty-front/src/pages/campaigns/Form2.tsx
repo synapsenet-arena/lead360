@@ -199,11 +199,8 @@ export const Form2 = () => {
             </StyledCheckboxInput>
             <StyledComboInputContainer>
               <Checkbox
-                checked={false}
-                indeterminate={false}
-                variant={CheckboxVariant.Primary}
-                size={CheckboxSize.Small}
-                shape={CheckboxShape.Squared}
+                checked={false}  
+                disabled
               />
               <StyledCheckboxLabel>
                 I agree to the terms and conditions.

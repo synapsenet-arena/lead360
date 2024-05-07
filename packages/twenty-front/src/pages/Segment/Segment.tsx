@@ -13,7 +13,7 @@ import {
 } from '@tabler/icons-react';
 
 import { H2Title } from '@/ui/display/typography/components/H2Title';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PageHeader } from '@/ui/layout/page/PageHeader';
 import { useLazyQuery } from '@apollo/client';
 import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { Select } from '@/ui/input/components/Select';
 import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
+import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
 
 const StyledBoardContainer = styled.div`
   display: flex;
@@ -96,6 +97,51 @@ const SytledHR = styled.hr`
   margin: ${({ theme }) => theme.spacing(10)};
 `;
 
+const StyledTable = styled.table<{ cursorPointer: boolean }>`
+  width: 100%;
+  border-collapse: collapse;
+  height: 10px;
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+  background-color: ${({ theme }) => theme.background.primary};
+  cursor: ${({ cursorPointer }) => (cursorPointer ? 'pointer' : 'inherit')};
+  font-family: inherit;
+  font-size: inherit;
+
+  font-weight: ${({ theme }) => theme.font.weight.regular};
+  max-width: 100%;
+  overflow: hidden;
+  text-decoration: inherit;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const StyledTableRow = styled.tr`
+  &:nth-of-type(odd) {
+    background-color: ${({ theme }) => theme.background.primary};
+  }
+`;
+
+const StyledTableCell = styled.td`
+  padding: 5px;
+  height: 25px;
+  border: 1px solid ${({ theme }) => theme.border.color.light};
+  font-weight: ${({ theme }) => theme.font.weight.regular};
+  &:hover {
+    background-color: ${({ theme }) => theme.background.tertiary};
+  }
+`;
+
+const StyledTableHeaderCell = styled.td`
+  padding: 5px;
+  border: 1px solid ${({ theme }) => theme.border.color.medium};
+  height: 25px;
+`;
+const StyledLabelContainer = styled.div`
+  color: ${({ theme }) => theme.font.color.tertiary};
+  width: auto;
+`;
+
 export const Segment = () => {
   const [leadData, setLeadData] = useState<any | any[]>([]);
   const [selectedFilterOptions, setSelectedFilterOptions] = useState<
@@ -111,6 +157,7 @@ export const Segment = () => {
   const [filter, setFilter] = useState('');
   const [cursor, setCursor] = useState<string | null>(null);
   const [filterLoading, setFilterLoading] = useState<boolean>(false);
+  const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
 
   const handleFilterButtonClick = () => {
     const key = `filter-${filterDivs.length + 1}`;
@@ -169,20 +216,37 @@ export const Segment = () => {
         if (!filter[conditionFilter]) {
           filter[conditionFilter] = [];
         }
+
+        let operation;
+        switch (operator) {
+          case '=':
+            operation = 'eq';
+            break;
+          case '>':
+            operation = 'gt';
+            break;
+          case '<':
+            operation = 'lt';
+            break;
+          case '!=':
+            operation = 'nt';
+            break;
+          default:
+            operation = 'ilike'; 
+            break;
+        }
+
         filter[conditionFilter].push({
-          [field]: { ilike: `%${value}%` },
+          [field]: {  [operation]: `${value}` },
         });
       }
     });
     setFilter(filter);
     let filterString = `{ "filter": ${JSON.stringify(filter)} }`;
 
-    console.log('This is the filter:', filterString);
-
     const orderBy = { position: 'AscNullsFirst' };
     try {
       const result = await filterleads({ variables: { filter } });
-      console.log('Data:', result.data);
 
       setLeadData(result.data.leads.edges);
       setCursor(result.data.leads.pageInfo.endCursor);
@@ -200,6 +264,7 @@ export const Segment = () => {
 
   const loadMore = async () => {
     if (filterLoading) {
+  
       const result = await filterleads({
         variables: {
           filter,
@@ -207,11 +272,16 @@ export const Segment = () => {
         },
       });
       setCursor(result.data.leads.pageInfo.endCursor);
-      console.log(result.data, 'new DATA');
       const newData = result.data.leads.edges;
       setLeadData([...leadData, ...newData]);
+      const currentPosition = window.scrollY;
+
+      console.log(currentPosition,"currentPosition")
+      window.scrollTo(0, currentPosition);
     }
   };
+  
+  
   const handlesave = async () => {
     try {
       const variables = {
@@ -238,6 +308,28 @@ export const Segment = () => {
     }
   };
 
+  const onIntersection = async (entries: any) => {
+    const firstEntry = entries[0];
+
+    if (firstEntry.isIntersecting && cursor) {
+      loadMore();
+    }
+  };
+
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(onIntersection);
+    if (observer && lastLeadRef.current) {
+      observer.observe(lastLeadRef.current);
+    }
+
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [leadData]);
+  
   return (
     <>
       <PageContainer>
@@ -347,16 +439,71 @@ export const Segment = () => {
             <SytledHR />
           </StyledInputCard>
         </StyledBoardContainer>
-        {!loading && data && <PreviewLeadsData data={leadData} />}
-        {filterLoading && (
-          <Button
-            Icon={IconLoader}
-            title="Load More"
-            variant="tertiary"
-            accent="default"
-            onClick={loadMore}
-          />
-        )}
+        {!loading && data && 
+            <StyledTable cursorPointer={true}>
+            <tbody>
+              <StyledTableRow>
+                <StyledTableHeaderCell>
+                  <StyledLabelContainer>Name</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
+                  <StyledLabelContainer>Age</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
+                  <StyledLabelContainer>Location</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
+                <StyledLabelContainer>Campaign Name</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
+                  <StyledLabelContainer>Advertisement Source</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
+                  <StyledLabelContainer>Phone Number</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
+                  <StyledLabelContainer>Comments</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
+                  <StyledLabelContainer>Advertisement Name</StyledLabelContainer>
+                </StyledTableHeaderCell>
+              </StyledTableRow>
+              {leadData.map((leads: any) => (
+                <StyledTableRow key={leads.node.id}>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.name}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.age}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.location}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.campaignName}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.advertisementSource}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.phoneNumber}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.comments}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.advertisementName}</EllipsisDisplay>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+              {cursor && (
+                    <StyledTableRow ref={lastLeadRef}>
+                      <td>Loading more...</td>
+                    </StyledTableRow>
+                  )}
+            </tbody>
+          </StyledTable>
+        }
       </PageContainer>
     </>
   );

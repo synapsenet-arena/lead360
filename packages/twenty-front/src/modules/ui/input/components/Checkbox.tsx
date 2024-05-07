@@ -28,6 +28,7 @@ type CheckboxProps = {
   size?: CheckboxSize;
   shape?: CheckboxShape;
   className?: string;
+  disabled?: boolean;
 };
 
 const StyledInputContainer = styled.div`
@@ -107,6 +108,7 @@ const StyledInput = styled.input<InputProps>`
     top: var(--padding);
     width: var(--size);
   }
+
 `;
 
 export const Checkbox = ({
@@ -118,6 +120,7 @@ export const Checkbox = ({
   size = CheckboxSize.Small,
   shape = CheckboxShape.Squared,
   className,
+  disabled,
 }: CheckboxProps) => {
   const [isInternalChecked, setIsInternalChecked] =
     React.useState<boolean>(false);
@@ -149,7 +152,9 @@ export const Checkbox = ({
         shape={shape}
         isChecked={isInternalChecked}
         onChange={handleChange}
+        disabled={disabled}
       />
+
       <label htmlFor={checkboxId}>
         {indeterminate ? (
           <IconMinus />

@@ -61,7 +61,6 @@ export const MessageTemplate = ({
         });
 
         campaignId = data.data.campaignTrigger.campaignId;
-        console.log(campaignId, 'campaignId');
       } else if (targetableObject.targetObjectNameSingular === 'campaign') {
         campaignId = targetableObject.id;
       }
@@ -75,7 +74,6 @@ export const MessageTemplate = ({
       setMessageTemplate([
         data?.data?.campaigns?.edges[0]?.node?.messageTemplate,
       ]);
-      console.log(messageTemplate, 'Message Template Details');
     } catch (error) {
       console.error('Error fetching message template:', error);
     }
@@ -85,7 +83,6 @@ export const MessageTemplate = ({
     messageTeamplateDetails();
   }, [targetableObject.id, selectedCampaign]);
 
-  console.log(messageTemplate[0]?.name, 'messageTemplate?.name');
   return (
     <>
       <StyledDetailContainer>

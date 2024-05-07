@@ -182,13 +182,13 @@ export const Form1 = () => {
                 description="Check any symptoms you are experiencing"
               />
               <StyledComboInputContainer>
-                  <Checkbox checked={symptoms.fever} />
+                  <Checkbox checked={false}disabled/>
                   <StyledCheckboxLabel>Fever</StyledCheckboxLabel>
-                  <Checkbox checked={symptoms.cough} />
+                  <Checkbox checked={false} disabled/>
                   <StyledCheckboxLabel>Cough</StyledCheckboxLabel>
-                  <Checkbox checked={symptoms.fatigue} />
+                  <Checkbox checked={false}disabled/>
                   <StyledCheckboxLabel>Fatigue</StyledCheckboxLabel>
-                  <Checkbox checked={symptoms.headache} />
+                  <Checkbox checked={false}disabled/>
                   <StyledCheckboxLabel>Headache</StyledCheckboxLabel>
               </StyledComboInputContainer>
             </StyledSection>
@@ -201,9 +201,9 @@ export const Form1 = () => {
               description="Check if you have any recent travel history"
             />
           <StyledComboInputContainer>
-              <Checkbox checked={travelHistory.withinCountry} />
+              <Checkbox checked={false}  disabled/>
               <StyledCheckboxLabel>Within Country</StyledCheckboxLabel>
-              <Checkbox checked={travelHistory.international} />
+              <Checkbox checked={false}  disabled/>
               <StyledCheckboxLabel>International</StyledCheckboxLabel>
           </StyledComboInputContainer>
           </StyledSection>
@@ -214,7 +214,7 @@ export const Form1 = () => {
               description="Check if you have been in contact with someone who tested positive for COVID-19"
             />
           <StyledComboInputContainer>
-            <Checkbox checked={contactWithCovid} />
+            <Checkbox checked={false} disabled/>
             <StyledCheckboxLabel>Yes, I have</StyledCheckboxLabel>
           </StyledComboInputContainer>
         

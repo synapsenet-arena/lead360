@@ -179,28 +179,13 @@ export const Form3 = () => {
               <StyledSection>
                 <H2Title title="Gender" description="Select your Gender" />
                 <StyledComboInputContainer>
-                  <Checkbox
-                    checked={false}
-                    indeterminate={false}
-                    variant={CheckboxVariant.Primary}
-                    size={CheckboxSize.Small}
-                    shape={CheckboxShape.Squared}
+                <Checkbox checked={false}  disabled
                   />
                   <StyledCheckboxLabel>Male</StyledCheckboxLabel>
-                  <Checkbox
-                    checked={false}
-                    indeterminate={false}
-                    variant={CheckboxVariant.Primary}
-                    size={CheckboxSize.Small}
-                    shape={CheckboxShape.Squared}
+                  <Checkbox checked={false}  disabled
                   />
                   <StyledCheckboxLabel>Female</StyledCheckboxLabel>
-                  <Checkbox
-                    checked={false}
-                    indeterminate={false}
-                    variant={CheckboxVariant.Primary}
-                    size={CheckboxSize.Small}
-                    shape={CheckboxShape.Squared}
+                  <Checkbox checked={false}  disabled
                   />
                   <StyledCheckboxLabel>Others</StyledCheckboxLabel>
                 </StyledComboInputContainer>
@@ -241,13 +226,13 @@ export const Form3 = () => {
                   description="Check any preexisting conditions"
                 />
                 <StyledComboInputContainer>
-                  <Checkbox checked={preexistingConditions.diabetes} />
+                  <Checkbox checked={false}  disabled/>
                   <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
-                  <Checkbox checked={preexistingConditions.asthma} />
+                  <Checkbox checked={false}  disabled />
                   <StyledCheckboxLabel>Asthma</StyledCheckboxLabel>
-                  <Checkbox checked={preexistingConditions.seizures} />
+                  <Checkbox  checked={false}  disabled />
                   <StyledCheckboxLabel>Seizures</StyledCheckboxLabel>
-                  <Checkbox checked={preexistingConditions.seizures} />
+                  <Checkbox  checked={false}  disabled />
                   <StyledCheckboxLabel>BloodPressure</StyledCheckboxLabel>
                 </StyledComboInputContainer>
               </StyledSection>
@@ -261,18 +246,18 @@ export const Form3 = () => {
                 />
 
                 <StyledComboInputContainer>
-                  <Checkbox checked={preexistingDiseases.cardiovascular} />
+                  <Checkbox checked={false}  disabled />
                   <StyledCheckboxLabel>Hypertension</StyledCheckboxLabel>
 
-                  <Checkbox checked={preexistingDiseases.respiratory} />
+                  <Checkbox checked={false}  disabled/>
                   <StyledCheckboxLabel>Arthritis</StyledCheckboxLabel>
 
-                  <Checkbox checked={preexistingDiseases.genitourinary} />
+                  <Checkbox  checked={false}  disabled />
                   <StyledCheckboxLabel>Genitourinary</StyledCheckboxLabel>
 
-                  <Checkbox checked={preexistingDiseases.cns} />
+                  <Checkbox  checked={false}  disabled />
                   <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
-                  <Checkbox checked={preexistingDiseases.other} />
+                  <Checkbox  checked={false}  disabled />
                   <StyledCheckboxLabel>Other</StyledCheckboxLabel>
                 </StyledComboInputContainer>
               </StyledSection>
@@ -283,12 +268,7 @@ export const Form3 = () => {
                 description="Read the terms and conditions before agreeing."
               />
               <StyledComboInputContainer>
-                <Checkbox
-                  checked={false}
-                  indeterminate={false}
-                  variant={CheckboxVariant.Primary}
-                  size={CheckboxSize.Small}
-                  shape={CheckboxShape.Squared}
+                <Checkbox checked={false}  disabled
                 />
                 <StyledCheckboxLabel>
                   I agree to the terms and conditions.

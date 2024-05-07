@@ -57,7 +57,8 @@ export const ObjectMetadataNavItems = () => {
         }`;
 
         return (
-          <NavigationDrawerItem
+          <>
+          {objectMetadataItem.namePlural!=='campaignTriggers' && <NavigationDrawerItem
             key={objectMetadataItem.id}
             label={objectMetadataItem.labelPlural}
             to={navigationPath}
@@ -66,7 +67,18 @@ export const ObjectMetadataNavItems = () => {
             onClick={() => {
               navigate(navigationPath);
             }}
-          />
+          />}
+          {objectMetadataItem.namePlural==='campaignTriggers' &&<NavigationDrawerItem
+            key={objectMetadataItem.id}
+            label={'Schedule Campaign'}
+            to={navigationPath}
+            active={currentPath === `/objects/${objectMetadataItem.namePlural}`}
+            Icon={getIcon(objectMetadataItem.icon)}
+            onClick={() => {
+              navigate(navigationPath);
+            }}
+          />}
+          </>
         );
       })}
     </>

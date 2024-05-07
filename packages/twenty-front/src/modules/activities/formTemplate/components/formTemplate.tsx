@@ -35,7 +35,6 @@ export const FormTemplate = ({
 }: {
   targetableObject: ActivityTargetableObject;
 }) => {
-  console.log(targetableObject, 'targetableobject');
   let [selectedCampaign, { data: selectedCampaignData }] =
     useLazyQuery(GET_CAMPAIGN_LISTS);
   let [selectedCampaignTrigger, { data: selectedCampaignTriggerData }] =
@@ -62,7 +61,6 @@ export const FormTemplate = ({
           });
 
           campaignId = data.data.campaignTrigger.campaignId;
-          console.log(campaignId, 'campaignId');
         } else if (targetableObject.targetObjectNameSingular === 'campaign') {
           campaignId = targetableObject.id;
         }
@@ -87,7 +85,6 @@ export const FormTemplate = ({
           status:
             data?.data?.campaigns?.edges[0]?.node?.formTemplate?.status || '',
         });
-        console.log(formTemplateName, 'formTemplateName');
       } catch (error) {
         console.error('Error fetching form template:', error);
       }
