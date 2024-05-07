@@ -63,6 +63,13 @@ export const MainNavigationDrawerItems = () => {
             Icon={IconCheckbox}
             count={currentUserDueTaskCount}
           />
+            <NavigationDrawerItem
+            label="Dashboard"
+            to="/dashboard"
+            // active={isTasksPage}
+            Icon={IconCheckbox}
+            // count={currentUserDueTaskCount}
+          />
         </NavigationDrawerSection>
       )}
 

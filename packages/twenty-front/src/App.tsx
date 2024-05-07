@@ -58,6 +58,7 @@ import { CampaignForm2 } from '~/pages/campaigns/CampaignForm2';
 import { CampaignForm3 } from '~/pages/campaigns/CampaignForm3';
 import { Campaigns } from '~/pages/campaigns/Campaigns';
 import { Segment } from '~/pages/Segment/Segment';
+import Dashboard from '~/pages/campaigns/Dashboard';
 
 export const App = () => {
   const billing = useRecoilValue(billingState);
@@ -229,6 +230,7 @@ export const App = () => {
           <Route path={CustomPath.CampaignForm2} element={<CampaignForm2 />} />
           <Route path={CustomPath.CampaignForm3} element={<CampaignForm3 />} />
 
+          <Route path={CustomPath.Dashboard} element={<Dashboard />} />
 
           <Route path={CustomPath.SegmentPage} element={<Segment />} />
       </Route>

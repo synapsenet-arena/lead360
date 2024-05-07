@@ -51,6 +51,7 @@
     "@sniptt/guards": "^0.2.0",
     "@stoplight/elements": "^8.0.5",
     "@storybook/icons": "^1.2.9",
+    "@superset-ui/embedded-sdk": "0.1.0-alpha.11",
     "@swc/jest": "^0.2.29",
     "@tabler/icons-react": "^2.44.0",
     "@types/dompurify": "^3.0.5",
