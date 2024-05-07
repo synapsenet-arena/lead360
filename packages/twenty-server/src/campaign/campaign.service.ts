@@ -145,6 +145,9 @@ export class CampaignService {
 
       if (data?.node?.stopDate !== null) {
         valid = Date.parse(data?.node?.stopDate) > Date.parse(Date());
+        console.log(valid,'valid-----')
+        console.log(data?.node?.stopDate,'valid-----')
+
       }
       if (!valid) {
         throw error('Campaign is not Active');

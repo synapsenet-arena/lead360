@@ -186,6 +186,7 @@ export const Segment = () => {
     'campaignName',
     'location',
     'age',
+    'gender'
   ]);
 
   const handleSelectChange = (key: string, value: string) => {
@@ -284,9 +285,10 @@ export const Segment = () => {
   
   const handlesave = async () => {
     try {
+      const id = uuidv4()
       const variables = {
         input: {
-          id: uuidv4(),
+          id: id,
           name: segmentName,
           description: segmentDescription,
           filters: filterString,
@@ -298,8 +300,8 @@ export const Segment = () => {
       enqueueSnackBar('Segment saved successfully', {
         variant: 'success',
       });
-      navigate('/objects/segments');
-      window.location.reload();
+      navigate(`/object/segment/${id}`);
+      // window.location.reload();
     } catch (errors: any) {
       console.log('Error saving segment', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
@@ -450,6 +452,9 @@ export const Segment = () => {
                   <StyledLabelContainer>Age</StyledLabelContainer>
                 </StyledTableHeaderCell>
                 <StyledTableHeaderCell>
+                  <StyledLabelContainer>Gender</StyledLabelContainer>
+                </StyledTableHeaderCell>
+                <StyledTableHeaderCell>
                   <StyledLabelContainer>Location</StyledLabelContainer>
                 </StyledTableHeaderCell>
                 <StyledTableHeaderCell>
@@ -475,6 +480,9 @@ export const Segment = () => {
                   </StyledTableCell>
                   <StyledTableCell>
                     <EllipsisDisplay>{leads.node?.age}</EllipsisDisplay>
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <EllipsisDisplay>{leads.node?.gender}</EllipsisDisplay>
                   </StyledTableCell>
                   <StyledTableCell>
                     <EllipsisDisplay>{leads.node?.location}</EllipsisDisplay>

@@ -1,4 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { error } from 'console';
+import { response } from 'express';
 
 import { CampaignExecutionDTO } from 'src/campaign/campaign-execution.dto';
 import { CampaignService } from 'src/campaign/campaign.service';
@@ -9,21 +11,24 @@ export class CampaignController {
 
   @Get('/:id')
   async validateFormDetails(@Param() id: any) {
-    try {
+    
       id = id.id.toString();
           
-      return this.campaignService.validateFormDetails(id);
-    } catch (error) {
-      return error;
-    }
+      const response = await  this.campaignService.validateFormDetails(id);
+      console.log(response,'======')
+      if(!response){
+        return {'error':'Campaign Not Found'}
+      } 
+      return response
+    
   }
 
   @Post('/save/:id')
   async saveFormResponse(@Param() id: any, @Body() formData: FormDataDTO) {
     try {
       id = id.id.toString();
-
-      return this.campaignService.saveFormResponse(id, formData);
+      const response=this.campaignService.saveFormResponse(id, formData);
+      return response
     } catch (error) {
       return error;
     }

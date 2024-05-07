@@ -130,7 +130,6 @@ export const CampaignForm = () => {
   const [apptType, setApptType] = useState('');
   const { userid } = useParams<{ userid: string }>();
   const { enqueueSnackBar } = useSnackBar();
-  console.log('USERID', userid);
   const navigate = useNavigate();
   const createOptions = (options: any[]) =>
     options.map((option: any) => ({ label: option, value: option }));
@@ -148,16 +147,15 @@ export const CampaignForm = () => {
       firstName,
       lastName,
       appointmentDate: apptDate, 
-      contactNumber: contact,
+      phoneNumber: contact,
       appointmentLocation: location,
-      reasonForAppointment: comments,
+      appointmentReason: comments,
       consent: 'I agree', 
       appointmentType: apptType,
     };
 
     try{
       const response = await axios.post(`http://localhost:3000/campaign/save/${userid}`, formData);
-      console.log('Form data saved,', response.data);
       enqueueSnackBar('Form Submitted Successfully!',{
         variant: 'success',
       });
@@ -176,40 +174,23 @@ export const CampaignForm = () => {
           `http://localhost:3000/campaign/${userid}`, 
         );
         const userData = await response.json();
-        if(!userData.name){
+        if(userData.error==='Campaign Not Found'){
+          setErrorType('formexpired');  
           throw new Error('Failed to fetch user details');
         }
-        console.log('setting user details....');
-        setFirstName(userData.name);
-        setEmail(userData.email);
+        setFirstName(userData?.name);
+        setEmail(userData?.email);
         setLoading(false);
         
       } catch (error: any) {
         console.error('error in fetching user details', error);
-        if (error.message === 'Form expired') {
-          setErrorType('formexpired');
-        } else {
-          setErrorType('othererror');
-        }
+       
       }
     };
     fetchUserDetails();
   }, [userid]);
 
-    // if (loading) {
-    //   return (
-    //     <>
-    //       <AnimatedPlaceholderErrorContainer>
-    //         <AnimatedPlaceholderEmptyTextContainer>
-    //           <AnimatedPlaceholderErrorTitle>
-    //             Collecting form data...
-    //           </AnimatedPlaceholderErrorTitle>
-    //         </AnimatedPlaceholderEmptyTextContainer>
-    //       </AnimatedPlaceholderErrorContainer>
-    //     </>
-    //   );
-    // } else 
-if (loading && errorType === 'formexpired') {
+      if (loading && errorType === 'formexpired') {
     return (
       <>
         <AnimatedPlaceholderErrorContainer>
@@ -217,6 +198,18 @@ if (loading && errorType === 'formexpired') {
           <AnimatedPlaceholderEmptyTextContainer>
             <AnimatedPlaceholderErrorTitle>
               Oops! We are not taking responses anymore.
+            </AnimatedPlaceholderErrorTitle>
+          </AnimatedPlaceholderEmptyTextContainer>
+        </AnimatedPlaceholderErrorContainer>
+      </>
+    );
+  }else if (loading) {
+    return (
+      <>
+        <AnimatedPlaceholderErrorContainer>
+          <AnimatedPlaceholderEmptyTextContainer>
+            <AnimatedPlaceholderErrorTitle>
+              Collecting form data...
             </AnimatedPlaceholderErrorTitle>
           </AnimatedPlaceholderEmptyTextContainer>
         </AnimatedPlaceholderErrorContainer>

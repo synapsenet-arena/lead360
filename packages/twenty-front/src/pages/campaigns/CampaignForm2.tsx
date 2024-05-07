@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Button } from '@/ui/input/button/components/Button';
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { Checkbox } from '@/ui/input/components/Checkbox';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
+import { AppPath } from '@/types/AppPath';
+import AnimatedPlaceholder from '@/ui/layout/animated-placeholder/components/AnimatedPlaceholder';
+import { AnimatedPlaceholderEmptyTextContainer } from '@/ui/layout/animated-placeholder/components/EmptyPlaceholderStyled';
+import { AnimatedPlaceholderErrorContainer, AnimatedPlaceholderErrorTitle } from '@/ui/layout/animated-placeholder/components/ErrorPlaceholderStyled';
+import axios from 'axios';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
+
 
 const StyledDiv = styled.div`
 display: flex;
@@ -60,7 +67,6 @@ const StyledTitle = styled.h2`
   padding: ${({ theme }) => theme.spacing(6)};
 `;
 
-
 const StyledCheckboxInput = styled.div`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
@@ -98,7 +104,7 @@ export const CampaignForm2 = () => {
   const [email, setEmail] = useState('');
   const [age, setAge] = useState('');
   const [bloodType, setBloodType] = useState('');
-
+  const { enqueueSnackBar } = useSnackBar();
   const [symptoms, setSymptoms] = useState({
     fever: false,
     cough: false,
@@ -115,33 +121,87 @@ export const CampaignForm2 = () => {
   const [loading, setLoading] = useState(true);
   const [errorType, setErrorType] = useState('');
   const { userid } = useParams<{ userid: string }>();
+const navigate = useNavigate();
   console.log('USERID', userid);
 
+
+  const handleSubmit = async () => {
+    const formData = {
+      email,
+      firstName,
+      lastName,
+      phoneNumber: contact,
+      age: age,
+      bloodType: bloodType,
+      consent: contactWithCovid,
+      medicalHistory: travelHistory.withinCountry?travelHistory.withinCountry:travelHistory.international,
+      appointmentReason: symptoms.cough
+
+    };
+
+    try{
+      const response = await axios.post(`http://localhost:3000/campaign/save/${userid}`, formData);
+      enqueueSnackBar('Form Submitted Successfully!',{
+        variant: 'success',
+      });
+      if(response.data){
+        navigate(AppPath.SignInUp)
+      }
+    }
+    catch(error){
+      console.log("error in saving form data:", error)
+    }
+  }
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/campaign/${userid}`,
+          `http://localhost:3000/campaign/${userid}`, 
         );
-        if (!response.ok) {
+        const userData = await response.json();
+        if(userData.error==='Campaign Not Found'){
+          setErrorType('formexpired');  
           throw new Error('Failed to fetch user details');
         }
-        const userData = await response.json();
-        console.log('setting user details....');
-        setFirstName(userData.name);
-        setEmail(userData.email);
+        setFirstName(userData?.name);
+        setEmail(userData?.email);
         setLoading(false);
+        
       } catch (error: any) {
         console.error('error in fetching user details', error);
-        if (error.message === 'Form expired') {
-          setErrorType('formexpired');
-        } else {
-          setErrorType('othererror');
-        }
+       
       }
     };
     fetchUserDetails();
   }, [userid]);
+
+      if (loading && errorType === 'formexpired') {
+    return (
+      <>
+        <AnimatedPlaceholderErrorContainer>
+          <AnimatedPlaceholder type="error404" />
+          <AnimatedPlaceholderEmptyTextContainer>
+            <AnimatedPlaceholderErrorTitle>
+              Oops! We are not taking responses anymore.
+            </AnimatedPlaceholderErrorTitle>
+          </AnimatedPlaceholderEmptyTextContainer>
+        </AnimatedPlaceholderErrorContainer>
+      </>
+    );
+  }else if (loading) {
+    return (
+      <>
+        <AnimatedPlaceholderErrorContainer>
+          <AnimatedPlaceholderEmptyTextContainer>
+            <AnimatedPlaceholderErrorTitle>
+              Collecting form data...
+            </AnimatedPlaceholderErrorTitle>
+          </AnimatedPlaceholderEmptyTextContainer>
+        </AnimatedPlaceholderErrorContainer>
+      </>
+    );
+  }
+
 
   const handleSymptomCheckboxChange = (symptom: string) => {
     setSymptoms({
@@ -297,7 +357,7 @@ export const CampaignForm2 = () => {
           </StyledAreaLabel>
 
           <StyledButton>
-            <Button title="Submit" variant="primary" accent="blue" />
+            <Button title="Submit" variant="primary" accent="blue" onClick={handleSubmit} />
           </StyledButton>
         </StyledInputCard>
       </StyledInputCard>

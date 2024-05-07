@@ -182,7 +182,6 @@ export const Leads = ({
         ...checkbox,
         [leadId]:true,
       })
-      return true;
     } else {
       selectedID.delete(leadId);
       setSelectedID(selectedID);
@@ -195,7 +194,11 @@ export const Leads = ({
     }
     
     setIsChecked(checked)
-    
+    setCampaignData({
+      ...campaignData,
+      selectedId: Array.from(selectedID),
+      unSelectedId: Array.from(unselectedID),
+    });
     return false;
 
   };
@@ -228,7 +231,11 @@ export const Leads = ({
       ...checkbox,
       ...allLeadId
     })
-
+    setCampaignData({
+      ...campaignData,
+      selectedId: Array.from(selectedID),
+      unSelectedId: Array.from(unselectedID),
+    });
   };
 
   let campaignId = '';
@@ -296,6 +303,7 @@ export const Leads = ({
     if (loading) {
       const result = await filterleads({
         variables: {
+          ...filter,
           lastCursor: cursor,
         },
       });

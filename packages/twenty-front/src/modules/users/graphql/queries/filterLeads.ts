@@ -8,6 +8,7 @@ query FindManyLeads($filter: LeadFilterInput, $orderBy: LeadOrderByInput, $lastC
           id
           email
           age
+          gender
           name
           phoneNumber
           advertisementName

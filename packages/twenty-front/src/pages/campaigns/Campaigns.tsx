@@ -20,6 +20,7 @@ import { Checkbox, CheckboxVariant, CheckboxSize, CheckboxShape } from '@/ui/inp
 import { Select } from '@/ui/input/components/Select';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { title } from 'process';
+import { TextArea } from '@/ui/input/components/TextArea';
 const StyledCheckboxLabel = styled.span`
   margin-left: ${({ theme }) => theme.spacing(2)};
 `;
@@ -228,6 +229,7 @@ export const Campaigns = () => {
   const [addCampaigns, { loading, error }] = useMutation(ADD_CAMPAIGN);
   const handleSave = async () => {
     try {
+      const id = uuidv4()
       console.log( campaignData.whatsappTemplate,"message templates")
       const messageTemplateId = campaignData.whatsappTemplate?campaignData.whatsappTemplate:campaignData.emailTemplate?campaignData.emailTemplate:null
       const variables = {
@@ -238,7 +240,8 @@ export const Campaigns = () => {
           specialty: specialty,
           subspecialty: subSpecialty,
           segmentId: campaignData.targetAudience,
-          formTemplateId: campaignData.pageUrl
+          formTemplateId: campaignData.pageUrl,
+          id:id
         },
       };
       console.log('Variables: ', variables);
@@ -248,8 +251,8 @@ export const Campaigns = () => {
       enqueueSnackBar('Campaign added successfully', {
         variant: 'success',
       });
-      navigate('/objects/campaigns')
-      window.location.reload();
+      navigate(`/object/campaign/${id}`)
+      // window.location.reload();
     } catch (errors: any) {
       console.error('Error adding campaign:', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
@@ -289,7 +292,7 @@ export const Campaigns = () => {
               title="Campaign Description"
               description="Your Campaign Description will be displayed in Campaign List"
             />
-            <TextInput
+            <TextArea
               value={campaignData?.campaignDescription}
               onChange={(e) =>
                 setCampaignData({
@@ -297,9 +300,8 @@ export const Campaigns = () => {
                   campaignDescription: e,
                 })
               }
-              name="campaignDescription"
-              required
-              fullWidth
+              minRows={4}
+              
             />
           </Section>
           <SytledHR />

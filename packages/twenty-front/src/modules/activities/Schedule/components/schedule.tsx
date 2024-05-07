@@ -147,7 +147,7 @@ export const Schedule = ({
                 })
               }
                 minDate={new Date()}
-                value={undefined}
+                /* value={campaignData?.startDate} */
               />
             )}
           </StyledComboInputContainer>
