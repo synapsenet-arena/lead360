@@ -26,6 +26,9 @@ import { Select } from '@/ui/input/components/Select';
 import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
+import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
+import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
+import { date } from 'zod';
 
 const StyledBoardContainer = styled.div`
   display: flex;
@@ -79,10 +82,6 @@ const StyledButton = styled.span`
 
 const StyledComboInputContainer1 = styled.div`
   display: flex;
-  flex-direction: row;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(6)};
-  }
   width: 100%;
   padding-top: ${({ theme }) => theme.spacing(6)};
   justify-content: space-evenly;
@@ -141,6 +140,27 @@ const StyledLabelContainer = styled.div`
   color: ${({ theme }) => theme.font.color.tertiary};
   width: auto;
 `;
+const StyledCountContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(10)};
+  }
+  margin-top: ${({ theme }) => theme.spacing(2)};
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+  height: auto;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
+`;
+
+const StyledComboInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(2)};
+  }
+`;
 
 export const Segment = () => {
   const [leadData, setLeadData] = useState<any | any[]>([]);
@@ -158,7 +178,8 @@ export const Segment = () => {
   const [cursor, setCursor] = useState<string | null>(null);
   const [filterLoading, setFilterLoading] = useState<boolean>(false);
   const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
-
+  const [totalLeadsCount, setTotalLeadsCount] = useState<number>(0);
+  const [querystamp, setQuerystamp] = useState("");
   const handleFilterButtonClick = () => {
     const key = `filter-${filterDivs.length + 1}`;
     setFilterDivs([...filterDivs, key]);
@@ -254,6 +275,8 @@ export const Segment = () => {
       if (result.data.leads.pageInfo.hasNextPage == true) {
         setFilterLoading(true);
       }
+      setTotalLeadsCount(result.data.leads.totalCount)
+      setQuerystamp(new Date().toISOString());
       // result.data.leads.edges.forEach((edge: { node: any }) => {
       // const lead = edge.node;
       // });
@@ -442,6 +465,21 @@ export const Segment = () => {
           </StyledInputCard>
         </StyledBoardContainer>
         {!loading && data && 
+        <>
+          <StyledCountContainer>
+          <StyledComboInputContainer>
+            <StyledLabelContainer>
+              <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
+            </StyledLabelContainer>
+            <DateTimeDisplay value={querystamp} />
+          </StyledComboInputContainer>
+          <StyledComboInputContainer>
+            <StyledLabelContainer>
+              <EllipsisDisplay>Total Leads:</EllipsisDisplay>
+            </StyledLabelContainer>
+            <NumberDisplay value={totalLeadsCount} />{' '}
+          </StyledComboInputContainer>
+        </StyledCountContainer>
             <StyledTable cursorPointer={true}>
             <tbody>
               <StyledTableRow>
@@ -511,6 +549,7 @@ export const Segment = () => {
                   )}
             </tbody>
           </StyledTable>
+          </>
         }
       </PageContainer>
     </>

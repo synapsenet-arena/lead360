@@ -37,7 +37,7 @@ const StyledShowPageRightContainer = styled.div`
   justify-content: start;
   overflow: ${() => (useIsMobile() ? 'none' : 'hidden')};
   width: calc(100% + 4px);
-  overflow-y: scroll;
+  overflow: scroll;
   scrollbar-color: ${({ theme }) => theme.border.color.strong};
   scrollbar-width: thin;
   

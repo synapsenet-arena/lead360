@@ -15,7 +15,7 @@ export default function Dashboard() {
   useEffect(() => {
     const embed = async () => {
       await embedDashboard({
-        id: '', // given by the Superset embedding UI
+        id: '9837afcd-7c43-45e9-9ba9-d40fd2d3c259', // given by the Superset embedding UI
         supersetDomain: 'http://localhost:8088',
         mountPoint: document.getElementById('dashboard'), // html element in which iframe render
         fetchGuestToken: () => getToken(),

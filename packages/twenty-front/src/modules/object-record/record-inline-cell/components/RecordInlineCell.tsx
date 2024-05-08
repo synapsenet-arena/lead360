@@ -62,8 +62,8 @@ export const RecordInlineCell = ({ readonly }: RecordInlineCellProps) => {
       ],
     });
 
-    enqueueSnackBar('Changed Opportunity Stage', {
-      variant: 'success',
+    enqueueSnackBar('Please enter comments!', {
+      variant: 'info',
     });
   };
   const handleEscape = () => {
