@@ -13,6 +13,7 @@ import { GetLeadData } from 'src/campaign/get-lead-query';
 import { CreateFormResponse } from 'src/campaign/create-form-response-query';
 import { GetOpportunityData } from 'src/campaign/get-opportunity-query';
 import { response } from 'express';
+import { env } from 'process';
 
 @Injectable()
 export class CampaignService {
@@ -131,8 +132,6 @@ export class CampaignService {
       let valid: boolean = false;
 
       if (data?.node?.status == 'ACTIVE') {
-        //   console.log('askakskas', data?.node?.validDate);
-        //   valid = Date.parse(data?.node?.validDate) > Date.parse(Date());
         valid = true;
       }
       if (!valid) {
@@ -282,6 +281,48 @@ export class CampaignService {
         console.log(airflowResponse, 'airflowResponse');
       }
       return 'Form Data Saved Successfully';
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async authenticateSuperset(){
+    try {
+      const body = {
+          "password":process.env.SUPERSET_USERNAME,
+         "provider":process.env.SUPERSET_PASSWORD,
+         "refresh":process.env.SUPERSET_PROVIDER,
+         "username":process.env.SUPERSET_REFRESH  
+      }
+      const response = await fetch('http://localhost:8088/api/v1/security/login', {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: this.headers,
+      });
+      const data = await response.json();
+      const guestBody= {
+          "user": {
+              "username": process.env.SUPERSET_GUEST_USERNAME,
+              "first_name": process.env.SUPERSET_GUEST_FIRSTNAME,
+              "last_name": process.env.SUPERSET_GUEST_LASTNAME
+          },
+          "resources": [
+              {
+                  "type": "dashboard",
+                  "id": process.env.SUPERSET_DASHBOARD_ID
+              }
+          ]
+          ,
+          "rls": [
+              ]
+      }
+      const result = await fetch('http://localhost:8088/api/v1/security/guest_token', {
+        method: 'post',
+        body: JSON.stringify(guestBody),
+        headers: this.headers,
+      });
+      const token = await result.json();
+      return token;
     } catch (error) {
       console.error(error);
     }

@@ -54,4 +54,14 @@ export class CampaignController {
     }
   }
 
+  @Post('/dashboard')
+  getSupersetGuestToken(@Param() id: any,@Body() data:any){
+    // console.log(id.id)
+    try {
+       this.campaignService.authenticateSuperset();
+       return true
+    } catch (error) {
+      return error;
+    }
+  }
 }
