@@ -289,10 +289,10 @@ export class CampaignService {
   async authenticateSuperset(){
     try {
       const body = {
-          "password":process.env.SUPERSET_USERNAME,
-         "provider":process.env.SUPERSET_PASSWORD,
-         "refresh":process.env.SUPERSET_PROVIDER,
-         "username":process.env.SUPERSET_REFRESH  
+          "username":process.env.SUPERSET_USERNAME,
+         "password":process.env.SUPERSET_PASSWORD,
+         "provider":process.env.SUPERSET_PROVIDER,
+         "refresh":process.env.SUPERSET_REFRESH  
       }
       const response = await fetch('http://localhost:8088/api/v1/security/login', {
         method: 'post',
@@ -300,6 +300,7 @@ export class CampaignService {
         headers: this.headers,
       });
       const data = await response.json();
+
       const guestBody= {
           "user": {
               "username": process.env.SUPERSET_GUEST_USERNAME,
@@ -319,7 +320,10 @@ export class CampaignService {
       const result = await fetch('http://localhost:8088/api/v1/security/guest_token', {
         method: 'post',
         body: JSON.stringify(guestBody),
-        headers: this.headers,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${data.access_token}`,
+        },
       });
       const token = await result.json();
       return token;

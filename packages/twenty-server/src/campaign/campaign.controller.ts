@@ -58,8 +58,8 @@ export class CampaignController {
   getSupersetGuestToken(@Param() id: any,@Body() data:any){
     // console.log(id.id)
     try {
-       this.campaignService.authenticateSuperset();
-       return true
+      return  this.campaignService.authenticateSuperset();
+        
     } catch (error) {
       return error;
     }

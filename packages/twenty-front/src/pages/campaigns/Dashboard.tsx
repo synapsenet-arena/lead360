@@ -6,11 +6,11 @@ import axios from 'axios';
 // import styles from "./Dashboard.module.css";
 export default function Dashboard() {
   const getToken = async () => {
-    const response = await fetch('http://localhost:3001/campaign/dashboard',{
+    const response = await fetch('http://localhost:3000/campaign/dashboard',{
       method: 'POST',
     });
     const token = await response.json();
-    return token.access_Token
+    return token.token
   };
   useEffect(() => {
     const embed = async () => {
