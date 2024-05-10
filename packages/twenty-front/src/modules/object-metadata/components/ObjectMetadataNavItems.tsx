@@ -58,7 +58,7 @@ export const ObjectMetadataNavItems = () => {
 
         return (
           <>
-          {objectMetadataItem.namePlural!=='campaignTriggers' && <NavigationDrawerItem
+          {objectMetadataItem.namePlural!=='campaignTriggers' && objectMetadataItem.namePlural!=='companies' && objectMetadataItem.namePlural!=='people' && <NavigationDrawerItem
             key={objectMetadataItem.id}
             label={objectMetadataItem.labelPlural}
             to={navigationPath}

@@ -88,10 +88,6 @@ const StyledComboInputContainer1 = styled.div`
 `;
 
 const SytledHR = styled.hr`
-  background: ${GRAY_SCALE.gray0};
-  color: ${GRAY_SCALE.gray0};
-  bordercolor: ${GRAY_SCALE.gray0};
-  height: 0.2px;
   width: 100%;
   margin: ${({ theme }) => theme.spacing(10)};
 `;
@@ -299,6 +295,7 @@ export const Segment = () => {
       const newData = result.data.leads.edges;
       setLeadData([...leadData, ...newData]);
       const currentPosition = window.scrollY;
+      }
 
       console.log(currentPosition,"currentPosition")
       window.scrollTo(0, currentPosition);
@@ -542,7 +539,7 @@ export const Segment = () => {
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
-              {cursor && (
+              {cursor && filterLoading && (
                     <StyledTableRow ref={lastLeadRef}>
                       <td>Loading more...</td>
                     </StyledTableRow>

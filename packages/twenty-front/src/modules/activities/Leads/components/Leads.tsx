@@ -327,7 +327,7 @@ export const Leads = ({
 
   };
 
-
+// console.log(cursor,"cursor")
   useEffect(() => {
 
 
@@ -365,6 +365,7 @@ export const Leads = ({
       <StyledButtonContainer>
         <IconButton
           variant="tertiary"
+          // console.log(cursor,"cursor")
           Icon={IconRefresh}
           onClick={fetchLeads}
         />
@@ -445,7 +446,7 @@ export const Leads = ({
                       </StyledTableRow>
                     );
                   })}
-                  {cursor && (
+                  {cursor && loading && (
                     <StyledTableRow ref={lastLeadRef}>
                       <td>Loading more...</td>
                     </StyledTableRow>

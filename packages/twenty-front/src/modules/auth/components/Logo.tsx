@@ -12,7 +12,7 @@ const StyledContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing(4)};
 
   position: relative;
-  width: 48px;
+  width: 175px;
 `;
 
 const StyledTwentyLogo = styled.img`

@@ -19,6 +19,7 @@ import { navigationMemorizedUrlState } from '@/ui/navigation/states/navigationMe
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
 
 import { useIsTasksPage } from '../hooks/useIsTasksPage';
+import { IconBrandGoogleAnalytics } from '@tabler/icons-react';
 
 export const MainNavigationDrawerItems = () => {
   const isMobile = useIsMobile();
@@ -67,7 +68,7 @@ export const MainNavigationDrawerItems = () => {
             label="Dashboard"
             to="/dashboard"
             // active={isTasksPage}
-            Icon={IconCheckbox}
+            Icon={IconBrandGoogleAnalytics}
             // count={currentUserDueTaskCount}
           />
         </NavigationDrawerSection>

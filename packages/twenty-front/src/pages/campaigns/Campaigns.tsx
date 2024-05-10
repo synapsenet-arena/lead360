@@ -458,8 +458,8 @@ export const Campaigns = () => {
           <SytledHR />
           <Section>
             <H2Title
-              title="Loading Page URL"
-              description="URL for the landing page, to be used here"
+              title="Lead Information Form"
+              description="Form to be sent to the leads."
             />
             <Select
               fullWidth

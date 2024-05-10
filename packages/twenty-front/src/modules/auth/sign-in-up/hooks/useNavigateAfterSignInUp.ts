@@ -7,6 +7,7 @@ import { previousUrlState } from '@/auth/states/previousUrlState';
 import { billingState } from '@/client-config/states/billingState';
 import { AppPath } from '@/types/AppPath';
 import { WorkspaceMember } from '~/generated/graphql.tsx';
+import { CustomPath } from '@/types/CustomPath';
 
 export const useNavigateAfterSignInUp = () => {
   const navigate = useNavigate();
@@ -37,8 +38,8 @@ export const useNavigateAfterSignInUp = () => {
         navigate(AppPath.CreateProfile);
         return;
       }
-      if (previousUrl !== '') navigate(previousUrl);
-      else navigate(AppPath.Index);
+      if (previousUrl !== '') navigate(CustomPath.Dashboard);
+      else navigate(CustomPath.Dashboard);
     },
     [billing, previousUrl, navigate],
   );

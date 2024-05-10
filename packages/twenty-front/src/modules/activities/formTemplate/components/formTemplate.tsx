@@ -22,6 +22,7 @@ const StyledComboInputContainer = styled.div`
 const StyledTitleBar = styled.div`
   display: flex;
   width: 100%;
+  flex-direction: row;
 `;
 
 const StyledLabelContainer = styled.div`
@@ -114,12 +115,12 @@ export const FormTemplate = ({
           </StyledLabelContainer>
           <TextDisplay text={formFetched.name || ''} />
         </StyledComboInputContainer>
-        <StyledComboInputContainer>
+        {/* <StyledComboInputContainer>
           <StyledLabelContainer>
             <EllipsisDisplay>Description:</EllipsisDisplay>
           </StyledLabelContainer>
           <TextDisplay text={formFetched.description || ''} />
-        </StyledComboInputContainer>
+        </StyledComboInputContainer> */}
         <StyledComboInputContainer>
           <StyledLabelContainer>
             <EllipsisDisplay>Created At:</EllipsisDisplay>

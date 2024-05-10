@@ -203,20 +203,6 @@ const navigate = useNavigate();
   }
 
 
-  const handleSymptomCheckboxChange = (symptom: string) => {
-    setSymptoms({
-      ...symptoms,
-      [symptom]: !symptoms[symptom],
-    });
-  };
-
-  const handleTravelHistoryCheckboxChange = (history: string) => {
-    setTravelHistory({
-      ...travelHistory,
-      [history]: !travelHistory[history],
-    });
-  };
-
   return (
     <StyledDiv>
       <StyledInputCard>

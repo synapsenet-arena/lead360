@@ -20,7 +20,7 @@ const StyledCard = styled.div`
  width: 100%;
  margin: auto;
  align-items: center;
- margin-bottom: ${({ theme }) => theme.spacing(2)}
+ margin-bottom: ${({ theme }) => theme.spacing(2)};
  overflow-y: scroll;
 `;
 

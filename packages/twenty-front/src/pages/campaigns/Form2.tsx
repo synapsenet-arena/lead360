@@ -17,7 +17,7 @@ const StyledCard = styled.div`
   flex-direction: column;
   justify-content: center;
   background: ${({ theme }) => theme.background.primary};
-  height: 120%%;
+  height: 120%;
   width: 100%;
   margin: auto;
   align-items: center;
@@ -99,7 +99,7 @@ export const Form2 = () => {
     <StyledDiv>
       <StyledCard>
         <StyledTitleContainer>
-          <StyledTitle>Campaign Form</StyledTitle>
+          <StyledTitle>Appointment Scheduling Form</StyledTitle>
         </StyledTitleContainer>
         <StyledInputCard>
           <StyledAreaLabel>

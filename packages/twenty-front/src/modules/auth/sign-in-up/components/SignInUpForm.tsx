@@ -110,12 +110,12 @@ export const SignInUpForm = () => {
       signInUpStep === SignInUpStep.Init ||
       signInUpStep === SignInUpStep.Email
     ) {
-      return 'Welcome to Twenty';
+      return 'Welcome to Lead360';
     }
 
     return signInUpMode === SignInUpMode.SignIn
-      ? 'Sign in to Twenty'
-      : 'Sign up to Twenty';
+      ? 'Sign in to Lead360'
+      : 'Sign up to Lead360';
   }, [signInUpMode, workspace?.displayName, isInviteMode, signInUpStep]);
 
   const theme = useTheme();
@@ -282,7 +282,7 @@ export const SignInUpForm = () => {
       )}
       {signInUpStep === SignInUpStep.Init && (
         <FooterNote>
-          By using Twenty, you agree to the Terms of Service and Privacy Policy.
+          By using Lead360, you agree to the Terms of Service and Privacy Policy.
         </FooterNote>
       )}
     </>

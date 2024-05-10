@@ -222,7 +222,7 @@ export const CampaignForm = () => {
     <StyledDiv>
     <StyledInputCard>
         <StyledTitleContainer>
-          <StyledTitle>Campaign Form</StyledTitle>
+          <StyledTitle>Appointment Scheduling Form</StyledTitle>
         </StyledTitleContainer>
         <StyledAreaLabel>
           <StyledSection>
