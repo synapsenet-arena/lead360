@@ -295,6 +295,8 @@ export const Segment = () => {
       const newData = result.data.leads.edges;
       setLeadData([...leadData, ...newData]);
       const currentPosition = window.scrollY;
+      if (result.data.leads.pageInfo.hasNextPage == true) {
+        setFilterLoading(true);
       }
 
       console.log(currentPosition,"currentPosition")
