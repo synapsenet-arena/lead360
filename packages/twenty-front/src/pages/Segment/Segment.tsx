@@ -1,24 +1,19 @@
 import styled from '@emotion/styled';
 import { Section } from '@react-email/components';
 import { Button } from '@/ui/input/button/components/Button';
-import { GRAY_SCALE } from '@/ui/theme/constants/GrayScale';
 import { useMutation } from '@apollo/client';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  IconLoader,
   IconPlayerPlay,
   IconPlus,
   IconUsersGroup,
   IconX,
 } from '@tabler/icons-react';
-
 import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { useEffect, useRef, useState } from 'react';
 import { PageHeader } from '@/ui/layout/page/PageHeader';
 import { useLazyQuery } from '@apollo/client';
 import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
-import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
-import { PreviewLeadsData } from '~/pages/campaigns/PreviewLeadsData';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { ADD_SEGMENT } from '@/users/graphql/queries/addSegment';
 import { useNavigate } from 'react-router-dom';
@@ -28,17 +23,7 @@ import { TextInput } from '@/ui/input/components/TextInput';
 import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
 import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
 import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
-import { date } from 'zod';
-
-const StyledBoardContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: auto;
-  flex-direction: column;
-  justify-content: flex-start;
-  background: ${({ theme }) => theme.background.noisy};
-  padding: ${({ theme }) => theme.spacing(2)};
-`;
+import { GRAY_SCALE } from 'twenty-ui';
 
 const PageContainer = styled.div`
   display: flex;
@@ -62,6 +47,16 @@ const PageContainer = styled.div`
   }
 `;
 
+const StyledBoardContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: auto;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: ${({ theme }) => theme.background.noisy};
+  padding: ${({ theme }) => theme.spacing(2)};
+`;
+
 const StyledInputCard = styled.div`
   color: ${({ theme }) => theme.font.color.secondary};
   display: flex;
@@ -71,6 +66,15 @@ const StyledInputCard = styled.div`
   justify-content: space-between;
   width: 70%;
   align-items: center;
+`;
+
+const SytledHR = styled.hr`
+  background: ${GRAY_SCALE.gray0};
+  color: ${GRAY_SCALE.gray0};
+  bordercolor: ${GRAY_SCALE.gray0};
+  height: 0.2px;
+  width: 100%;
+  margin: ${({ theme }) => theme.spacing(10)};
 `;
 
 const StyledButton = styled.span`
@@ -87,9 +91,31 @@ const StyledComboInputContainer1 = styled.div`
   justify-content: space-evenly;
 `;
 
-const SytledHR = styled.hr`
+const StyledCountContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(10)};
+  }
+  margin-top: ${({ theme }) => theme.spacing(2)};
+  margin-bottom: ${({ theme }) => theme.spacing(6)};
+  height: auto;
+  justify-content: flex-start;
   width: 100%;
-  margin: ${({ theme }) => theme.spacing(10)};
+  align-items: center;
+`;
+
+const StyledComboInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(2)};
+  }
+`;
+
+const StyledLabelContainer = styled.div`
+  color: ${({ theme }) => theme.font.color.tertiary};
+  width: auto;
 `;
 
 const StyledTable = styled.table<{ cursorPointer: boolean }>`
@@ -117,6 +143,12 @@ const StyledTableRow = styled.tr`
   }
 `;
 
+const StyledTableHeaderCell = styled.td`
+  padding: 5px;
+  border: 1px solid ${({ theme }) => theme.border.color.medium};
+  height: 25px;
+`;
+
 const StyledTableCell = styled.td`
   padding: 5px;
   height: 25px;
@@ -127,55 +159,26 @@ const StyledTableCell = styled.td`
   }
 `;
 
-const StyledTableHeaderCell = styled.td`
-  padding: 5px;
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  height: 25px;
-`;
-const StyledLabelContainer = styled.div`
-  color: ${({ theme }) => theme.font.color.tertiary};
-  width: auto;
-`;
-const StyledCountContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(10)};
-  }
-  margin-top: ${({ theme }) => theme.spacing(2)};
-  margin-bottom: ${({ theme }) => theme.spacing(6)};
-  height: auto;
-  justify-content: flex-start;
-  width: 100%;
-  align-items: center;
-`;
-
-const StyledComboInputContainer = styled.div`
-  display: flex;
-  align-items: center;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(2)};
-  }
-`;
-
 export const Segment = () => {
-  const [leadData, setLeadData] = useState<any | any[]>([]);
-  const [selectedFilterOptions, setSelectedFilterOptions] = useState<
-    Record<string, string>
-  >({});
-  const navigate = useNavigate();
-
-  const [filterDivs, setFilterDivs] = useState<string[]>([]);
   const [segmentName, setSegmentName] = useState('');
   const [segmentDescription, setSegmentDescription] = useState('');
-  const { enqueueSnackBar } = useSnackBar();
   const [filterString, setFilterString] = useState('');
   const [filter, setFilter] = useState('');
+  const [querystamp, setQuerystamp] = useState('');
+
+  const [leadData, setLeadData] = useState<any | any[]>([]);
+  const [filterDivs, setFilterDivs] = useState<string[]>([]);
+  const [selectedFilterOptions, setSelectedFilterOptions] = useState<Record<string, string> >({});
+
   const [cursor, setCursor] = useState<string | null>(null);
-  const [filterLoading, setFilterLoading] = useState<boolean>(false);
   const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
+  const [filterLoading, setFilterLoading] = useState<boolean>(false);
+
   const [totalLeadsCount, setTotalLeadsCount] = useState<number>(0);
-  const [querystamp, setQuerystamp] = useState("");
+
+  const { enqueueSnackBar } = useSnackBar();
+  const navigate = useNavigate();
+
   const handleFilterButtonClick = () => {
     const key = `filter-${filterDivs.length + 1}`;
     setFilterDivs([...filterDivs, key]);
@@ -193,18 +196,25 @@ export const Segment = () => {
       return rest;
     });
   };
+
   const createOptions = (options: any[]) =>
     options.map((option: any) => ({ label: option, value: option }));
-  const [modalOpen, setModalOpen] = useState(false);
   const conditions = createOptions(['AND', 'OR']);
-  const operators = createOptions(['=', '>', '<', '!=']);
-  const fields = createOptions([
-    'advertisementSource',
-    'campaignName',
-    'location',
-    'age',
-    'gender'
+  const operators = createOptions([
+    '= equal',
+    '>  greater',
+    '<  lesser',
+    '!= not equal',
+    '<> between',
   ]);
+
+  const fields = [
+    {"label": 'Advertisement Source', "value": 'advertisementSource'},
+    {"label": 'Age', "value": 'age'},
+    {"label": 'Location', "value": 'location'},
+    {"label": 'Campaign Name', "value": 'campaignName'},
+    {"label": 'Advertisement Name', "value": 'advertisementName'}
+  ];
 
   const handleSelectChange = (key: string, value: string) => {
     setSelectedFilterOptions((prevOptions) => ({
@@ -227,8 +237,10 @@ export const Segment = () => {
       const field = selectedFilterOptions[`${key}-field`];
       const operator = selectedFilterOptions[`${key}-operators`];
       const value = selectedFilterOptions[`${key}-value`];
+      const value1 = selectedFilterOptions[`${key}-value1`];
+      const value2 = selectedFilterOptions[`${key}-value2`];
 
-      if (field && operator && value) {
+      if (field && operator && (value1 || value2)) {
         const conditionFilter = condition === 'OR' ? 'or' : 'and';
 
         if (!filter[conditionFilter]) {
@@ -236,32 +248,51 @@ export const Segment = () => {
         }
 
         let operation;
-        switch (operator) {
-          case '=':
-            operation = 'eq';
-            break;
-          case '>':
-            operation = 'gt';
-            break;
-          case '<':
-            operation = 'lt';
-            break;
-          case '!=':
-            operation = 'nt';
-            break;
-          default:
-            operation = 'ilike'; 
-            break;
+        console.log(selectedFilterOptions[`${key}-operators`] ===
+        '<> between',"operator")
+        if (selectedFilterOptions[`${key}-operators`] ===
+        '<> between') {
+          
+          operation = '';
+        } else {
+          switch (operator) {
+            case '= equal':
+              operation = 'eq';
+              break;
+            case '> greater':
+              operation = 'gt';
+              break;
+            case '< lesser':
+              operation = 'lt';
+              break;
+            case '!= not equal':
+              operation = 'nt';
+              break;
+            default:
+              operation = 'ilike';
+              break;
+          }
         }
 
-        filter[conditionFilter].push({
-          [field]: {  [operation]: `${value}` },
-        });
+        if (operator === '<> between') {
+          filter[conditionFilter].push({
+            [field]: {
+              lte: `${value2}`,
+              gte: `${value1}`,
+            },
+          });
+        } else {
+          filter[conditionFilter].push({
+            [field]: { [operation]: `${value1}` },
+          });
+        }
       }
     });
+
     setFilter(filter);
     let filterString = `{ "filter": ${JSON.stringify(filter)} }`;
-
+    console.log(filter, 'filter');
+    console.log(filterString, 'filterString');
     const orderBy = { position: 'AscNullsFirst' };
     try {
       const result = await filterleads({ variables: { filter } });
@@ -271,11 +302,8 @@ export const Segment = () => {
       if (result.data.leads.pageInfo.hasNextPage == true) {
         setFilterLoading(true);
       }
-      setTotalLeadsCount(result.data.leads.totalCount)
+      setTotalLeadsCount(result.data.leads.totalCount);
       setQuerystamp(new Date().toISOString());
-      // result.data.leads.edges.forEach((edge: { node: any }) => {
-      // const lead = edge.node;
-      // });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -284,7 +312,6 @@ export const Segment = () => {
 
   const loadMore = async () => {
     if (filterLoading) {
-  
       const result = await filterleads({
         variables: {
           filter,
@@ -299,15 +326,14 @@ export const Segment = () => {
         setFilterLoading(true);
       }
 
-      console.log(currentPosition,"currentPosition")
+      console.log(currentPosition, 'currentPosition');
       window.scrollTo(0, currentPosition);
     }
   };
-  
-  
+
   const handlesave = async () => {
     try {
-      const id = uuidv4()
+      const id = uuidv4();
       const variables = {
         input: {
           id: id,
@@ -340,7 +366,6 @@ export const Segment = () => {
     }
   };
 
-
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersection);
     if (observer && lastLeadRef.current) {
@@ -353,7 +378,7 @@ export const Segment = () => {
       }
     };
   }, [leadData]);
-  
+
   return (
     <>
       <PageContainer>
@@ -450,106 +475,132 @@ export const Segment = () => {
                   />
 
                   <TextInput
-                    placeholder={'Value'}
-                    value={selectedFilterOptions[`${key}-value`] || ''}
-                    onChange={(e) => handleSelectChange(`${key}-value`, e)}
+                    placeholder={selectedFilterOptions[`${key}-operators`] ===
+                    '<> between'? 'Greater than' : "Value"}
+                    value={selectedFilterOptions[`${key}-value1`] || ''}
+                    onChange={(e) => handleSelectChange(`${key}-value1`, e)}
                     name="value"
                     required
                     fullWidth
                   />
+
+                  {selectedFilterOptions[`${key}-operators`] ===
+                    '<> between' && (
+                    <TextInput
+                      placeholder={selectedFilterOptions[`${key}-operators`] ===
+                      '<> between'? 'Lesser than' : "Value"}
+                      value={selectedFilterOptions[`${key}-value2`] || ''}
+                      onChange={(e) => handleSelectChange(`${key}-value2`, e)}
+                      name="value"
+                      required
+                      fullWidth
+                    />
+                  )}
                 </StyledComboInputContainer1>
               </div>
             ))}
             <SytledHR />
           </StyledInputCard>
         </StyledBoardContainer>
-        {!loading && data && 
-        <>
-          <StyledCountContainer>
-          <StyledComboInputContainer>
-            <StyledLabelContainer>
-              <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
-            </StyledLabelContainer>
-            <DateTimeDisplay value={querystamp} />
-          </StyledComboInputContainer>
-          <StyledComboInputContainer>
-            <StyledLabelContainer>
-              <EllipsisDisplay>Total Leads:</EllipsisDisplay>
-            </StyledLabelContainer>
-            <NumberDisplay value={totalLeadsCount} />{' '}
-          </StyledComboInputContainer>
-        </StyledCountContainer>
+        {!loading && data && (
+          <>
+            <StyledCountContainer>
+              <StyledComboInputContainer>
+                <StyledLabelContainer>
+                  <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
+                </StyledLabelContainer>
+                <DateTimeDisplay value={querystamp} />
+              </StyledComboInputContainer>
+              <StyledComboInputContainer>
+                <StyledLabelContainer>
+                  <EllipsisDisplay>Total Leads:</EllipsisDisplay>
+                </StyledLabelContainer>
+                <NumberDisplay value={totalLeadsCount} />{' '}
+              </StyledComboInputContainer>
+            </StyledCountContainer>
             <StyledTable cursorPointer={true}>
-            <tbody>
-              <StyledTableRow>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Name</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Age</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Gender</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Location</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                <StyledLabelContainer>Campaign Name</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Advertisement Source</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Phone Number</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Comments</StyledLabelContainer>
-                </StyledTableHeaderCell>
-                <StyledTableHeaderCell>
-                  <StyledLabelContainer>Advertisement Name</StyledLabelContainer>
-                </StyledTableHeaderCell>
-              </StyledTableRow>
-              {leadData.map((leads: any) => (
-                <StyledTableRow key={leads.node.id}>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.name}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.age}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.gender}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.location}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.campaignName}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.advertisementSource}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.phoneNumber}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.comments}</EllipsisDisplay>
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <EllipsisDisplay>{leads.node?.advertisementName}</EllipsisDisplay>
-                  </StyledTableCell>
+              <tbody>
+                <StyledTableRow>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>Name</StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>Age</StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>Gender</StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>Location</StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>Campaign Name</StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>
+                      Advertisement Source
+                    </StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>Phone Number</StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>Comments</StyledLabelContainer>
+                  </StyledTableHeaderCell>
+                  <StyledTableHeaderCell>
+                    <StyledLabelContainer>
+                      Advertisement Name
+                    </StyledLabelContainer>
+                  </StyledTableHeaderCell>
                 </StyledTableRow>
-              ))}
-              {cursor && filterLoading && (
-                    <StyledTableRow ref={lastLeadRef}>
-                      <td>Loading more...</td>
-                    </StyledTableRow>
-                  )}
-            </tbody>
-          </StyledTable>
+                {leadData.map((leads: any) => (
+                  <StyledTableRow key={leads.node.id}>
+                    <StyledTableCell>
+                      <EllipsisDisplay>{leads.node?.name}</EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>{leads.node?.age}</EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>{leads.node?.gender}</EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>{leads.node?.location}</EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>
+                        {leads.node?.campaignName}
+                      </EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>
+                        {leads.node?.advertisementSource}
+                      </EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>
+                        {leads.node?.phoneNumber}
+                      </EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>{leads.node?.comments}</EllipsisDisplay>
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      <EllipsisDisplay>
+                        {leads.node?.advertisementName}
+                      </EllipsisDisplay>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+                {cursor && filterLoading && (
+                  <StyledTableRow ref={lastLeadRef}>
+                    <td>Loading more...</td>
+                  </StyledTableRow>
+                )}
+              </tbody>
+            </StyledTable>
           </>
-        }
+        )}
       </PageContainer>
     </>
   );

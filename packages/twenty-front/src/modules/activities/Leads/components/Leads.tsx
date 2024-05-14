@@ -24,6 +24,20 @@ import {
 import { IconButton } from '@/ui/input/button/components/IconButton';
 import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
 
+const StyledButtonContainer = styled.div`
+  display: inline-flex;
+  justify-content: flex-end;
+  margin-top: ${({ theme }) => theme.spacing(2)};
+`;
+
+const StyledContainer = styled.div`
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
 const StyledInputCard = styled.div`
   align-items: flex-start;
   display: flex;
@@ -31,12 +45,6 @@ const StyledInputCard = styled.div`
   height: auto%;
   justify-content: space-evenly;
   width: 100%;
-`;
-
-const StyledButtonContainer = styled.div`
-  display: inline-flex;
-  justify-content: flex-end;
-  margin-top: ${({ theme }) => theme.spacing(2)};
 `;
 
 const StyledCountContainer = styled.div`
@@ -51,6 +59,19 @@ const StyledCountContainer = styled.div`
   justify-content: flex-start;
   width: 100%;
   align-items: center;
+`;
+
+const StyledComboInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  > * + * {
+    margin-left: ${({ theme }) => theme.spacing(2)};
+  }
+`;
+
+const StyledLabelContainer = styled.div`
+  color: ${({ theme }) => theme.font.color.tertiary};
+  width: auto;
 `;
 
 const StyledTable = styled.table<{ cursorPointer: boolean }>`
@@ -78,6 +99,12 @@ const StyledTableRow = styled.tr`
   }
 `;
 
+const StyledTableHeaderCell = styled.td`
+  padding: 5px;
+  border: 1px solid ${({ theme }) => theme.border.color.medium};
+  height: 25px;
+`;
+
 const StyledTableCell = styled.td`
   padding: 5px;
   height: 25px;
@@ -88,32 +115,6 @@ const StyledTableCell = styled.td`
   }
 `;
 
-const StyledTableHeaderCell = styled.td`
-  padding: 5px;
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  height: 25px;
-`;
-
-const StyledComboInputContainer = styled.div`
-  display: flex;
-  align-items: center;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(2)};
-  }
-`;
-
-const StyledContainer = styled.div`
-  align-items: flex-start;
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const StyledLabelContainer = styled.div`
-  color: ${({ theme }) => theme.font.color.tertiary};
-  width: auto;
-`;
 interface CheckboxState {
   [key: string]: boolean;
 }
@@ -135,25 +136,19 @@ export const Leads = ({
 
   const [leadsData, setLeadsData] = useState<any | any[]>([]);
   const [totalLeadsCount, setTotalLeadsCount] = useState<number>(0);
-  const [selectedRows, setSelectedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-
-  const [filter, setFilter] = useState('');
-  const [cursor, setCursor] = useState<string | null>(null);
+  let campaignId = '';
+  const [filter, setFilter] = useState<Record<string, any>>({});
+    const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
   const [selectedID, setSelectedID] = useState(new Set());
   const [unselectedID, setUnselectedID] = useState(new Set());
-
-  const [unSelectedRows, setunSelectedRows] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [masterCheckboxChecked, setMasterCheckboxChecked] = useState(true);
   const [isChecked, setIsChecked] = useState<boolean>(true);
-  const [checkbox,setCheckbox]=useState<CheckboxState>({});
+  const [checkbox, setCheckbox] = useState<CheckboxState>({});
   const { campaignData, setCampaignData } = useCampaign();
-  const allLeadId={}
+  const allLeadId = {};
+  const date = new Date(campaignData.querystamp.toString());
+
   let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
     GET_CAMPAIGN_LISTS,
     {
@@ -169,76 +164,6 @@ export const Leads = ({
   let [filterleads, { data: filterLeadsData }] = useLazyQuery(FILTER_LEADS, {
     fetchPolicy: 'network-only',
   });
-
-
-  const handleCheckboxChange = (event: any, leadId: string): boolean => {
-    const { checked } = event.target;
-    if (checked) {
-      setSelectedID(selectedID.add(leadId));
-      unselectedID.delete(leadId);
-      setUnselectedID(unselectedID);
-      // allLeadId[leadId]=true
-      setCheckbox({
-        ...checkbox,
-        [leadId]:true,
-      })
-    } else {
-      selectedID.delete(leadId);
-      setSelectedID(selectedID);
-      setUnselectedID(unselectedID.add(leadId));
-      // allLeadId[leadId]=false
-      setCheckbox({
-        ...checkbox,
-        [leadId]:false
-      })
-    }
-    
-    setIsChecked(checked)
-    setCampaignData({
-      ...campaignData,
-      selectedId: Array.from(selectedID),
-      unSelectedId: Array.from(unselectedID),
-    });
-    return false;
-
-  };
-  const handleMasterCheckboxChange = (event: any) => {
-    const { checked } = event.target;
-    if (checked) {
-      
-      for (const id of unselectedID.keys()) {
-        setSelectedID(selectedID.add(id));
-        unselectedID.delete(id);
-        setUnselectedID(unselectedID);
-      }
-      for (const id of selectedID .keys()) {
-        allLeadId[id]=true
-      }
-      
-    } else {
-      for (const id of selectedID.keys()) {
-        selectedID.delete(id);
-        setSelectedID(selectedID);
-        setUnselectedID(unselectedID.add(id));
-      }
-      for (const id of unselectedID.keys()) {
-        allLeadId[id]=false
-      }
-
-    }
-
-    setCheckbox({
-      ...checkbox,
-      ...allLeadId
-    })
-    setCampaignData({
-      ...campaignData,
-      selectedId: Array.from(selectedID),
-      unSelectedId: Array.from(unselectedID),
-    });
-  };
-
-  let campaignId = '';
 
   const fetchLeads = async () => {
     try {
@@ -299,42 +224,105 @@ export const Leads = ({
     }
   };
 
-  const loadMore = async () => {
-    if (loading) {
-      const result = await filterleads({
-        variables: {
-          ...filter,
-          lastCursor: cursor,
-        },
-      });
-      result.data.leads.edges.forEach((leadEdge: any) => {
-        const lead = leadEdge?.node;
-        setSelectedID(selectedID.add(lead.id));
-        const leadId=lead.id
-        allLeadId[leadId]=true
 
-      });
-      setCheckbox({
-        ...checkbox,
-        ...allLeadId
-      })
+const loadMore = async () => {
+  if (loading) {
+    const result = await filterleads({
+      variables: {
+        ...filter,
+        lastCursor: cursor,
+      },
+    });
+
+    result.data.leads.edges.forEach((leadEdge: any) => {
+      const lead = leadEdge?.node;
+      setSelectedID(selectedID.add(lead.id));
+      allLeadId[lead.id] = true;
+    });
+
+    setCheckbox({
+      ...checkbox,
+      ...allLeadId
+    });
+
+    setCursor(result.data.leads.pageInfo.endCursor);
+    const newLeadsData = result.data.leads.edges;
+    setLeadsData([...leadsData, ...newLeadsData]);
+  }
+};
 
 
-      setCursor(result.data.leads.pageInfo.endCursor);
-      const newLeadsData = result.data.leads.edges;
-      setLeadsData([...leadsData, ...newLeadsData]);
-    }
-
-  };
-
-// console.log(cursor,"cursor")
   useEffect(() => {
-
-
     fetchLeads();
   }, [targetableObject.id, selectedCampaign,]);
 
-  const date = new Date(campaignData.querystamp.toString());
+  const handleCheckboxChange = (event: any, leadId: string): boolean => {
+    const { checked } = event.target;
+    if (checked) {
+      setSelectedID(selectedID.add(leadId));
+      unselectedID.delete(leadId);
+      setUnselectedID(unselectedID);
+      // allLeadId[leadId]=true
+      setCheckbox({
+        ...checkbox,
+        [leadId]:true,
+      })
+    } else {
+      selectedID.delete(leadId);
+      setSelectedID(selectedID);
+      setUnselectedID(unselectedID.add(leadId));
+      // allLeadId[leadId]=false
+      setCheckbox({
+        ...checkbox,
+        [leadId]:false
+      })
+    }
+    
+    setIsChecked(checked)
+    setCampaignData({
+      ...campaignData,
+      selectedId: Array.from(selectedID),
+      unSelectedId: Array.from(unselectedID),
+    });
+    return false;
+
+  };
+
+  const handleMasterCheckboxChange = (event: any) => {
+    const { checked } = event.target;
+    if (checked) {
+      
+      for (const id of unselectedID.keys()) {
+        setSelectedID(selectedID.add(id));
+        unselectedID.delete(id);
+        setUnselectedID(unselectedID);
+      }
+      for (const id of selectedID .keys()) {
+        allLeadId[id]=true
+      }
+      
+    } else {
+      for (const id of selectedID.keys()) {
+        selectedID.delete(id);
+        setSelectedID(selectedID);
+        setUnselectedID(unselectedID.add(id));
+      }
+      for (const id of unselectedID.keys()) {
+        allLeadId[id]=false
+      }
+
+    }
+
+    setCheckbox({
+      ...checkbox,
+      ...allLeadId
+    })
+    setCampaignData({
+      ...campaignData,
+      selectedId: Array.from(selectedID),
+      unSelectedId: Array.from(unselectedID),
+    });
+  };
 
   const onIntersection = async (entries: any) => {
     const firstEntry = entries[0];
@@ -343,10 +331,7 @@ export const Leads = ({
       loadMore();
     }
   };
-  const handleCheck=(leadId: string | number)=>{
-    return checkbox[leadId];
-  }
-
+  
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersection);
     if (observer && lastLeadRef.current) {

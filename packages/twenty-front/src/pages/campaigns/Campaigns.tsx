@@ -19,10 +19,24 @@ import { useNavigate } from 'react-router-dom';
 import { Checkbox, CheckboxVariant, CheckboxSize, CheckboxShape } from '@/ui/input/components/Checkbox';
 import { Select } from '@/ui/input/components/Select';
 import { TextInput } from '@/ui/input/components/TextInput';
-import { title } from 'process';
 import { TextArea } from '@/ui/input/components/TextArea';
-const StyledCheckboxLabel = styled.span`
-  margin-left: ${({ theme }) => theme.spacing(2)};
+
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-y: scroll;
+`;
+
+const StyledBoardContainer = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background: ${({ theme }) => theme.background.noisy};
+  padding: ${({ theme }) => theme.spacing(2)};
 `;
 
 const StyledInputCard = styled.div`
@@ -36,29 +50,6 @@ const StyledInputCard = styled.div`
   align-items: center;
 `;
 
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow-y: scroll;
-`;
-
-const StyledButton = styled.span`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin: ${({ theme }) => theme.spacing(10)};
-`;
-const StyledLabel = styled.span`
-  color: ${({ theme }) => theme.font.color.light};
-  font-size: ${({ theme }) => theme.font.size.xs};
-  font-weight: ${({ theme }) => theme.font.weight.semiBold};
-  margin-left: ${({ theme }) => theme.spacing(2)};
-  display: flex;
-  align-items: center;
-  text-transform: uppercase;
-`;
-
 const SytledHR = styled.hr`
   background: ${GRAY_SCALE.gray0};
   color: ${GRAY_SCALE.gray0};
@@ -66,17 +57,6 @@ const SytledHR = styled.hr`
   height: 0.2px;
   width: 100%;
   margin: ${({ theme }) => theme.spacing(8)};
-`;
-
-const StyledBoardContainer = styled.div`
-  display: flex;
-  height: 100%;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  background: ${({ theme }) => theme.background.noisy};
-  padding: ${({ theme }) => theme.spacing(2)};
 `;
 
 const StyledSection = styled(Section)`
@@ -94,30 +74,80 @@ const StyledComboInputContainer = styled.div`
     margin-left: ${({ theme }) => theme.spacing(4)};
   }
 `;
+
+const StyledLabel = styled.span`
+  color: ${({ theme }) => theme.font.color.light};
+  font-size: ${({ theme }) => theme.font.size.xs};
+  font-weight: ${({ theme }) => theme.font.weight.semiBold};
+  margin-left: ${({ theme }) => theme.spacing(2)};
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+`;
+
+const StyledCheckboxLabel = styled.span`
+  margin-left: ${({ theme }) => theme.spacing(2)};
+`;
+
+const StyledButton = styled.span`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: ${({ theme }) => theme.spacing(10)};
+`;
+
 type MessageTemplate = {
   type: string;
   value: string;
   label: string;
 };
-type SegmentList = {
-  type: string;
-  value: string;
-  label: string;
-};
+
 export const Campaigns = () => {
-  const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>(
-    [],
-  );
+  const { campaignData, setCampaignData } = useCampaign();
+  const [specialty, setSpecialty] = useState('');
+  const [subSpecialty, setSubSpecialty] = useState('');
+
+  const handleSpecialtySelectChange = (selectedValue: any) => {
+    setSpecialty(selectedValue);
+  };
+  const handleSubSpecialtySelectChange = (selectedValue: any) => {
+    setSubSpecialty(selectedValue);
+  };
+
+  let Specialty: any = [];
+  const SpecialtyTypes: any = {};
+
+  const [segmentsList, setSegmentsList] = useState<any>([]);
+  const [formTemplates, setFormTemplates] = useState<any>([]);
+  const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>([], );
+
+
   const navigate = useNavigate();
-  const { loading: templatesLoading, data: templatesData } = useQuery(
-    GET_MESSAGE_TEMPLATES,
-  );
+  const { enqueueSnackBar } = useSnackBar();
+
+  const { loading: templatesLoading, data: templatesData } = useQuery(GET_MESSAGE_TEMPLATES, );
+  const { loading: segmentLoading, data: segmentsData } = useQuery(GET_SEGMENT_LISTS);
+  const { loading: formTemplateLoading, data: formTemplateData } = useQuery(GET_FORM_TEMPLATES);
+  const { loading: queryLoading, data: queryData } = useQuery(GET_SPECIALTY);
+
+  const { enqueueSnackBar } = useSnackBar();
+  const navigate = useNavigate();
+  const [addCampaigns, { loading, error }] = useMutation(ADD_CAMPAIGN);
+
+  const onSelectCheckBoxChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    channel: string,
+  ): void => {
+    // throw new Error('Function not implemented.');
+    setCampaignData((prevData: any) => ({
+      ...prevData,
+      [channel]: event.target.checked,
+    }));
+  };
+
   const fetchTemplates = (channelType: string) => {
     const channelTemplates = templatesData?.messageTemplates.edges
-      .filter(
-        (edge: { node: any }) =>
-          edge.node?.channelType === channelType,
-      )
+      .filter((edge: { node: any }) => edge.node?.channelType === channelType)
       .map((edge: { node: any }) => ({
         value: edge.node?.id,
         label: edge.node?.name,
@@ -125,9 +155,6 @@ export const Campaigns = () => {
     setMessageTemplates(channelTemplates);
   };
 
-  const [segmentsList, setSegmentsList] = useState<any>([]);
-  const { loading: segmentLoading, data: segmentsData } =
-    useQuery(GET_SEGMENT_LISTS);
   const fetchSegments = () => {
     if (!segmentLoading) {
       const segments = segmentsData?.segments.edges.map(
@@ -140,12 +167,7 @@ export const Campaigns = () => {
     }
   };
 
-  const [formTemplates, setFormTemplates] = useState<any>([]);
-  const { loading: formTemplateLoading, data: formTemplateData } =
-    useQuery(GET_FORM_TEMPLATES);
-
   const fetchFormTemplates = () => {
-    console.log(formTemplateData, '>>>>>>>>>>>>');
     if (!formTemplateLoading) {
       const forms = formTemplateData?.formTemplates.edges.map(
         (edge: { node: any }) => ({
@@ -157,19 +179,11 @@ export const Campaigns = () => {
     }
   };
 
-  console.log(messageTemplates, 'MESSAGE TEMPLATES');
-  console.log(formTemplates, 'FORM TEMPLATES');
   useEffect(() => {
     fetchSegments();
     fetchFormTemplates();
   }, [segmentLoading, formTemplateLoading]);
 
-  let Specialty: any = [];
-  const { loading: queryLoading, data: queryData } = useQuery(GET_SPECIALTY);
-
-  const SpecialtyTypes: any = {};
-  const [specialty, setSpecialty] = useState('');
-  const [subSpecialty, setSubSpecialty] = useState('');
   if (!queryLoading) {
     const specialtyTypes = queryData?.subspecialties.edges.map(
       (edge: { node: { specialty: { name: any } } }) =>
@@ -180,7 +194,6 @@ export const Campaigns = () => {
       value: specialty,
       label: specialty,
     }));
-    console.log(queryData, 'UNIQYUE SPECIALTY');
     queryData?.subspecialties.edges.forEach(
       (edge: { node: { specialty: { name: any }; name: any } }) => {
         const specialtyType = edge.node?.specialty?.name;
@@ -204,33 +217,9 @@ export const Campaigns = () => {
     );
   }
 
-  const handleSpecialtySelectChange = (selectedValue: any) => {
-    setSpecialty(selectedValue);
-  };
-
-  const handleSubSpecialtySelectChange = (selectedValue: any) => {
-    setSubSpecialty(selectedValue);
-  };
-
-  const { campaignData, setCampaignData } =
-    useCampaign();
-
-  const { enqueueSnackBar } = useSnackBar();
-  const onSelectCheckBoxChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    channel: string,
-  ): void => {
-    // throw new Error('Function not implemented.');
-    setCampaignData((prevData: any) => ({
-      ...prevData,
-      [channel]: event.target.checked,
-    }));
-  };
-  const [addCampaigns, { loading, error }] = useMutation(ADD_CAMPAIGN);
   const handleSave = async () => {
     try {
       const id = uuidv4()
-      console.log( campaignData.whatsappTemplate,"message templates")
       const messageTemplateId = campaignData.whatsappTemplate?campaignData.whatsappTemplate:campaignData.emailTemplate?campaignData.emailTemplate:null
       const variables = {
         input: {
@@ -244,7 +233,6 @@ export const Campaigns = () => {
           id:id
         },
       };
-      console.log('Variables: ', variables);
       const { data } = await addCampaigns({
         variables: variables,
       });
@@ -301,7 +289,6 @@ export const Campaigns = () => {
                 })
               }
               minRows={4}
-              
             />
           </Section>
           <SytledHR />
@@ -320,11 +307,9 @@ export const Campaigns = () => {
             />
           </Section>
 
-       
-        
-            {specialty && (
-              <>
-                        <SytledHR />
+          {specialty && (
+            <>
+              <SytledHR />
               <Section>
                 <H2Title
                   title="Subspecialty Type"
@@ -339,8 +324,8 @@ export const Campaigns = () => {
                   onChange={handleSubSpecialtySelectChange}
                 />
               </Section>
-              </>
-            )}
+            </>
+          )}
           <SytledHR />
           <Section>
             <H2Title
@@ -363,8 +348,10 @@ export const Campaigns = () => {
           <SytledHR />
           <Section>
             <Section>
-              <H2Title title="Target Communication"
-               description="Choose your communication medium." />
+              <H2Title
+                title="Target Communication"
+                description="Choose your communication medium."
+              />
             </Section>
 
             <StyledSection>
@@ -458,8 +445,8 @@ export const Campaigns = () => {
           <SytledHR />
           <Section>
             <H2Title
-              title="Lead Information Form"
-              description="Form to be sent to the leads."
+              title="Loading Page URL"
+              description="URL for the landing page, to be used here"
             />
             <Select
               fullWidth
