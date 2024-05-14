@@ -123,7 +123,6 @@ export const Campaigns = () => {
 
 
   const navigate = useNavigate();
-  const { enqueueSnackBar } = useSnackBar();
 
   const { loading: templatesLoading, data: templatesData } = useQuery(GET_MESSAGE_TEMPLATES, );
   const { loading: segmentLoading, data: segmentsData } = useQuery(GET_SEGMENT_LISTS);
@@ -131,7 +130,6 @@ export const Campaigns = () => {
   const { loading: queryLoading, data: queryData } = useQuery(GET_SPECIALTY);
 
   const { enqueueSnackBar } = useSnackBar();
-  const navigate = useNavigate();
   const [addCampaigns, { loading, error }] = useMutation(ADD_CAMPAIGN);
 
   const onSelectCheckBoxChange = (
