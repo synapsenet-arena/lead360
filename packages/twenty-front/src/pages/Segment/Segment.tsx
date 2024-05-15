@@ -260,10 +260,10 @@ export const Segment = () => {
               operation = 'eq';
               break;
             case '> greater':
-              operation = 'gt';
+              operation = 'gte';
               break;
             case '< lesser':
-              operation = 'lt';
+              operation = 'lte';
               break;
             case '!= not equal':
               operation = 'nt';

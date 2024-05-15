@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { ActivityTargetableObject } from '@/activities/types/ActivityTargetableEntity';
 import { GET_CAMPAIGN_LISTS } from '@/users/graphql/queries/getCampaignList';
 import { GET_CAMPAIGN_TRIGGER } from '@/users/graphql/queries/getOneCampaignTrigger';
+import { GET_CONTACTED_OPPORTUNITIES } from '@/users/graphql/queries/getContactedOpportunities';
 import { useLazyQuery } from '@apollo/client';
 import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
 import { Checkbox } from '@/ui/input/components/Checkbox';
@@ -138,7 +139,7 @@ export const Leads = ({
   const [totalLeadsCount, setTotalLeadsCount] = useState<number>(0);
   let campaignId = '';
   const [filter, setFilter] = useState<Record<string, any>>({});
-    const [cursor, setCursor] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
   const [selectedID, setSelectedID] = useState(new Set());
@@ -148,6 +149,7 @@ export const Leads = ({
   const { campaignData, setCampaignData } = useCampaign();
   const allLeadId = {};
   const date = new Date(campaignData.querystamp.toString());
+  let [opportunitiesLeadIds,setOpportunitiesLeadIds] = useState(new Set());
 
   let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
     GET_CAMPAIGN_LISTS,
@@ -164,6 +166,11 @@ export const Leads = ({
   let [filterleads, { data: filterLeadsData }] = useLazyQuery(FILTER_LEADS, {
     fetchPolicy: 'network-only',
   });
+
+  let [contactedOpportunities, { data: contactedOpportunitiesData }] =
+    useLazyQuery(GET_CONTACTED_OPPORTUNITIES, {
+      fetchPolicy: 'network-only',
+    });
 
   const fetchLeads = async () => {
     try {
@@ -199,16 +206,16 @@ export const Leads = ({
       result.data.leads.edges.forEach((leadEdge: any) => {
         const lead = leadEdge?.node;
         setSelectedID(selectedID.add(lead.id));
-        let leadId=lead.id
+        let leadId = lead.id;
       });
 
       for (const id of selectedID.keys()) {
-        allLeadId[id]=true
+        allLeadId[id] = true;
       }
       setCheckbox({
         ...checkbox,
-        ...allLeadId
-      })
+        ...allLeadId,
+      });
 
       const querystamp = new Date().toISOString();
       setCursor(result.data.leads.pageInfo.endCursor);
@@ -224,37 +231,89 @@ export const Leads = ({
     }
   };
 
+  const loadMore = async () => {
+    if (loading) {
+      const result = await filterleads({
+        variables: {
+          ...filter,
+          lastCursor: cursor,
+        },
+      });
 
-const loadMore = async () => {
-  if (loading) {
-    const result = await filterleads({
-      variables: {
-        ...filter,
-        lastCursor: cursor,
-      },
-    });
+      result.data.leads.edges.forEach((leadEdge: any) => {
+        const lead = leadEdge?.node;
+        setSelectedID(selectedID.add(lead.id));
+        allLeadId[lead.id] = true;
+      });
 
-    result.data.leads.edges.forEach((leadEdge: any) => {
-      const lead = leadEdge?.node;
-      setSelectedID(selectedID.add(lead.id));
-      allLeadId[lead.id] = true;
-    });
+      setCheckbox({
+        ...checkbox,
+        ...allLeadId,
+      });
 
-    setCheckbox({
-      ...checkbox,
-      ...allLeadId
-    });
+      setCursor(result.data.leads.pageInfo.endCursor);
+      const newLeadsData = result.data.leads.edges;
 
-    setCursor(result.data.leads.pageInfo.endCursor);
-    const newLeadsData = result.data.leads.edges;
-    setLeadsData([...leadsData, ...newLeadsData]);
-  }
-};
+      const removeleads = (prevLeadsData: any[]) =>
+        prevLeadsData.filter(
+          (lead: any) => !opportunitiesLeadIds.has(lead.node.id),
+        )
+        const leadsRemoved = removeleads(newLeadsData)
+      setLeadsData([...leadsData, ...leadsRemoved]);
 
+    }
+  };
 
   useEffect(() => {
     fetchLeads();
-  }, [targetableObject.id, selectedCampaign,]);
+  }, [targetableObject.id, selectedCampaign]);
+
+  const handleRemoveContactedLeads = async () => {
+    try {
+      let hasNextPage = true;
+      let cursor = null;
+
+      
+      while (hasNextPage) {
+        const data = await contactedOpportunities({
+          variables: {
+            objectRecordId: targetableObject.id,
+            opportunityLeadFilter: {
+              stage: {
+                eq: 'INFORMED',
+              },
+              messageStatus: {
+                eq: 'SUCCESS',
+              },
+            },
+            lastCursor: cursor,
+          },
+        });
+
+        data.data.campaign.opportunities.edges.forEach(
+          (edge: { node: { leadId: unknown } }) => {
+            setOpportunitiesLeadIds(opportunitiesLeadIds.add(edge.node.leadId));
+          },
+        );
+
+        cursor = data.data.campaign.opportunities.pageInfo.endCursor;
+        hasNextPage = data.data.campaign.opportunities.pageInfo.hasNextPage;
+        console.log(hasNextPage);
+      }
+      console.log("-----",leadsData,"leadsData")
+      const removeleads = (prevLeadsData: any[]) =>
+        prevLeadsData.filter(
+          (lead: any) => !opportunitiesLeadIds.has(lead.node.id),
+        )
+        
+      setLeadsData(removeleads(leadsData));
+      console.log(removeleads(leadsData),"removeleads")
+      console.log("leads removed from  more...")
+
+    } catch (error) {
+      console.error('Error fetching contacted opportunities:', error);
+    }
+  };
 
   const handleCheckboxChange = (event: any, leadId: string): boolean => {
     const { checked } = event.target;
@@ -265,8 +324,8 @@ const loadMore = async () => {
       // allLeadId[leadId]=true
       setCheckbox({
         ...checkbox,
-        [leadId]:true,
-      })
+        [leadId]: true,
+      });
     } else {
       selectedID.delete(leadId);
       setSelectedID(selectedID);
@@ -274,33 +333,30 @@ const loadMore = async () => {
       // allLeadId[leadId]=false
       setCheckbox({
         ...checkbox,
-        [leadId]:false
-      })
+        [leadId]: false,
+      });
     }
-    
-    setIsChecked(checked)
+
+    setIsChecked(checked);
     setCampaignData({
       ...campaignData,
       selectedId: Array.from(selectedID),
       unSelectedId: Array.from(unselectedID),
     });
     return false;
-
   };
 
   const handleMasterCheckboxChange = (event: any) => {
     const { checked } = event.target;
     if (checked) {
-      
       for (const id of unselectedID.keys()) {
         setSelectedID(selectedID.add(id));
         unselectedID.delete(id);
         setUnselectedID(unselectedID);
       }
-      for (const id of selectedID .keys()) {
-        allLeadId[id]=true
+      for (const id of selectedID.keys()) {
+        allLeadId[id] = true;
       }
-      
     } else {
       for (const id of selectedID.keys()) {
         selectedID.delete(id);
@@ -308,15 +364,14 @@ const loadMore = async () => {
         setUnselectedID(unselectedID.add(id));
       }
       for (const id of unselectedID.keys()) {
-        allLeadId[id]=false
+        allLeadId[id] = false;
       }
-
     }
 
     setCheckbox({
       ...checkbox,
-      ...allLeadId
-    })
+      ...allLeadId,
+    });
     setCampaignData({
       ...campaignData,
       selectedId: Array.from(selectedID),
@@ -331,7 +386,7 @@ const loadMore = async () => {
       loadMore();
     }
   };
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersection);
     if (observer && lastLeadRef.current) {
@@ -386,6 +441,17 @@ const loadMore = async () => {
                   </StyledLabelContainer>
                   <NumberDisplay value={unselectedID.size} />
                 </StyledComboInputContainer>
+                <StyledComboInputContainer>
+                  <StyledLabelContainer>
+                    <EllipsisDisplay>
+                      <Checkbox
+                        checked={false}
+                        onChange={() => handleRemoveContactedLeads()}
+                      />
+                      Remove leads that were contacted previously
+                    </EllipsisDisplay>
+                  </StyledLabelContainer>
+                </StyledComboInputContainer>
               </StyledCountContainer>
 
               <StyledTable cursorPointer={true}>
@@ -393,8 +459,8 @@ const loadMore = async () => {
                   <StyledTableRow>
                     <StyledTableHeaderCell>
                       <Checkbox
-                        checked={unselectedID.size==0}
-                        onChange={() => (handleMasterCheckboxChange(event))}
+                        checked={unselectedID.size == 0}
+                        onChange={() => handleMasterCheckboxChange(event)}
                       />
                     </StyledTableHeaderCell>
 
@@ -410,9 +476,7 @@ const loadMore = async () => {
                   {leadsData.map((leadEdge: any) => {
                     const lead = leadEdge?.node;
                     return (
-                      <StyledTableRow
-                        key={lead.id}
-                      >
+                      <StyledTableRow key={lead.id}>
                         <StyledTableCell>
                           <Checkbox
                             checked={checkbox[lead.id]}
