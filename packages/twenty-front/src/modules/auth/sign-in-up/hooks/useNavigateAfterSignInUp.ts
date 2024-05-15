@@ -6,8 +6,9 @@ import { CurrentWorkspace } from '@/auth/states/currentWorkspaceState';
 import { previousUrlState } from '@/auth/states/previousUrlState';
 import { billingState } from '@/client-config/states/billingState';
 import { AppPath } from '@/types/AppPath';
-import { CustomPath } from '@/types/CustomPath';
 import { WorkspaceMember } from '~/generated/graphql';
+import { CustomPath } from '@/types/CustomPath';
+
 
 export const useNavigateAfterSignInUp = () => {
   const navigate = useNavigate();
