@@ -7,7 +7,7 @@ import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 export const SelectFieldDisplay = () => {
   const { fieldValue,draftValue, fieldDefinition } = useSelectField();
 
-  const selectedOption = fieldDefinition.metadata.options.find(
+  const selectedOption = fieldDefinition.metadata.options?.find(
     (option) => option.value === fieldValue,
   );
   const {campaignData,setCampaignData}=useCampaign()

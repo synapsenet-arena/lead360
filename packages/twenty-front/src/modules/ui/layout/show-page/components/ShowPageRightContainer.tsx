@@ -76,6 +76,7 @@ type ShowPageRightContainerProps = {
   tasks?: boolean;
   notes?: boolean;
   emails?: boolean;
+  loading?: boolean;
 };
 
 export const ShowPageRightContainer = ({
@@ -84,6 +85,7 @@ export const ShowPageRightContainer = ({
   tasks,
   notes,
   emails,
+  loading,
 }: ShowPageRightContainerProps) => {
   const { activeTabIdState } = useTabList(TAB_LIST_COMPONENT_ID);
   const activeTabId = useRecoilValue(activeTabIdState);
@@ -92,11 +94,10 @@ export const ShowPageRightContainer = ({
       objectNameSingular: targetableObject.targetObjectNameSingular,
     });
   const shouldDisplayCalendarTab =
-    useIsFeatureEnabled('IS_CALENDAR_ENABLED') &&
-    (targetableObject.targetObjectNameSingular ===
+    targetableObject.targetObjectNameSingular ===
       CoreObjectNameSingular.Company ||
-      targetableObject.targetObjectNameSingular ===
-        CoreObjectNameSingular.Person);
+    targetableObject.targetObjectNameSingular === CoreObjectNameSingular.Person;
+
   const shouldDisplayLogTab = useIsFeatureEnabled('IS_EVENT_OBJECT_ENABLED');
 
   const shouldDisplayEmailsTab =
@@ -191,12 +192,16 @@ export const ShowPageRightContainer = ({
   return (
     <StyledShowPageRightContainer>
       <StyledTabListContainer>
-        <TabList tabListId={TAB_LIST_COMPONENT_ID} tabs={TASK_TABS} />
+        <TabList
+          loading={loading}
+          tabListId={TAB_LIST_COMPONENT_ID}
+          tabs={TASK_TABS}
+        />
       </StyledTabListContainer>
       {activeTabId === 'timeline' && (
         <>
           <TimelineQueryEffect targetableObject={targetableObject} />
-          <Timeline targetableObject={targetableObject} />
+          <Timeline loading={loading} targetableObject={targetableObject} />
         </>
       )}
       {activeTabId === 'tasks' && (

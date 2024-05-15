@@ -232,17 +232,17 @@ const handleRuncampaign = async () => {
               onClick={handleFavoriteButtonClick}
             />
             <ShowPageAddButton
-              key="add"
-              activityTargetObject={{
-                id: record.id,
-                targetObjectNameSingular: objectMetadataItem?.nameSingular,
-              }}
-            />
-            <ShowPageMoreButton
-              key="more"
-              recordId={record.id}
-              objectNameSingular={objectNameSingular}
-            />
+            key="add"
+            activityTargetObject={{
+              id: record?.id ?? '0',
+              targetObjectNameSingular: objectMetadataItem?.nameSingular,
+            }}
+          />
+          <ShowPageMoreButton
+            key="more"
+            recordId={record?.id ?? '0'}
+            objectNameSingular={objectNameSingular}
+          />
           </>
         )}
                 {record && objectNameSingular === 'campaign' && (
@@ -270,6 +270,7 @@ const handleRuncampaign = async () => {
         <RecordShowContainer
           objectNameSingular={objectNameSingular}
           objectRecordId={objectRecordId}
+          loading={loading}
         />
       </PageBody>
     </PageContainer>

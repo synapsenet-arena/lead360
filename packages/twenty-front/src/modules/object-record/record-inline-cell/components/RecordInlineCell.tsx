@@ -19,9 +19,13 @@ import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
 type RecordInlineCellProps = {
   readonly?: boolean;
+  loading?: boolean;
 };
 
-export const RecordInlineCell = ({ readonly }: RecordInlineCellProps) => {
+export const RecordInlineCell = ({
+  readonly,
+  loading,
+}: RecordInlineCellProps) => {
   const { fieldDefinition, entityId } = useContext(FieldContext);
 
   const buttonIcon = useGetButtonIcon();
