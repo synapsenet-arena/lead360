@@ -149,7 +149,7 @@ export const Leads = ({
   const { campaignData, setCampaignData } = useCampaign();
   const allLeadId = {};
   const date = new Date(campaignData.querystamp.toString());
-  let [opportunitiesLeadIds,setOpportunitiesLeadIds] = useState(new Set());
+  let [opportunitiesLeadIds, setOpportunitiesLeadIds] = useState(new Set());
 
   let [selectedCampaign, { data: selectedCampaignData }] = useLazyQuery(
     GET_CAMPAIGN_LISTS,
@@ -233,6 +233,7 @@ export const Leads = ({
 
   const loadMore = async () => {
     if (loading) {
+    
       const result = await filterleads({
         variables: {
           ...filter,
@@ -254,13 +255,43 @@ export const Leads = ({
       setCursor(result.data.leads.pageInfo.endCursor);
       const newLeadsData = result.data.leads.edges;
 
+      for (const id of unselectedID.keys()) {
+        setSelectedID(selectedID.add(id));
+        unselectedID.delete(id);
+        setUnselectedID(unselectedID);
+      }
+
+      for (const id of selectedID.keys()) {
+        allLeadId[id] = true;
+      }
+
+      setCheckbox({
+        ...checkbox,
+        ...allLeadId,
+      });
+
+      const removeleadsfromSelected = (prevLeadsData: any[]) =>
+        prevLeadsData.filter((lead: any) =>
+          opportunitiesLeadIds.has(lead.node.id),
+        );
+
       const removeleads = (prevLeadsData: any[]) =>
         prevLeadsData.filter(
           (lead: any) => !opportunitiesLeadIds.has(lead.node.id),
-        )
-        const leadsRemoved = removeleads(newLeadsData)
-      setLeadsData([...leadsData, ...leadsRemoved]);
+        );
 
+      const removeFromSelected = removeleadsfromSelected(newLeadsData);
+      for (const lead of removeFromSelected) {
+        selectedID.delete(lead.node.id);
+        unselectedID.delete(lead.node.id);
+      }
+      setSelectedID(selectedID);
+      setUnselectedID(unselectedID);
+      console.log(selectedID, 'selected');
+
+      const leadsRemoved = removeleads(newLeadsData);
+      setLeadsData([...leadsData, ...leadsRemoved]);
+      setTotalLeadsCount(totalLeadsCount - removeFromSelected.length);
     }
   };
 
@@ -273,7 +304,6 @@ export const Leads = ({
       let hasNextPage = true;
       let cursor = null;
 
-      
       while (hasNextPage) {
         const data = await contactedOpportunities({
           variables: {
@@ -300,16 +330,31 @@ export const Leads = ({
         hasNextPage = data.data.campaign.opportunities.pageInfo.hasNextPage;
         console.log(hasNextPage);
       }
-      console.log("-----",leadsData,"leadsData")
+      const removeleadsfromSelected = (prevLeadsData: any[]) =>
+        prevLeadsData.filter((lead: any) =>
+          opportunitiesLeadIds.has(lead.node.id),
+        );
+
       const removeleads = (prevLeadsData: any[]) =>
         prevLeadsData.filter(
           (lead: any) => !opportunitiesLeadIds.has(lead.node.id),
-        )
-        
-      setLeadsData(removeleads(leadsData));
-      console.log(removeleads(leadsData),"removeleads")
-      console.log("leads removed from  more...")
+        );
 
+      const removeFromSelected = removeleadsfromSelected(leadsData);
+      console.log(removeFromSelected, 'remove');
+      for (const lead of removeFromSelected) {
+        // console.log(node.id,"node.id")
+        // console.log(node,"node")
+
+        selectedID.delete(lead.node.id);
+        unselectedID.delete(lead.node.id);
+      }
+      setSelectedID(selectedID);
+      setUnselectedID(unselectedID);
+      console.log(selectedID, 'selected');
+
+      setLeadsData(removeleads(leadsData));
+      setTotalLeadsCount(totalLeadsCount - removeFromSelected.length);
     } catch (error) {
       console.error('Error fetching contacted opportunities:', error);
     }
@@ -321,7 +366,6 @@ export const Leads = ({
       setSelectedID(selectedID.add(leadId));
       unselectedID.delete(leadId);
       setUnselectedID(unselectedID);
-      // allLeadId[leadId]=true
       setCheckbox({
         ...checkbox,
         [leadId]: true,
@@ -330,7 +374,6 @@ export const Leads = ({
       selectedID.delete(leadId);
       setSelectedID(selectedID);
       setUnselectedID(unselectedID.add(leadId));
-      // allLeadId[leadId]=false
       setCheckbox({
         ...checkbox,
         [leadId]: false,
