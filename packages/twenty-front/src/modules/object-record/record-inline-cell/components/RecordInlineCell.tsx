@@ -125,10 +125,16 @@ export const RecordInlineCell = ({
               isReadOnly={readonly}
             />
           }
-          displayModeContent={<FieldDisplay />}
+          displayModeContent={({ cellElement, isCellSoftFocused }) => (
+            <FieldDisplay
+              cellElement={cellElement}
+              isCellSoftFocused={isCellSoftFocused}
+            />
+          )}
           isDisplayModeContentEmpty={isFieldEmpty}
           isDisplayModeFixHeight
           editModeContentOnly={isFieldInputOnly}
+          loading={loading}
         />
       )}
       {fieldDefinition.metadata.fieldName === 'stage' && (
@@ -155,10 +161,16 @@ export const RecordInlineCell = ({
               onSubmit={handleStageChange}
             />
           }
-          displayModeContent={<FieldDisplay />}
+          displayModeContent={({ cellElement, isCellSoftFocused }) => (
+            <FieldDisplay
+              cellElement={cellElement}
+              isCellSoftFocused={isCellSoftFocused}
+            />
+          )}
           isDisplayModeContentEmpty={isFieldEmpty}
           isDisplayModeFixHeight
           editModeContentOnly={isFieldInputOnly}
+          loading={loading}
         />
       )}
     </>
