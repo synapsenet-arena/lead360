@@ -35,6 +35,7 @@ const StyledInputContainer = styled.div`
   align-items: center;
   display: flex;
   position: relative;
+  margin: 4px;
 `;
 
 type InputProps = {

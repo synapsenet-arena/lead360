@@ -75,6 +75,16 @@ const StyledLabelContainer = styled.div`
   width: auto;
 `;
 
+const StyledCheckLabelContainer = styled.div`
+display: flex;
+> * + * {
+  margin-left: ${({ theme }) => theme.spacing(4)};
+}
+  color: ${({ theme }) => theme.font.color.tertiary};
+  width: auto;
+  align-items: center;
+`;
+
 const StyledTable = styled.table<{ cursorPointer: boolean }>`
   width: 100%;
   border-collapse: collapse;
@@ -484,17 +494,13 @@ export const Leads = ({
                   </StyledLabelContainer>
                   <NumberDisplay value={unselectedID.size} />
                 </StyledComboInputContainer>
-                <StyledComboInputContainer>
-                  <StyledLabelContainer>
-                    <EllipsisDisplay>
+                  <StyledCheckLabelContainer>
                       <Checkbox
                         checked={false}
                         onChange={() => handleRemoveContactedLeads()}
                       />
                       Remove leads that were contacted previously
-                    </EllipsisDisplay>
-                  </StyledLabelContainer>
-                </StyledComboInputContainer>
+                  </StyledCheckLabelContainer>
               </StyledCountContainer>
 
               <StyledTable cursorPointer={true}>

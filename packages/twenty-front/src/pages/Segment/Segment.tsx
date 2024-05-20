@@ -24,6 +24,7 @@ import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
 import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
 import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
 import { GRAY_SCALE } from 'twenty-ui';
+import { capitalize } from '~/utils/string/capitalize';
 
 const PageContainer = styled.div`
   display: flex;
@@ -168,7 +169,9 @@ export const Segment = () => {
 
   const [leadData, setLeadData] = useState<any | any[]>([]);
   const [filterDivs, setFilterDivs] = useState<string[]>([]);
-  const [selectedFilterOptions, setSelectedFilterOptions] = useState<Record<string, string> >({});
+  const [selectedFilterOptions, setSelectedFilterOptions] = useState<
+    Record<string, string>
+  >({});
 
   const [cursor, setCursor] = useState<string | null>(null);
   const lastLeadRef = useRef<HTMLTableRowElement | null>(null);
@@ -202,18 +205,18 @@ export const Segment = () => {
   const conditions = createOptions(['AND', 'OR']);
   const operators = createOptions([
     '= equal',
-    '>  greater',
-    '<  lesser',
+    '> greater',
+    '< lesser',
     '!= not equal',
     '<> between',
   ]);
 
   const fields = [
-    {"label": 'Advertisement Source', "value": 'advertisementSource'},
-    {"label": 'Age', "value": 'age'},
-    {"label": 'Location', "value": 'location'},
-    {"label": 'Campaign Name', "value": 'campaignName'},
-    {"label": 'Advertisement Name', "value": 'advertisementName'}
+    { label: 'Advertisement Source', value: 'advertisementSource' },
+    { label: 'Age', value: 'age' },
+    { label: 'Location', value: 'location' },
+    { label: 'Campaign Name', value: 'campaignName' },
+    { label: 'Advertisement Name', value: 'advertisementName' },
   ];
 
   const handleSelectChange = (key: string, value: string) => {
@@ -248,11 +251,7 @@ export const Segment = () => {
         }
 
         let operation;
-        console.log(selectedFilterOptions[`${key}-operators`] ===
-        '<> between',"operator")
-        if (selectedFilterOptions[`${key}-operators`] ===
-        '<> between') {
-          
+        if (selectedFilterOptions[`${key}-operators`] === '<> between') {
           operation = '';
         } else {
           switch (operator) {
@@ -291,12 +290,8 @@ export const Segment = () => {
 
     setFilter(filter);
     let filterString = `{ "filter": ${JSON.stringify(filter)} }`;
-    console.log(filter, 'filter');
-    console.log(filterString, 'filterString');
-    const orderBy = { position: 'AscNullsFirst' };
     try {
       const result = await filterleads({ variables: { filter } });
-
       setLeadData(result.data.leads.edges);
       setCursor(result.data.leads.pageInfo.endCursor);
       if (result.data.leads.pageInfo.hasNextPage == true) {
@@ -325,8 +320,6 @@ export const Segment = () => {
       if (result.data.leads.pageInfo.hasNextPage == true) {
         setFilterLoading(true);
       }
-
-      console.log(currentPosition, 'currentPosition');
       window.scrollTo(0, currentPosition);
     }
   };
@@ -351,7 +344,7 @@ export const Segment = () => {
       navigate(`/object/segment/${id}`);
       // window.location.reload();
     } catch (errors: any) {
-      console.log('Error saving segment', error);
+      console.error('Error saving segment', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
         variant: 'error',
       });
@@ -378,6 +371,13 @@ export const Segment = () => {
       }
     };
   }, [leadData]);
+
+  const fieldsToDisplay =
+    leadData.length > 0
+      ? Object.keys(leadData[0].node).filter(
+          (field) => field !== '__typename' && field !== 'id',
+        )
+      : [];
 
   return (
     <>
@@ -475,8 +475,11 @@ export const Segment = () => {
                   />
 
                   <TextInput
-                    placeholder={selectedFilterOptions[`${key}-operators`] ===
-                    '<> between'? 'Greater than' : "Value"}
+                    placeholder={
+                      selectedFilterOptions[`${key}-operators`] === '<> between'
+                        ? 'Greater than'
+                        : 'Value'
+                    }
                     value={selectedFilterOptions[`${key}-value1`] || ''}
                     onChange={(e) => handleSelectChange(`${key}-value1`, e)}
                     name="value"
@@ -487,8 +490,12 @@ export const Segment = () => {
                   {selectedFilterOptions[`${key}-operators`] ===
                     '<> between' && (
                     <TextInput
-                      placeholder={selectedFilterOptions[`${key}-operators`] ===
-                      '<> between'? 'Lesser than' : "Value"}
+                      placeholder={
+                        selectedFilterOptions[`${key}-operators`] ===
+                        '<> between'
+                          ? 'Lesser than'
+                          : 'Value'
+                      }
                       value={selectedFilterOptions[`${key}-value2`] || ''}
                       onChange={(e) => handleSelectChange(`${key}-value2`, e)}
                       name="value"
@@ -519,77 +526,26 @@ export const Segment = () => {
               </StyledComboInputContainer>
             </StyledCountContainer>
             <StyledTable cursorPointer={true}>
-              <tbody>
+              <thead>
                 <StyledTableRow>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>Name</StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>Age</StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>Gender</StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>Location</StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>Campaign Name</StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>
-                      Advertisement Source
-                    </StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>Phone Number</StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>Comments</StyledLabelContainer>
-                  </StyledTableHeaderCell>
-                  <StyledTableHeaderCell>
-                    <StyledLabelContainer>
-                      Advertisement Name
-                    </StyledLabelContainer>
-                  </StyledTableHeaderCell>
+                  {fieldsToDisplay.map((field) => (
+                    <StyledTableHeaderCell key={field}>
+                      {capitalize(field)}
+                    </StyledTableHeaderCell>
+                  ))}
                 </StyledTableRow>
-                {leadData.map((leads: any) => (
-                  <StyledTableRow key={leads.node.id}>
-                    <StyledTableCell>
-                      <EllipsisDisplay>{leads.node?.name}</EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>{leads.node?.age}</EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>{leads.node?.gender}</EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>{leads.node?.location}</EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>
-                        {leads.node?.campaignName}
-                      </EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>
-                        {leads.node?.advertisementSource}
-                      </EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>
-                        {leads.node?.phoneNumber}
-                      </EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>{leads.node?.comments}</EllipsisDisplay>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <EllipsisDisplay>
-                        {leads.node?.advertisementName}
-                      </EllipsisDisplay>
-                    </StyledTableCell>
+              </thead>
+              <tbody>
+                {leadData.map((lead: any, index: number) => (
+                  <StyledTableRow
+                    key={lead.node.id}
+                    ref={index === leadData.length - 1 ? lastLeadRef : null}
+                  >
+                    {fieldsToDisplay.map((field) => (
+                      <StyledTableCell key={field}>
+                        {lead.node[field]}
+                      </StyledTableCell>
+                    ))}
                   </StyledTableRow>
                 ))}
                 {cursor && filterLoading && (
