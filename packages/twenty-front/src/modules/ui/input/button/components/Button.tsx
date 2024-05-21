@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import isPropValid from '@emotion/is-prop-valid';
 import { css, useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
 import { IconComponent } from '@ui/display/icon/types/IconComponent';
@@ -24,9 +26,14 @@ export type ButtonProps = {
   disabled?: boolean;
   focus?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-};
+  to?: string;
+  target?: string;
+} & React.ComponentProps<'button'>;
 
-const StyledButton = styled.button<
+const StyledButton = styled('button', {
+  shouldForwardProp: (prop) =>
+    !['fullWidth'].includes(prop) && isPropValid(prop),
+})<
   Pick<
     ButtonProps,
     'fullWidth' | 'variant' | 'size' | 'position' | 'accent' | 'focus'
@@ -216,7 +223,9 @@ const StyledButton = styled.button<
               box-shadow: ${!disabled && focus
                 ? `0 0 0 3px ${theme.color.red10}`
                 : 'none'};
-              color: ${!disabled ? theme.font.color.danger : theme.color.red20};
+              color: ${!disabled
+                ? theme.font.color.danger
+                : theme.border.color.danger};
               &:hover {
                 background: ${!disabled
                   ? theme.background.danger
@@ -232,6 +241,7 @@ const StyledButton = styled.button<
     }
   }}
 
+  text-decoration: none;
   border-radius: ${({ position, theme }) => {
     switch (position) {
       case 'left':
@@ -293,6 +303,8 @@ export const Button = ({
   disabled = false,
   focus = false,
   onClick,
+  to,
+  target,
 }: ButtonProps) => {
   const theme = useTheme();
 
@@ -307,6 +319,9 @@ export const Button = ({
       accent={accent}
       className={className}
       onClick={onClick}
+      to={to}
+      as={to ? Link : 'button'}
+      target={target}
     >
       {Icon && <Icon size={theme.icon.size.sm} />}
       {title}

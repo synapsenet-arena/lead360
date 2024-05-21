@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { IconCheckbox } from 'twenty-ui';
 
@@ -125,7 +125,8 @@ export const PageChangeEffect = () => {
       navigate(AppPath.CreateProfile);
     } else if (
       onboardingStatus === OnboardingStatus.Completed &&
-      isMatchingOnboardingRoute
+      isMatchingOnboardingRoute &&
+      !isMatchingLocation(AppPath.Invite)
     ) {
       navigate(AppPath.Index);
     } else if (
@@ -134,24 +135,6 @@ export const PageChangeEffect = () => {
       !isMatchingLocation(AppPath.PlanRequired)
     ) {
       navigate(AppPath.Index);
-    } else if (isMatchingLocation(AppPath.Invite)) {
-      const inviteHash =
-        matchPath({ path: '/invite/:workspaceInviteHash' }, location.pathname)
-          ?.params.workspaceInviteHash || '';
-
-      workspaceFromInviteHashQuery({
-        variables: {
-          inviteHash,
-        },
-        onCompleted: (data) => {
-          if (isUndefinedOrNull(data.findWorkspaceFromInviteHash)) {
-            navigateToSignUp();
-          }
-        },
-        onError: (_) => {
-          navigateToSignUp();
-        },
-      });
     }
   }, [
     enqueueSnackBar,

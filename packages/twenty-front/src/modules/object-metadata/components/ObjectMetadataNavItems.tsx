@@ -10,10 +10,9 @@ import { getObjectMetadataItemViews } from '@/views/utils/getObjectMetadataItemV
 
 export const ObjectMetadataNavItems = () => {
   const { activeObjectMetadataItems } = useFilteredObjectMetadataItems();
-  const navigate = useNavigate();
   const { getIcon } = useIcons();
   const currentPath = useLocation().pathname;
-
+  const navigate=useNavigate()
   const { records: views } = usePrefetchedData<View>(PrefetchKey.AllViews);
 
   return (
