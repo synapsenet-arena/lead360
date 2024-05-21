@@ -11,6 +11,8 @@ import {
 import { useSignInUpForm } from '@/auth/sign-in-up/hooks/useSignInUpForm';
 import { currentWorkspaceState } from '@/auth/states/currentWorkspaceState';
 import { isDefined } from '~/utils/isDefined';
+import { Logo } from '@/auth/components/Logo';
+import { AnimatedEaseIn } from '@/ui/utilities/animation/components/AnimatedEaseIn';
 
 export const SignInUp = () => {
   const { form } = useSignInUpForm();
@@ -23,11 +25,11 @@ export const SignInUp = () => {
       signInUpStep === SignInUpStep.Init ||
       signInUpStep === SignInUpStep.Email
     ) {
-      return 'Welcome to Twenty';
+      return 'Welcome to Lead360';
     }
     return signInUpMode === SignInUpMode.SignIn
-      ? 'Sign in to Twenty'
-      : 'Sign up to Twenty';
+      ? 'Sign in to Lead360'
+      : 'Sign up to Lead360';
   }, [signInUpMode, signInUpStep]);
 
   if (isDefined(currentWorkspace)) {
@@ -36,6 +38,9 @@ export const SignInUp = () => {
 
   return (
     <>
+    <AnimatedEaseIn>
+      <Logo workspaceLogo={currentWorkspace?.logo} />
+    </AnimatedEaseIn>
       <Title animate>{title}</Title>
       <SignInUpForm />
     </>
