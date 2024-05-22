@@ -453,6 +453,18 @@ export const Leads = ({
     };
   }, [leadsData]);
 
+  const [fieldsToDisplay, setFieldsToDisplay] = useState<string[]>([]);
+  let transformedObject: any;
+  useEffect(() => {
+    if (leadsData[0]) {
+      setFieldsToDisplay(
+        Object.keys(leadsData[0].node).filter(
+          (field) => field !== '__typename' && field !== 'id',
+        ),
+      );
+    }
+  }, [leadsData]);
+
   return (
     <>
       <StyledButtonContainer>
@@ -507,16 +519,16 @@ export const Leads = ({
                 <tbody>
                   <StyledTableRow>
                     <StyledTableHeaderCell>
-                      <Checkbox
+                    <Checkbox
                         checked={unselectedID.size == 0}
                         onChange={() => handleMasterCheckboxChange(event)}
                       />
                     </StyledTableHeaderCell>
 
-                    {fields.map(({ name, icon: Icon }) => (
+                    {fieldsToDisplay.map(( name) => (
                       <StyledTableHeaderCell key={name}>
                         <StyledLabelContainer>
-                          {Icon && <Icon size={15} />}
+                          {/* {Icon && <Icon size={15} />} */}
                           {capitalize(name)}
                         </StyledLabelContainer>
                       </StyledTableHeaderCell>
@@ -527,14 +539,14 @@ export const Leads = ({
                     return (
                       <StyledTableRow key={lead.id}>
                         <StyledTableCell>
-                          <Checkbox
+                          <Checkbox     
                             checked={checkbox[lead.id]}
                             onChange={() =>
                               handleCheckboxChange(event, lead.id)
                             }
                           />
                         </StyledTableCell>
-                        {fields.map(({ name }) => (
+                        {fieldsToDisplay.map(( name ) => (
                           <StyledTableCell key={name}>
                             <EllipsisDisplay>
                               {lead[name].toString()}
