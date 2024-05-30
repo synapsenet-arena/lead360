@@ -18,10 +18,17 @@ import { WorkspaceIsNullable } from 'src/engine/twenty-orm/decorators/workspace-
 import { WorkspaceRelation } from 'src/engine/twenty-orm/decorators/workspace-relation.decorator';
 
 export enum MessageChannelSyncStatus {
+  // TO BE DEPRECATED
   PENDING = 'PENDING',
-  ONGOING = 'ONGOING',
   SUCCEEDED = 'SUCCEEDED',
   FAILED = 'FAILED',
+
+  // NEW STATUSES
+  NOT_SYNCED = 'NOT_SYNCED',
+  ONGOING = 'ONGOING',
+  COMPLETED = 'COMPLETED',
+  FAILED_INSUFFICIENT_PERMISSIONS = 'FAILED_INSUFFICIENT_PERMISSIONS',
+  FAILED_UNKNOWN = 'FAILED_UNKNOWN',
 }
 
 export enum MessageChannelSyncSubStatus {
@@ -30,6 +37,7 @@ export enum MessageChannelSyncSubStatus {
   MESSAGES_LIST_FETCH_ONGOING = 'MESSAGES_LIST_FETCH_ONGOING',
   MESSAGES_IMPORT_PENDING = 'MESSAGES_IMPORT_PENDING',
   MESSAGES_IMPORT_ONGOING = 'MESSAGES_IMPORT_ONGOING',
+  FAILED = 'FAILED',
 }
 
 export enum MessageChannelVisibility {
@@ -163,17 +171,12 @@ export class MessageChannelWorkspaceEntity extends BaseWorkspaceEntity {
     description: 'Sync status',
     icon: 'IconStatusChange',
     options: [
+      // TO BE DEPRECATED: PENDING, SUCCEEDED, FAILED
       {
         value: MessageChannelSyncStatus.PENDING,
         label: 'Pending',
         position: 0,
         color: 'blue',
-      },
-      {
-        value: MessageChannelSyncStatus.ONGOING,
-        label: 'Ongoing',
-        position: 1,
-        color: 'yellow',
       },
       {
         value: MessageChannelSyncStatus.SUCCEEDED,
@@ -185,6 +188,37 @@ export class MessageChannelWorkspaceEntity extends BaseWorkspaceEntity {
         value: MessageChannelSyncStatus.FAILED,
         label: 'Failed',
         position: 3,
+        color: 'red',
+      },
+      // NEW STATUSES
+      {
+        value: MessageChannelSyncStatus.ONGOING,
+        label: 'Ongoing',
+        position: 1,
+        color: 'yellow',
+      },
+      {
+        value: MessageChannelSyncStatus.NOT_SYNCED,
+        label: 'Not Synced',
+        position: 4,
+        color: 'blue',
+      },
+      {
+        value: MessageChannelSyncStatus.COMPLETED,
+        label: 'Completed',
+        position: 5,
+        color: 'green',
+      },
+      {
+        value: MessageChannelSyncStatus.FAILED_INSUFFICIENT_PERMISSIONS,
+        label: 'Failed Insufficient Permissions',
+        position: 6,
+        color: 'red',
+      },
+      {
+        value: MessageChannelSyncStatus.FAILED_UNKNOWN,
+        label: 'Failed Unknown',
+        position: 7,
         color: 'red',
       },
     ],
@@ -229,7 +263,14 @@ export class MessageChannelWorkspaceEntity extends BaseWorkspaceEntity {
         position: 4,
         color: 'orange',
       },
+      {
+        value: MessageChannelSyncSubStatus.FAILED,
+        label: 'Failed',
+        position: 5,
+        color: 'red',
+      },
     ],
+    defaultValue: `'${MessageChannelSyncSubStatus.FULL_MESSAGES_LIST_FETCH_PENDING}'`,
   })
   syncSubStatus: MessageChannelSyncSubStatus;
 
