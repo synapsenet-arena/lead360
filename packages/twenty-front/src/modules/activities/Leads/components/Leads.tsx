@@ -43,7 +43,7 @@ const StyledInputCard = styled.div`
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  height: auto%;
+  height: auto;
   justify-content: space-evenly;
   width: 100%;
 `;

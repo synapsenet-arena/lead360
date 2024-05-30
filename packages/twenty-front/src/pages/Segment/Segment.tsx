@@ -217,6 +217,7 @@ export const Segment = () => {
     { label: 'Location', value: 'location' },
     { label: 'Campaign Name', value: 'campaignName' },
     { label: 'Advertisement Name', value: 'advertisementName' },
+    {label: 'Gender', value: 'gender'}
   ];
 
   const handleSelectChange = (key: string, value: string) => {
