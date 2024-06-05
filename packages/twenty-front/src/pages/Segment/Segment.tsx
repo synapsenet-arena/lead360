@@ -1,15 +1,7 @@
-import styled from '@emotion/styled';
-import { Section } from '@react-email/components';
 import { Button } from '@/ui/input/button/components/Button';
 import { useMutation } from '@apollo/client';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  IconPlayerPlay,
-  IconPlus,
-  IconUsersGroup,
-  IconX,
-} from '@tabler/icons-react';
-import { H2Title } from '@/ui/display/typography/components/H2Title';
+import { IconPlayerPlay, IconPlus, IconUsersGroup } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { PageHeader } from '@/ui/layout/page/PageHeader';
 import { useLazyQuery } from '@apollo/client';
@@ -17,148 +9,16 @@ import { FILTER_LEADS } from '@/users/graphql/queries/filterLeads';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { ADD_SEGMENT } from '@/users/graphql/queries/addSegment';
 import { useNavigate } from 'react-router-dom';
-import { Select } from '@/ui/input/components/Select';
-import { TextArea } from '@/ui/input/components/TextArea';
-import { TextInput } from '@/ui/input/components/TextInput';
-import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
-import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
-import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
-import { GRAY_SCALE } from 'twenty-ui';
-import { capitalize } from '~/utils/string/capitalize';
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow-y: scroll;
-  scrollbar-color: ${({ theme }) => theme.border.color.strong};
-  scrollbar-width: thin;
-  *::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
-  }
-
-  *::-webkit-scrollbar-corner {
-    background-color: transparent;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: ${({ theme }) => theme.border.color.strong};
-    border-radius: ${({ theme }) => theme.border.radius.sm};
-  }
-`;
-
-const StyledBoardContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: auto;
-  flex-direction: column;
-  justify-content: flex-start;
-  background: ${({ theme }) => theme.background.noisy};
-  padding: ${({ theme }) => theme.spacing(2)};
-`;
-
-const StyledInputCard = styled.div`
-  color: ${({ theme }) => theme.font.color.secondary};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: auto;
-  justify-content: space-between;
-  width: 70%;
-  align-items: center;
-`;
-
-const SytledHR = styled.hr`
-  background: ${GRAY_SCALE.gray0};
-  color: ${GRAY_SCALE.gray0};
-  bordercolor: ${GRAY_SCALE.gray0};
-  height: 0.2px;
-  width: 100%;
-  margin: ${({ theme }) => theme.spacing(10)};
-`;
-
-const StyledButton = styled.span`
-  display: flex;
-  gap: 15px;
-  width: 100%;
-  margin-right: ${({ theme }) => theme.spacing(4)};
-`;
-
-const StyledComboInputContainer1 = styled.div`
-  display: flex;
-  width: 100%;
-  padding-top: ${({ theme }) => theme.spacing(6)};
-  justify-content: space-evenly;
-`;
-
-const StyledCountContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(10)};
-  }
-  margin-top: ${({ theme }) => theme.spacing(2)};
-  margin-bottom: ${({ theme }) => theme.spacing(6)};
-  height: auto;
-  justify-content: flex-start;
-  width: 100%;
-  align-items: center;
-`;
-
-const StyledComboInputContainer = styled.div`
-  display: flex;
-  align-items: center;
-  > * + * {
-    margin-left: ${({ theme }) => theme.spacing(2)};
-  }
-`;
-
-const StyledLabelContainer = styled.div`
-  color: ${({ theme }) => theme.font.color.tertiary};
-  width: auto;
-`;
-
-const StyledTable = styled.table<{ cursorPointer: boolean }>`
-  width: 100%;
-  border-collapse: collapse;
-  height: 10px;
-  margin-bottom: ${({ theme }) => theme.spacing(6)};
-  background-color: ${({ theme }) => theme.background.primary};
-  cursor: ${({ cursorPointer }) => (cursorPointer ? 'pointer' : 'inherit')};
-  font-family: inherit;
-  font-size: inherit;
-
-  font-weight: ${({ theme }) => theme.font.weight.regular};
-  max-width: 100%;
-  overflow: hidden;
-  text-decoration: inherit;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const StyledTableRow = styled.tr`
-  &:nth-of-type(odd) {
-    background-color: ${({ theme }) => theme.background.primary};
-  }
-`;
-
-const StyledTableHeaderCell = styled.td`
-  padding: 5px;
-  border: 1px solid ${({ theme }) => theme.border.color.medium};
-  height: 25px;
-`;
-
-const StyledTableCell = styled.td`
-  padding: 5px;
-  height: 25px;
-  border: 1px solid ${({ theme }) => theme.border.color.light};
-  font-weight: ${({ theme }) => theme.font.weight.regular};
-  &:hover {
-    background-color: ${({ theme }) => theme.background.tertiary};
-  }
-`;
+import { Filters } from '~/pages/Segment/Filters';
+import { SegmentInput } from '~/pages/Segment/SegmentInput';
+import {
+  StyledInputCard,
+  SytledHR,
+  StyledButton,
+  PageContainer,
+  StyledBoardContainer,
+} from '~/pages/Segment/SegmentStyles';
+import { DisplayLeads } from '~/pages/Segment/DisplayLeads';
 
 export const Segment = () => {
   const [segmentName, setSegmentName] = useState('');
@@ -166,7 +26,6 @@ export const Segment = () => {
   const [filterString, setFilterString] = useState('');
   const [filter, setFilter] = useState('');
   const [querystamp, setQuerystamp] = useState('');
-
   const [leadData, setLeadData] = useState<any | any[]>([]);
   const [filterDivs, setFilterDivs] = useState<string[]>([]);
   const [selectedFilterOptions, setSelectedFilterOptions] = useState<
@@ -187,6 +46,13 @@ export const Segment = () => {
     setFilterDivs([...filterDivs, key]);
   };
 
+  const setSegmentNameValue = (value: string) => {
+    setSegmentName(value);
+  };
+  const setSegmentDescriptionValue = (value: string) => {
+    setSegmentDescription(value);
+  };
+
   const handleFilterRemove = (keyToRemove: string) => {
     setFilterDivs(filterDivs.filter((key) => key !== keyToRemove));
     setSelectedFilterOptions((prevOptions) => {
@@ -199,26 +65,6 @@ export const Segment = () => {
       return rest;
     });
   };
-
-  const createOptions = (options: any[]) =>
-    options.map((option: any) => ({ label: option, value: option }));
-  const conditions = createOptions(['AND', 'OR']);
-  const operators = createOptions([
-    '= equal',
-    '> greater',
-    '< lesser',
-    '!= not equal',
-    '<> between',
-  ]);
-
-  const fields = [
-    { label: 'Advertisement Source', value: 'advertisementSource' },
-    { label: 'Age', value: 'age' },
-    { label: 'Location', value: 'location' },
-    { label: 'Campaign Name', value: 'campaignName' },
-    { label: 'Advertisement Name', value: 'advertisementName' },
-    {label: 'Gender', value: 'gender'}
-  ];
 
   const handleSelectChange = (key: string, value: string) => {
     setSelectedFilterOptions((prevOptions) => ({
@@ -240,9 +86,12 @@ export const Segment = () => {
       const condition = selectedFilterOptions[`${key}-conditions`];
       const field = selectedFilterOptions[`${key}-field`];
       const operator = selectedFilterOptions[`${key}-operators`];
-      const value = selectedFilterOptions[`${key}-value`];
-      const value1 = selectedFilterOptions[`${key}-value1`];
-      const value2 = selectedFilterOptions[`${key}-value2`];
+      const value1: number | string = isNaN(
+        Number(selectedFilterOptions[`${key}-value1`]),
+      )
+        ? selectedFilterOptions[`${key}-value1`]
+        : Number(selectedFilterOptions[`${key}-value1`]);
+      const value2: number = Number(selectedFilterOptions[`${key}-value2`]);
 
       if (field && operator && (value1 || value2)) {
         const conditionFilter = condition === 'OR' ? 'or' : 'and';
@@ -277,13 +126,13 @@ export const Segment = () => {
         if (operator === '<> between') {
           filter[conditionFilter].push({
             [field]: {
-              lte: `${value2}`,
-              gte: `${value1}`,
+              lte: value2,
+              gte: value1,
             },
           });
         } else {
           filter[conditionFilter].push({
-            [field]: { [operation]: `${value1}` },
+            [field]: { [operation]: value1 },
           });
         }
       }
@@ -294,9 +143,11 @@ export const Segment = () => {
     try {
       const result = await filterleads({ variables: { filter } });
       setLeadData(result.data.leads.edges);
-      setCursor(result.data.leads.pageInfo.endCursor);
       if (result.data.leads.pageInfo.hasNextPage == true) {
         setFilterLoading(true);
+        setCursor(result.data.leads.pageInfo.endCursor);
+      } else if (result.data.leads.pageInfo.hasNextPage == false) {
+        setCursor(null);
       }
       setTotalLeadsCount(result.data.leads.totalCount);
       setQuerystamp(new Date().toISOString());
@@ -314,14 +165,14 @@ export const Segment = () => {
           lastCursor: cursor,
         },
       });
-      setCursor(result.data.leads.pageInfo.endCursor);
       const newData = result.data.leads.edges;
-      setLeadData([...leadData, ...newData]);
-      const currentPosition = window.scrollY;
+      setLeadData((prevData: any) => [...prevData, ...newData]);
       if (result.data.leads.pageInfo.hasNextPage == true) {
         setFilterLoading(true);
+        setCursor(result.data.leads.pageInfo.endCursor);
+      } else if (result.data.leads.pageInfo.hasNextPage == false) {
+        setCursor(null);
       }
-      window.scrollTo(0, currentPosition);
     }
   };
 
@@ -346,7 +197,7 @@ export const Segment = () => {
       // window.location.reload();
     } catch (errors: any) {
       console.error('Error saving segment', error);
-      enqueueSnackBar(errors.message + 'Error while adding Campaign', {
+      enqueueSnackBar(errors.message + 'Error while adding Segment', {
         variant: 'error',
       });
     }
@@ -373,49 +224,19 @@ export const Segment = () => {
     };
   }, [leadData]);
 
-  const fieldsToDisplay =
-    leadData.length > 0
-      ? Object.keys(leadData[0].node).filter(
-          (field) => field !== '__typename' && field !== 'id',
-        )
-      : [];
-
   return (
     <>
       <PageContainer>
         <PageHeader title="Segment" Icon={IconUsersGroup}></PageHeader>
         <StyledBoardContainer>
           <StyledInputCard>
-            <Section>
-              <H2Title
-                title="Segment Name"
-                description="Enter Segment name here"
-              />
-              <TextInput
-                placeholder={'Enter segment name'}
-                value={segmentName}
-                onChange={(e) => setSegmentName(e)}
-                name="segmentName"
-                required
-                fullWidth
-              />
-            </Section>
-            <SytledHR />
-            <Section>
-              <H2Title
-                title="Segment Description"
-                description="Enter segment description"
-              />
-            </Section>
-            <TextArea
-              placeholder={'Enter segment description'}
-              minRows={5}
-              value={segmentDescription}
-              onChange={(e) => setSegmentDescription(e)}
+            <SegmentInput
+              setSegmentName={setSegmentNameValue}
+              segmentName={segmentName}
+              segmentDescription={segmentDescription}
+              setSegmentDescription={setSegmentDescriptionValue}
             />
-
             <SytledHR />
-
             <StyledButton>
               <StyledButton>
                 <Button
@@ -438,126 +259,25 @@ export const Segment = () => {
                 onClick={handlesave}
               />
             </StyledButton>
-            {filterDivs.map((key) => (
-              <div key={key}>
-                <StyledComboInputContainer1>
-                  <Button
-                    Icon={IconX}
-                    onClick={() => handleFilterRemove(key)}
-                  />
-
-                  <Select
-                    fullWidth
-                    dropdownId={`conditions-${key}`}
-                    value={selectedFilterOptions[`${key}-conditions`] || ''}
-                    onChange={(value: string) =>
-                      handleSelectChange(`${key}-conditions`, value)
-                    }
-                    options={conditions}
-                  />
-                  <Select
-                    fullWidth
-                    dropdownId={`field-${key}`}
-                    value={selectedFilterOptions[`${key}-field`] || ''}
-                    onChange={(value: string) =>
-                      handleSelectChange(`${key}-field`, value)
-                    }
-                    options={fields}
-                  />
-
-                  <Select
-                    fullWidth
-                    dropdownId={`operators-${key}`}
-                    value={selectedFilterOptions[`${key}-operators`] || ''}
-                    onChange={(value: string) =>
-                      handleSelectChange(`${key}-operators`, value)
-                    }
-                    options={operators}
-                  />
-
-                  <TextInput
-                    placeholder={
-                      selectedFilterOptions[`${key}-operators`] === '<> between'
-                        ? 'Greater than'
-                        : 'Value'
-                    }
-                    value={selectedFilterOptions[`${key}-value1`] || ''}
-                    onChange={(e) => handleSelectChange(`${key}-value1`, e)}
-                    name="value"
-                    required
-                    fullWidth
-                  />
-
-                  {selectedFilterOptions[`${key}-operators`] ===
-                    '<> between' && (
-                    <TextInput
-                      placeholder={
-                        selectedFilterOptions[`${key}-operators`] ===
-                        '<> between'
-                          ? 'Lesser than'
-                          : 'Value'
-                      }
-                      value={selectedFilterOptions[`${key}-value2`] || ''}
-                      onChange={(e) => handleSelectChange(`${key}-value2`, e)}
-                      name="value"
-                      required
-                      fullWidth
-                    />
-                  )}
-                </StyledComboInputContainer1>
-              </div>
-            ))}
+            <Filters
+              filterDivs={filterDivs}
+              handleFilterRemove={handleFilterRemove}
+              selectedFilterOptions={selectedFilterOptions}
+              handleSelectChange={handleSelectChange}
+            />
             <SytledHR />
           </StyledInputCard>
         </StyledBoardContainer>
-        {!loading && data && (
-          <>
-            <StyledCountContainer>
-              <StyledComboInputContainer>
-                <StyledLabelContainer>
-                  <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
-                </StyledLabelContainer>
-                <DateTimeDisplay value={querystamp} />
-              </StyledComboInputContainer>
-              <StyledComboInputContainer>
-                <StyledLabelContainer>
-                  <EllipsisDisplay>Total Leads:</EllipsisDisplay>
-                </StyledLabelContainer>
-                <NumberDisplay value={totalLeadsCount} />{' '}
-              </StyledComboInputContainer>
-            </StyledCountContainer>
-            <StyledTable cursorPointer={true}>
-              <thead>
-                <StyledTableRow>
-                  {fieldsToDisplay.map((field) => (
-                    <StyledTableHeaderCell key={field}>
-                      {capitalize(field)}
-                    </StyledTableHeaderCell>
-                  ))}
-                </StyledTableRow>
-              </thead>
-              <tbody>
-                {leadData.map((lead: any, index: number) => (
-                  <StyledTableRow
-                    key={lead.node.id}
-                    ref={index === leadData.length - 1 ? lastLeadRef : null}
-                  >
-                    {fieldsToDisplay.map((field) => (
-                      <StyledTableCell key={field}>
-                        {lead.node[field]}
-                      </StyledTableCell>
-                    ))}
-                  </StyledTableRow>
-                ))}
-                {cursor && filterLoading && (
-                  <StyledTableRow ref={lastLeadRef}>
-                    <td>Loading more...</td>
-                  </StyledTableRow>
-                )}
-              </tbody>
-            </StyledTable>
-          </>
-        )}
+        <DisplayLeads
+          loading={loading}
+          data={data}
+          querystamp={querystamp}
+          leadData={leadData}
+          totalLeadsCount={totalLeadsCount}
+          cursor={cursor}
+          filterLoading={filterLoading}
+          lastLeadRef={lastLeadRef}
+        />
       </PageContainer>
     </>
   );
