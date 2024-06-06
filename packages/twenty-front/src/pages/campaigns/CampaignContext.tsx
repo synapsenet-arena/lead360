@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { ReactNode, createContext, useState } from 'react';
 
 import { App } from '~/App';
 
@@ -21,11 +21,15 @@ export type CampaignContextProps = {
 
   setLeadData: any;
 };
-
+type CampaignContextProviderProps = {
+  children: ReactNode;
+};
 export const CampaignMultiStepContext =
   createContext<CampaignContextProps | null>(null);
 
-const CampaignContext = () => {
+const CampaignContext: React.FC<CampaignContextProviderProps> = ({
+  children,
+}) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [leadData, setLeadData] = useState();
   const [campaignData, setCampaignData] = useState({
@@ -40,7 +44,7 @@ const CampaignContext = () => {
     emailTemplate: '',
     whatsappTemplate: '',
     pageUrl: '',
-    reload: false
+    reload: false,
   });
 
   return (

@@ -35,6 +35,7 @@ export const colorLabels: Record<ThemeColor, string> = {
   orange: 'Orange',
   yellow: 'Yellow',
   gray: 'Gray',
+  black: 'Black'
 };
 
 export const MenuItemSelectColor = ({

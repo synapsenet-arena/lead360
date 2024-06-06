@@ -47,6 +47,7 @@ export const SECONDARY_COLORS = {
   blue20: '#d1dffb',
   blue10: '#e8effd',
 
+  black:'#000000',
   purple80: '#231e2e',
   purple70: '#2f2545',
   purple60: '#483473',

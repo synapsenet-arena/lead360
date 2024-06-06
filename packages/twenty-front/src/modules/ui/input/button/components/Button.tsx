@@ -6,8 +6,6 @@ import styled from '@emotion/styled';
 import { IconComponent } from '@ui/display/icon/types/IconComponent';
 import { Pill } from '@ui/components/Pill/Pill';
 
-
-
 export type ButtonSize = 'medium' | 'small';
 export type ButtonPosition = 'standalone' | 'left' | 'middle' | 'right';
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
@@ -23,6 +21,7 @@ export type ButtonProps = {
   position?: ButtonPosition;
   accent?: ButtonAccent;
   soon?: boolean;
+  justify?: 'center' | 'flex-start' | 'flex-end';
   disabled?: boolean;
   focus?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -36,7 +35,15 @@ const StyledButton = styled('button', {
 })<
   Pick<
     ButtonProps,
-    'fullWidth' | 'variant' | 'size' | 'position' | 'accent' | 'focus'
+    | 'fullWidth'
+    | 'variant'
+    | 'size'
+    | 'position'
+    | 'accent'
+    | 'focus'
+    | 'justify'
+    | 'to'
+    | 'target'
   >
 >`
   align-items: center;

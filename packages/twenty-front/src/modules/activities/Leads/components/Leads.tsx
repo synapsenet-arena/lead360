@@ -129,6 +129,10 @@ const StyledTableCell = styled.td`
 interface CheckboxState {
   [key: string]: boolean;
 }
+interface AllLeadId {
+  [key: string]: boolean;
+}
+
 export const Leads = ({
   targetableObject,
 }: {
@@ -157,7 +161,7 @@ export const Leads = ({
   const [isChecked, setIsChecked] = useState<boolean>(true);
   const [checkbox, setCheckbox] = useState<CheckboxState>({});
   const { campaignData, setCampaignData } = useCampaign();
-  const allLeadId = {};
+  const allLeadId:AllLeadId = {};
   const date = new Date(campaignData.querystamp.toString());
   let [opportunitiesLeadIds, setOpportunitiesLeadIds] = useState(new Set());
 
@@ -220,7 +224,7 @@ export const Leads = ({
       });
 
       for (const id of selectedID.keys()) {
-        allLeadId[id] = true;
+        allLeadId[id as string] = true;
       }
       setCheckbox({
         ...checkbox,
@@ -254,7 +258,8 @@ export const Leads = ({
       result.data.leads.edges.forEach((leadEdge: any) => {
         const lead = leadEdge?.node;
         setSelectedID(selectedID.add(lead.id));
-        allLeadId[lead.id] = true;
+        const id = lead.id
+        allLeadId[id] = true;
       });
 
       setCheckbox({
@@ -272,7 +277,7 @@ export const Leads = ({
       }
 
       for (const id of selectedID.keys()) {
-        allLeadId[id] = true;
+        allLeadId[id as string] = true;
       }
 
       setCheckbox({
@@ -408,7 +413,7 @@ export const Leads = ({
         setUnselectedID(unselectedID);
       }
       for (const id of selectedID.keys()) {
-        allLeadId[id] = true;
+        allLeadId[id as string] = true;
       }
     } else {
       for (const id of selectedID.keys()) {
@@ -417,7 +422,7 @@ export const Leads = ({
         setUnselectedID(unselectedID.add(id));
       }
       for (const id of unselectedID.keys()) {
-        allLeadId[id] = false;
+        allLeadId[id as string] = false;
       }
     }
 
@@ -549,7 +554,7 @@ export const Leads = ({
                         {fieldsToDisplay.map(( name ) => (
                           <StyledTableCell key={name}>
                             <EllipsisDisplay>
-                              {lead[name].toString()}
+                              {lead[name]}
                             </EllipsisDisplay>
                           </StyledTableCell>
                         ))}

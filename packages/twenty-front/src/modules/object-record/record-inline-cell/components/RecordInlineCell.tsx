@@ -55,13 +55,14 @@ export const RecordInlineCell = ({
   const handleStageChange: FieldInputEvent = (persistField) => {
     persistField();
     closeInlineCell();
+    const targetableObject : string = fieldDefinition.metadata.objectMetadataNameSingular?fieldDefinition.metadata.objectMetadataNameSingular:''
     openCreateActivity({
       type: 'Note',
       targetableObjects: [
         {
           id: entityId,
-          targetObjectNameSingular:
-            fieldDefinition.metadata.objectMetadataNameSingular,
+          targetObjectNameSingular:targetableObject
+            ,
         },
       ],
     });

@@ -16,7 +16,7 @@ import { AnimatedEaseIn } from '@/ui/utilities/animation/components/AnimatedEase
 
 export const SignInUp = () => {
   const { form } = useSignInUpForm();
-  const currentWorkspace = useRecoilValue(currentWorkspaceState);
+  const currentWorkspace= useRecoilValue(currentWorkspaceState);
 
   const { signInUpStep, signInUpMode } = useSignInUp(form);
 
@@ -39,7 +39,7 @@ export const SignInUp = () => {
   return (
     <>
     <AnimatedEaseIn>
-      <Logo workspaceLogo={currentWorkspace?.logo} />
+      <Logo workspaceLogo={currentWorkspace} />
     </AnimatedEaseIn>
       <Title animate>{title}</Title>
       <SignInUpForm />

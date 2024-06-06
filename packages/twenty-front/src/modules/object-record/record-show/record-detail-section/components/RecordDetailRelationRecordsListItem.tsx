@@ -90,9 +90,7 @@ export const RecordDetailRelationRecordsListItem = ({
     objectNameSingular: string;
     objectRecordId: string;
   }>();
-  const { getActiveTabIdState, setActiveTabId } = useTabList(
-    TAB_LIST_COMPONENT_ID,
-  );
+  const { setActiveTabId } = useTabList(TAB_LIST_COMPONENT_ID);
 
   const {
     relationFieldMetadataId,
@@ -258,16 +256,16 @@ export const RecordDetailRelationRecordsListItem = ({
           />
         </DropdownScope>
         {objectNameSingular == 'campaign' &&
-            (relationRecord.__typename == 'FormTemplate' ||
-              relationRecord.__typename == 'MessageTemplate' ||
-              relationRecord.__typename == 'Segment') && (
-              <LightIconButton
-                className="displayOnHover"
-                Icon={IconEye}
-                accent="tertiary"
-                onClick={handleView}
-              />
-            )}
+          (relationRecord.__typename == 'FormTemplate' ||
+            relationRecord.__typename == 'MessageTemplate' ||
+            relationRecord.__typename == 'Segment') && (
+            <LightIconButton
+              className="displayOnHover"
+              Icon={IconEye}
+              accent="tertiary"
+              onClick={handleView}
+            />
+          )}
       </StyledListItem>
       <AnimatedEaseInOut isOpen={isExpanded}>
         <PropertyBox>

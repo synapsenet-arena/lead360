@@ -12,6 +12,7 @@ export const TAG_DARK = {
     orange: COLOR.orange10,
     yellow: COLOR.yellow10,
     gray: COLOR.gray10,
+    black:COLOR.black,
   },
   background: {
     green: COLOR.green60,
@@ -24,5 +25,6 @@ export const TAG_DARK = {
     orange: COLOR.orange60,
     yellow: COLOR.yellow60,
     gray: COLOR.gray60,
+    black:COLOR.black,
   },
 };

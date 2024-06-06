@@ -189,7 +189,6 @@ export const Schedule = ({
                 })
               }
                 minDate={new Date()}
-                value={undefined}
               />
             )}
           </StyledComboInputContainer>

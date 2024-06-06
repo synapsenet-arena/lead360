@@ -13,11 +13,12 @@ export default function Dashboard() {
     return token.token
   };
   useEffect(() => {
+    const mountPoint:any=document.getElementById('dashboard')
     const embed = async () => {
       await embedDashboard({
         id: '9837afcd-7c43-45e9-9ba9-d40fd2d3c259', // given by the Superset embedding UI
         supersetDomain: 'http://localhost:8088',
-        mountPoint: document.getElementById('dashboard'), // html element in which iframe render
+        mountPoint: mountPoint, // html element in which iframe render
         fetchGuestToken: () => getToken(),
         dashboardUiConfig: {
           hideTitle: true,
@@ -25,10 +26,6 @@ export default function Dashboard() {
           hideTab: true,
         },
         debug: true,
-        hideTitle: true,
-        filters: {
-          expanded: false,
-        },
       });
     };
     if (document.getElementById('dashboard')) {
