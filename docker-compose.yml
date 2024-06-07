@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  lead360db:
+    build:
+      context: .
+      dockerfile: DockerfileDB
+    volumes:
+    - twenty_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=default
+    ports:
+      - "5431:5432" 
+  lead360:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # only this port is exposed
+
+volumes:
+  twenty_db_data:
+    name: twenty_db_data
+
