@@ -26,12 +26,6 @@ COPY ./packages/twenty-server /app/packages/twenty-server
 
 RUN npx nx run twenty-server:build
 
-#build twenty-emails
-RUN npx nx run twenty-emails:build
-
-# # create schema 
-# RUN npx nx database:reset twenty-server
-
 RUN mv /app/packages/twenty-server/dist /app/packages/twenty-server/build
 RUN npx nx run twenty-server:build:packageJson
 RUN mv /app/packages/twenty-server/dist/package.json /app/packages/twenty-server/package.json
