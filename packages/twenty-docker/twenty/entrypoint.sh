@@ -18,6 +18,7 @@ fi
 FLAG_FILE="/app/.initialized"
 
 # Check if the flag file exists
+if [ ! -f "$FLAG_FILE" ]; then
     echo "Running initialization commands..."
     # Run your initialization commands here
     echo "yarn could not be found, installing... yarn"
