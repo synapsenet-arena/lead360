@@ -5,11 +5,8 @@ import { IconCheckbox } from 'twenty-ui';
 
 import { useOpenCreateActivityDrawer } from '@/activities/hooks/useOpenCreateActivityDrawer';
 import { useEventTracker } from '@/analytics/hooks/useEventTracker';
-import { useOnboardingStatus } from '@/auth/hooks/useOnboardingStatus';
-import { OnboardingStatus } from '@/auth/utils/getOnboardingStatus';
 import { useRequestFreshCaptchaToken } from '@/captcha/hooks/useRequestFreshCaptchaToken';
 import { isCaptchaScriptLoadedState } from '@/captcha/states/isCaptchaScriptLoadedState';
-import { isSignUpDisabledState } from '@/client-config/states/isSignUpDisabledState';
 import { useCommandMenu } from '@/command-menu/hooks/useCommandMenu';
 import { CommandType } from '@/command-menu/types/Command';
 import { TableHotkeyScope } from '@/object-record/record-table/types/TableHotkeyScope';
@@ -17,16 +14,21 @@ import { AppBasePath } from '@/types/AppBasePath';
 import { AppPath } from '@/types/AppPath';
 import { PageHotkeyScope } from '@/types/PageHotkeyScope';
 import { SettingsPath } from '@/types/SettingsPath';
-import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useSetHotkeyScope } from '@/ui/utilities/hotkey/hooks/useSetHotkeyScope';
 import { useGetWorkspaceFromInviteHashLazyQuery } from '~/generated/graphql';
+import { useIsMatchingLocation } from '~/hooks/useIsMatchingLocation';
+import { usePageChangeEffectNavigateLocation } from '~/hooks/usePageChangeEffectNavigateLocation';
 import { isDefined } from '~/utils/isDefined';
 import { isUndefinedOrNull } from '~/utils/isUndefinedOrNull';
 
-import { useIsMatchingLocation } from '../hooks/useIsMatchingLocation';
 import { CustomPath } from '@/types/CustomPath';
+import { OnboardingStatus } from '@/auth/utils/getOnboardingStatus';
+import { useOnboardingStatus } from '@/auth/hooks/useOnboardingStatus';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
+import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
 
 // TODO: break down into smaller functions and / or hooks
+//  - moved usePageChangeEffectNavigateLocation into dedicated hook
 export const PageChangeEffect = () => {
   const navigate = useNavigate();
   const isMatchingLocation = useIsMatchingLocation();
@@ -40,15 +42,14 @@ export const PageChangeEffect = () => {
 
   const location = useLocation();
 
+  const pageChangeEffectNavigateLocation =
+    usePageChangeEffectNavigateLocation();
+
   const eventTracker = useEventTracker();
 
-  const [workspaceFromInviteHashQuery] =
-    useGetWorkspaceFromInviteHashLazyQuery();
   const { addToCommandMenu, setToInitialCommandMenu } = useCommandMenu();
 
   const openCreateActivity = useOpenCreateActivityDrawer();
-
-  const isSignUpDisabled = useRecoilValue(isSignUpDisabledState);
 
   useEffect(() => {
     if (!previousLocation || previousLocation !== location.pathname) {
@@ -73,10 +74,14 @@ export const PageChangeEffect = () => {
 
     const navigateToSignUp = () => {
       enqueueSnackBar('workspace does not exist', {
-        variant: 'error',
+        variant: SnackBarVariant.Error,
       });
       navigate(AppPath.SignUp);
     };
+
+    if (isDefined(pageChangeEffectNavigateLocation)) {
+      navigate(pageChangeEffectNavigateLocation);
+    }
     if (
       isMatchingLocation(CustomPath.CampaignForm) ||
       isMatchingLocation(CustomPath.CampaignForm2) ||
@@ -85,15 +90,13 @@ export const PageChangeEffect = () => {
       console.log('Path Location:', location.pathname);
       navigate(location.pathname);
       return;
-    } 
-    else if (
+    } else if (
       onboardingStatus === OnboardingStatus.OngoingUserCreation &&
       !isMatchingOngoingUserCreationRoute &&
       !isMatchingLocation(AppPath.ResetPassword)
     ) {
       navigate(AppPath.SignInUp);
-    }
-   else if (
+    } else if (
       isDefined(onboardingStatus) &&
       onboardingStatus === OnboardingStatus.Incomplete &&
       !isMatchingLocation(AppPath.PlanRequired)
@@ -136,15 +139,7 @@ export const PageChangeEffect = () => {
     ) {
       navigate(AppPath.Index);
     }
-  }, [
-    enqueueSnackBar,
-    isMatchingLocation,
-    isSignUpDisabled,
-    location.pathname,
-    navigate,
-    onboardingStatus,
-    workspaceFromInviteHashQuery,
-  ]);
+  }, [navigate, pageChangeEffectNavigateLocation]);
 
   useEffect(() => {
     switch (true) {

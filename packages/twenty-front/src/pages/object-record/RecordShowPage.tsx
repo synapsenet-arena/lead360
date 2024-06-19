@@ -8,6 +8,8 @@ import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadata
 import { useFindOneRecord } from '@/object-record/hooks/useFindOneRecord';
 import { RecordShowContainer } from '@/object-record/record-show/components/RecordShowContainer';
 import { findOneRecordForShowPageOperationSignatureFactory } from '@/object-record/record-show/graphql/operations/factories/findOneRecordForShowPageOperationSignatureFactory';
+import { RecordValueSetterEffect } from '@/object-record/record-store/components/RecordValueSetterEffect';
+import { RecordFieldValueSelectorContextProvider } from '@/object-record/record-store/contexts/RecordFieldValueSelectorContext';
 import { recordStoreFamilyState } from '@/object-record/record-store/states/recordStoreFamilyState';
 import { PageBody } from '@/ui/layout/page/PageBody';
 import { PageContainer } from '@/ui/layout/page/PageContainer';
@@ -26,6 +28,8 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 import { RunCampaignButton } from '@/ui/layout/page/RunCampaignButton';
 import { useDialogManager } from '@/ui/feedback/dialog-manager/hooks/useDialogManager';
+import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
+import { TimelineActivityContext } from '@/activities/contexts/TimelineActivityContext';
 
 export const RecordShowPage = () => {
   const { objectNameSingular, objectRecordId } = useParams<{
@@ -70,7 +74,10 @@ export const RecordShowPage = () => {
   });
 
   useEffect(() => {
-    if (!record) return;
+    if (!record) {
+      return;
+    }
+
     setEntityFields(record);
   }, [record, setEntityFields]);
 
@@ -91,113 +98,112 @@ export const RecordShowPage = () => {
   };
 
   let [selectedCampaign, { data: selectedCampaignData }] =
-  useLazyQuery(GET_CAMPAIGN_LISTS);
+    useLazyQuery(GET_CAMPAIGN_LISTS);
 
-useEffect(() => {
-  const fetchData = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await selectedCampaign({
+          variables: {
+            filter: {
+              id: { eq: objectRecordId },
+            },
+          },
+        });
+        const fetchedCampaigns = data?.data?.campaigns?.edges ?? [];
+        setCampaigns(fetchedCampaigns);
+      } catch (error) {
+        console.error('Error fetching campaign:', error);
+      }
+    };
+
+    fetchData();
+  }, [objectRecordId, selectedCampaign]);
+
+  const { campaignData, setCampaignData } = useCampaign();
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
+  const { enqueueSnackBar } = useSnackBar();
+  const navigate = useNavigate();
+  const { enqueueDialog } = useDialogManager();
+
+  const handleConfirmRun = async () => {
     try {
-      const data = await selectedCampaign({
+      const { data: addTriggerData } = await addTriggerCampaignRecord({
         variables: {
-          filter: {
-            id: { eq: objectRecordId },
+          input: {
+            name: campaigns[0]?.node?.name,
+            startDate: campaignData.startDate.toISOString(),
+            stopDate: campaignData.endDate.toISOString(),
+            status: 'ACTIVE',
+            campaignId: campaigns[0]?.node?.id,
           },
         },
       });
-      const fetchedCampaigns = data?.data?.campaigns?.edges ?? [];
-      setCampaigns(fetchedCampaigns);
+
+      let requestBody: {
+        campaignId: string;
+        queryTimestamp: any;
+        campaignTriggerId: any;
+        startDate: any;
+        stopDate: any;
+        id: { selectedID: any } | { unselectedID: any };
+      } = {
+        campaignId: objectRecordId,
+        queryTimestamp: campaignData.querystamp,
+        campaignTriggerId: addTriggerData?.createCampaignTrigger?.id,
+        startDate: campaignData.startDate,
+        stopDate: campaignData.endDate,
+        id: { selectedID: campaignData.selectedId },
+      };
+
+      if (campaignData.selectedId.length > campaignData.unSelectedId.length) {
+        requestBody.id = { unselectedID: campaignData.unSelectedId };
+      }
+
+      console.log(requestBody, 'request body');
+
+      const response = await fetch('http://localhost:3000/campaign/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      const data = await response.json();
+
+      console.log('Response from the API:', data);
+      enqueueSnackBar('Campaign running successfully', {
+        variant: SnackBarVariant.Success,
+      });
+
+      navigate(
+        `/object/campaignTrigger/${addTriggerData?.createCampaignTrigger?.id}`,
+      );
     } catch (error) {
-      console.error('Error fetching campaign:', error);
+      console.error('Error in running campaign:', error);
+      enqueueSnackBar('Failed to run Campaign', {
+        variant: SnackBarVariant.Error,
+      });
     }
   };
 
-  fetchData();
-}, [objectRecordId, selectedCampaign]);
-
-const { campaignData, setCampaignData } = useCampaign();
-const [campaigns, setCampaigns] = useState<any[]>([]);
-const [addTriggerCampaignRecord] = useMutation(ADD_TRIGGER_CAMPAIGN_RECORD);
-const { enqueueSnackBar } = useSnackBar();
-const navigate = useNavigate();
-const { enqueueDialog } = useDialogManager();
-
-const handleConfirmRun = async () => {
-  try {
-    const { data: addTriggerData } = await addTriggerCampaignRecord({
-      variables: {
-        input: {
-          name: campaigns[0]?.node?.name,
-          startDate: campaignData.startDate.toISOString(),
-          stopDate: campaignData.endDate.toISOString(),
-          status: 'ACTIVE',
-          campaignId: campaigns[0]?.node?.id,
+  const handleRuncampaign = async () => {
+    enqueueDialog({
+      title: ' Are you sure you want to trigger this campaign?',
+      message:
+        'Triggering this campaign will send notifications to all subscribed users.',
+      buttons: [
+        { title: 'Cancel' },
+        {
+          title: 'Run',
+          variant: 'primary',
+          onClick: handleConfirmRun,
+          role: 'confirm',
         },
-      },
+      ],
     });
-
-
-    let requestBody: {
-      campaignId: string;
-      queryTimestamp: any;
-      campaignTriggerId: any;
-      startDate: any;
-      stopDate: any;
-      id: { selectedID: any } | { unselectedID: any };
-    } = {
-      campaignId: objectRecordId,
-      queryTimestamp: campaignData.querystamp,
-      campaignTriggerId: addTriggerData?.createCampaignTrigger?.id,
-      startDate: campaignData.startDate,
-      stopDate: campaignData.endDate,
-      id: { selectedID: campaignData.selectedId },
-    };
-
-    if (campaignData.selectedId.length > campaignData.unSelectedId.length) {
-      requestBody.id = { unselectedID: campaignData.unSelectedId };
-    }
-
-    console.log(requestBody, 'request body');
-
-    const response = await fetch('http://localhost:3000/campaign/execute', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-    const data = await response.json();
-
-    console.log('Response from the API:', data);
-    enqueueSnackBar('Campaign running successfully', {
-      variant: 'success',
-    });
-   
-    navigate(`/object/campaignTrigger/${addTriggerData?.createCampaignTrigger?.id}`);
-  } catch (error) {
-    console.error('Error in running campaign:', error);
-    enqueueSnackBar('Failed to run Campaign', {
-      variant: 'error',
-    });
-  }
-};
-
-const handleRuncampaign = async () => {
-  enqueueDialog({
-    title: ' Are you sure you want to trigger this campaign?',
-    message:
-      'Triggering this campaign will send notifications to all subscribed users.',
-    buttons: [
-      { title: 'Cancel' },
-      {
-        title: 'Run',
-        variant: 'primary',
-        onClick: handleConfirmRun,
-        role: 'confirm',
-      },
-    ],
-  });
-};
-
-
+  };
 
   const labelIdentifierFieldValue =
     record?.[labelIdentifierFieldMetadataItem?.name ?? ''];
@@ -217,62 +223,56 @@ const handleRuncampaign = async () => {
     : capitalize(objectNameSingular);
 
   return (
-    <PageContainer>
-      <PageTitle title={pageTitle} />
-      <PageHeader
-        title={pageName ?? ''}
-        hasBackButton
-        Icon={headerIcon}
-        loading={loading}
-      >
-        {record && (
-          <>
-            <PageFavoriteButton
-              isFavorite={isFavorite}
-              onClick={handleFavoriteButtonClick}
-            />
-            <ShowPageAddButton
-            key="add"
-            activityTargetObject={{
-              id: record?.id ?? '0',
-              targetObjectNameSingular: objectMetadataItem?.nameSingular,
-            }}
-          />
-          <ShowPageMoreButton
-            key="more"
-            recordId={record?.id ?? '0'}
-            objectNameSingular={objectNameSingular}
-          />
-          </>
-        )}
-                {record && objectNameSingular === 'campaign' && (
-          <>
-            <RunCampaignButton onClick={handleRuncampaign} />
-          </>
-        )}
-      </PageHeader>
-
-      {/* <ConfirmationModal
-          confirmationPlaceholder={''}
-          isOpen={isConfirmModalOpen}
-          setIsOpen={setIsConfirmModalOpen}
-          title="Run Campaign"
-          subtitle={
-            <>
-              Are you sure you want to trigger this campaign? <br /> Triggering
-              this campaign will send notifications to all subscribed users.
-            </>
-          }
-          onConfirmClick={handleConfirmRun}
-          deleteButtonText="Run Campaign"
-        /> */}
-      <PageBody>
-        <RecordShowContainer
-          objectNameSingular={objectNameSingular}
-          objectRecordId={objectRecordId}
+    <RecordFieldValueSelectorContextProvider>
+      <RecordValueSetterEffect recordId={objectRecordId} />
+      <PageContainer>
+        <PageTitle title={pageTitle} />
+        <PageHeader
+          title={pageName ?? ''}
+          hasBackButton
+          Icon={headerIcon}
           loading={loading}
-        />
-      </PageBody>
-    </PageContainer>
+        >
+          {record && (
+            <>
+              <PageFavoriteButton
+                isFavorite={isFavorite}
+                onClick={handleFavoriteButtonClick}
+              />
+              <ShowPageAddButton
+                key="add"
+                activityTargetObject={{
+                  id: record?.id ?? '0',
+                  targetObjectNameSingular: objectMetadataItem?.nameSingular,
+                }}
+              />
+              <ShowPageMoreButton
+                key="more"
+                recordId={record?.id ?? '0'}
+                objectNameSingular={objectNameSingular}
+              />
+            </>
+          )}
+          {record && objectNameSingular === 'campaign' && (
+            <>
+              <RunCampaignButton onClick={handleRuncampaign} />
+            </>
+          )}
+        </PageHeader>
+        <PageBody>
+          <TimelineActivityContext.Provider
+            value={{
+              labelIdentifierValue: pageName,
+            }}
+          >
+            <RecordShowContainer
+              objectNameSingular={objectNameSingular}
+              objectRecordId={objectRecordId}
+              loading={loading}
+            />
+          </TimelineActivityContext.Provider>
+        </PageBody>
+      </PageContainer>
+    </RecordFieldValueSelectorContextProvider>
   );
 };

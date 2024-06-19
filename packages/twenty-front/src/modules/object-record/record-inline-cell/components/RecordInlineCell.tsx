@@ -4,6 +4,7 @@ import { useIcons } from 'twenty-ui';
 import { FieldDisplay } from '@/object-record/record-field/components/FieldDisplay';
 import { FieldInput } from '@/object-record/record-field/components/FieldInput';
 import { FieldContext } from '@/object-record/record-field/contexts/FieldContext';
+import { FieldFocusContextProvider } from '@/object-record/record-field/contexts/FieldFocusContextProvider';
 import { useGetButtonIcon } from '@/object-record/record-field/hooks/useGetButtonIcon';
 import { useIsFieldEmpty } from '@/object-record/record-field/hooks/useIsFieldEmpty';
 import { useIsFieldInputOnly } from '@/object-record/record-field/hooks/useIsFieldInputOnly';
@@ -16,6 +17,7 @@ import { useInlineCell } from '../hooks/useInlineCell';
 import { RecordInlineCellContainer } from './RecordInlineCellContainer';
 import { useOpenCreateActivityDrawer } from '@/activities/hooks/useOpenCreateActivityDrawer';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
+import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
 
 type RecordInlineCellProps = {
   readonly?: boolean;
@@ -55,20 +57,22 @@ export const RecordInlineCell = ({
   const handleStageChange: FieldInputEvent = (persistField) => {
     persistField();
     closeInlineCell();
-    const targetableObject : string = fieldDefinition.metadata.objectMetadataNameSingular?fieldDefinition.metadata.objectMetadataNameSingular:''
+    const targetableObject: string = fieldDefinition.metadata
+      .objectMetadataNameSingular
+      ? fieldDefinition.metadata.objectMetadataNameSingular
+      : '';
     openCreateActivity({
       type: 'Note',
       targetableObjects: [
         {
           id: entityId,
-          targetObjectNameSingular:targetableObject
-            ,
+          targetObjectNameSingular: targetableObject,
         },
       ],
     });
 
     enqueueSnackBar('Please enter comments!', {
-      variant: 'info',
+      variant: SnackBarVariant.Info,
     });
   };
   const handleEscape = () => {
@@ -95,84 +99,86 @@ export const RecordInlineCell = ({
   return (
     <>
       {fieldDefinition.metadata.fieldName !== 'stage' && (
-        <RecordInlineCellContainer
-          readonly={readonly}
-          buttonIcon={buttonIcon}
-          customEditHotkeyScope={
-            isFieldRelation(fieldDefinition)
-              ? {
-                  scope: RelationPickerHotkeyScope.RelationPicker,
-                }
-              : undefined
-          }
-          IconLabel={
-            fieldDefinition.iconName
-              ? getIcon(fieldDefinition.iconName)
-              : undefined
-          }
-          label={fieldDefinition.label}
-          labelWidth={fieldDefinition.labelWidth}
-          showLabel={fieldDefinition.showLabel}
-          editModeContent={
-            <FieldInput
-              recordFieldInputdId={`${entityId}-${fieldDefinition?.metadata?.fieldName}`}
-              onEnter={handleEnter}
-              onCancel={handleCancel}
-              onEscape={handleEscape}
-              onSubmit={handleSubmit}
-              onTab={handleTab}
-              onShiftTab={handleShiftTab}
-              onClickOutside={handleClickOutside}
-              isReadOnly={readonly}
-            />
-          }
-          displayModeContent={({ cellElement, isCellSoftFocused }) => (
-            <FieldDisplay
-              cellElement={cellElement}
-              isCellSoftFocused={isCellSoftFocused}
-            />
-          )}
-          isDisplayModeContentEmpty={isFieldEmpty}
-          isDisplayModeFixHeight
-          editModeContentOnly={isFieldInputOnly}
-          loading={loading}
-        />
+        <FieldFocusContextProvider>
+          <RecordInlineCellContainer
+            readonly={readonly}
+            buttonIcon={buttonIcon}
+            customEditHotkeyScope={
+              isFieldRelation(fieldDefinition)
+                ? {
+                    scope: RelationPickerHotkeyScope.RelationPicker,
+                  }
+                : undefined
+            }
+            IconLabel={
+              fieldDefinition.iconName
+                ? getIcon(fieldDefinition.iconName)
+                : undefined
+            }
+            label={fieldDefinition.label}
+            labelWidth={fieldDefinition.labelWidth}
+            showLabel={fieldDefinition.showLabel}
+            editModeContent={
+              <FieldInput
+                recordFieldInputdId={`${entityId}-${fieldDefinition?.metadata?.fieldName}`}
+                onEnter={handleEnter}
+                onCancel={handleCancel}
+                onEscape={handleEscape}
+                onSubmit={handleSubmit}
+                onTab={handleTab}
+                onShiftTab={handleShiftTab}
+                onClickOutside={handleClickOutside}
+                isReadOnly={readonly}
+              />
+            }
+            displayModeContent={<FieldDisplay />}
+            isDisplayModeContentEmpty={isFieldEmpty}
+            isDisplayModeFixHeight
+            editModeContentOnly={isFieldInputOnly}
+            loading={loading}
+          />
+        </FieldFocusContextProvider>
       )}
       {fieldDefinition.metadata.fieldName === 'stage' && (
-        <RecordInlineCellContainer
-          // buttonIcon={buttonIcon}
-          customEditHotkeyScope={
-            isFieldRelation(fieldDefinition)
-              ? {
-                  scope: RelationPickerHotkeyScope.RelationPicker,
-                }
-              : undefined
-          }
-          IconLabel={
-            fieldDefinition.iconName
-              ? getIcon(fieldDefinition.iconName)
-              : undefined
-          }
-          label={fieldDefinition.label}
-          labelWidth={fieldDefinition.labelWidth}
-          showLabel={fieldDefinition.showLabel}
-          editModeContent={
-            <FieldInput
-              recordFieldInputdId={`${entityId}-${fieldDefinition?.metadata?.fieldName}`}
-              onSubmit={handleStageChange}
-            />
-          }
-          displayModeContent={({ cellElement, isCellSoftFocused }) => (
-            <FieldDisplay
-              cellElement={cellElement}
-              isCellSoftFocused={isCellSoftFocused}
-            />
-          )}
-          isDisplayModeContentEmpty={isFieldEmpty}
-          isDisplayModeFixHeight
-          editModeContentOnly={isFieldInputOnly}
-          loading={loading}
-        />
+        <FieldFocusContextProvider>
+          <RecordInlineCellContainer
+            readonly={readonly}
+            buttonIcon={buttonIcon}
+            customEditHotkeyScope={
+              isFieldRelation(fieldDefinition)
+                ? {
+                    scope: RelationPickerHotkeyScope.RelationPicker,
+                  }
+                : undefined
+            }
+            IconLabel={
+              fieldDefinition.iconName
+                ? getIcon(fieldDefinition.iconName)
+                : undefined
+            }
+            label={fieldDefinition.label}
+            labelWidth={fieldDefinition.labelWidth}
+            showLabel={fieldDefinition.showLabel}
+            editModeContent={
+              <FieldInput
+                recordFieldInputdId={`${entityId}-${fieldDefinition?.metadata?.fieldName}`}
+                onEnter={handleEnter}
+                onCancel={handleCancel}
+                onEscape={handleEscape}
+                onSubmit={handleStageChange}
+                onTab={handleTab}
+                onShiftTab={handleShiftTab}
+                onClickOutside={handleClickOutside}
+                isReadOnly={readonly}
+              />
+            }
+            displayModeContent={<FieldDisplay />}
+            isDisplayModeContentEmpty={isFieldEmpty}
+            isDisplayModeFixHeight
+            editModeContentOnly={isFieldInputOnly}
+            loading={loading}
+          />
+        </FieldFocusContextProvider>
       )}
     </>
   );

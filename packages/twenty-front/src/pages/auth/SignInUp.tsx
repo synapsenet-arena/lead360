@@ -38,9 +38,9 @@ export const SignInUp = () => {
 
   return (
     <>
-    <AnimatedEaseIn>
-      <Logo workspaceLogo={currentWorkspace} />
-    </AnimatedEaseIn>
+      <AnimatedEaseIn>
+        <Logo />
+      </AnimatedEaseIn>
       <Title animate>{title}</Title>
       <SignInUpForm />
     </>
