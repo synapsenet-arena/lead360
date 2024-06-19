@@ -134,3 +134,13 @@ export const StyledTableCell = styled.td`
     background-color: ${({ theme }) => theme.background.tertiary};
   }
 `;
+
+export const StyledCheckLabelContainer = styled.div`
+display: flex;
+> * + * {
+  margin-left: ${({ theme }) => theme.spacing(4)};
+}
+  color: ${({ theme }) => theme.font.color.tertiary};
+  width: auto;
+  align-items: center;
+`;
