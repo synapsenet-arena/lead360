@@ -1,9 +1,9 @@
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { Select } from '@/ui/input/components/Select';
 import { GET_SPECIALTY } from '@/users/graphql/queries/getSpecialtyDetails';
 import { useQuery } from '@apollo/client';
 import { Section } from '@react-email/components';
 import { atom, useRecoilState } from 'recoil';
+import { H2Title } from 'twenty-ui';
 import { SytledHR } from '~/pages/Segment/SegmentStyles';
 
 export const campaignSpecialtyState = atom({

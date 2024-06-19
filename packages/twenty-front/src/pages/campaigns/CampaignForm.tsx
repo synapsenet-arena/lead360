@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Button } from '@/ui/input/button/components/Button';
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { useNavigate, useParams } from 'react-router-dom';
 import AnimatedPlaceholder from '@/ui/layout/animated-placeholder/components/AnimatedPlaceholder';
 import {
@@ -17,6 +16,8 @@ import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { AnimatedPlaceholderEmptyTextContainer } from '@/ui/layout/animated-placeholder/components/EmptyPlaceholderStyled';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
+import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
+import { H2Title } from 'twenty-ui';
 
 
 const StyledDiv = styled.div`
@@ -157,7 +158,7 @@ export const CampaignForm = () => {
     try{
       const response = await axios.post(`http://localhost:3000/campaign/save/${userid}`, formData);
       enqueueSnackBar('Form Submitted Successfully!',{
-        variant: 'success',
+        variant: SnackBarVariant.Success,
       });
       if(response.data){
         navigate(AppPath.SignInUp)

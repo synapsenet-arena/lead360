@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 import { Section } from '@react-email/components';
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { Checkbox } from '@/ui/input/components/Checkbox';
 import { TextInput } from '@/ui/input/components/TextInput';
+import { H2Title } from 'twenty-ui';
 
 const StyledDiv = styled.div``;
 

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-import { H2Title } from '@/ui/display/typography/components/H2Title';
+import { H2Title } from 'twenty-ui';
 import { Checkbox, CheckboxVariant, CheckboxSize, CheckboxShape } from '@/ui/input/components/Checkbox';
 import { Select } from '@/ui/input/components/Select';
 import { TextArea } from '@/ui/input/components/TextArea';

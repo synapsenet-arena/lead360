@@ -1,6 +1,5 @@
 
 
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { Checkbox, CheckboxVariant, CheckboxSize, CheckboxShape } from '@/ui/input/components/Checkbox';
 import { Select } from '@/ui/input/components/Select';
 import { GET_MESSAGE_TEMPLATES } from '@/users/graphql/queries/getMessageTemplates';
@@ -8,6 +7,7 @@ import { useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
 import { Section } from '@react-email/components';
 import { ChangeEvent, useState } from 'react';
+import { H2Title } from 'twenty-ui';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
 
 

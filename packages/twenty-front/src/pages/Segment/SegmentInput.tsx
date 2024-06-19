@@ -1,8 +1,8 @@
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { Section } from '@react-email/components';
 import { SytledHR } from '~/pages/Segment/SegmentStyles';
+import { H2Title } from 'twenty-ui';
 
 export type SegmentInputProps = {
   segmentName: string;

@@ -1,9 +1,9 @@
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { Select } from '@/ui/input/components/Select';
 import { GET_SEGMENT_LISTS } from '@/users/graphql/queries/getSegments';
 import { useQuery } from '@apollo/client';
 import { Section } from '@react-email/components';
 import { atom, useRecoilState } from 'recoil';
+import { H2Title } from 'twenty-ui';
 
 export const campaignSegmentState = atom({
   key: 'campaignSegment',

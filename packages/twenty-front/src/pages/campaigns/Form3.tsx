@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 
-import { H2Title } from '@/ui/display/typography/components/H2Title';
-import {
-  Checkbox,
-  CheckboxVariant,
-  CheckboxSize,
-  CheckboxShape,
-} from '@/ui/input/components/Checkbox';
+import { H2Title } from 'twenty-ui';
+import { Checkbox } from '@/ui/input/components/Checkbox';
 import { TextInput } from '@/ui/input/components/TextInput';
 
 const StyledDiv = styled.div``;
@@ -25,7 +20,7 @@ const StyledCard = styled.div`
  width: 100%;
  margin: auto;
  align-items: center;
- margin-bottom: ${({ theme }) => theme.spacing(2)}
+ margin-bottom: ${({ theme }) => theme.spacing(2)};
  overflow-y: scroll;
 `;
 
@@ -179,14 +174,11 @@ export const Form3 = () => {
               <StyledSection>
                 <H2Title title="Gender" description="Select your Gender" />
                 <StyledComboInputContainer>
-                <Checkbox checked={false}  disabled
-                  />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Male</StyledCheckboxLabel>
-                  <Checkbox checked={false}  disabled
-                  />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Female</StyledCheckboxLabel>
-                  <Checkbox checked={false}  disabled
-                  />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Others</StyledCheckboxLabel>
                 </StyledComboInputContainer>
               </StyledSection>
@@ -226,13 +218,13 @@ export const Form3 = () => {
                   description="Check any preexisting conditions"
                 />
                 <StyledComboInputContainer>
-                  <Checkbox checked={false}  disabled/>
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
-                  <Checkbox checked={false}  disabled />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Asthma</StyledCheckboxLabel>
-                  <Checkbox  checked={false}  disabled />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Seizures</StyledCheckboxLabel>
-                  <Checkbox  checked={false}  disabled />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>BloodPressure</StyledCheckboxLabel>
                 </StyledComboInputContainer>
               </StyledSection>
@@ -246,18 +238,18 @@ export const Form3 = () => {
                 />
 
                 <StyledComboInputContainer>
-                  <Checkbox checked={false}  disabled />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Hypertension</StyledCheckboxLabel>
 
-                  <Checkbox checked={false}  disabled/>
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Arthritis</StyledCheckboxLabel>
 
-                  <Checkbox  checked={false}  disabled />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Genitourinary</StyledCheckboxLabel>
 
-                  <Checkbox  checked={false}  disabled />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Diabetes</StyledCheckboxLabel>
-                  <Checkbox  checked={false}  disabled />
+                  <Checkbox checked={false} disabled />
                   <StyledCheckboxLabel>Other</StyledCheckboxLabel>
                 </StyledComboInputContainer>
               </StyledSection>
@@ -268,8 +260,7 @@ export const Form3 = () => {
                 description="Read the terms and conditions before agreeing."
               />
               <StyledComboInputContainer>
-                <Checkbox checked={false}  disabled
-                />
+                <Checkbox checked={false} disabled />
                 <StyledCheckboxLabel>
                   I agree to the terms and conditions.
                 </StyledCheckboxLabel>

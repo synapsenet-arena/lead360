@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { Button } from '@/ui/input/button/components/Button';
 import { IconSpeakerphone } from '@tabler/icons-react';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
-import { GRAY_SCALE } from '@/ui/theme/constants/GrayScale';
 import { PageHeader } from '@/ui/layout/page/PageHeader';
 import { ADD_CAMPAIGN } from '@/users/graphql/queries/addCampaign';
 import { useMutation } from '@apollo/client';
@@ -29,6 +28,8 @@ import {
   CampaignFormInput,
   campaignFormInputState,
 } from '~/pages/campaigns/CampaignFormInput';
+import { GRAY_SCALE } from 'twenty-ui';
+import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
 
 const PageContainer = styled.div`
   display: flex;
@@ -111,14 +112,14 @@ export const Campaigns = () => {
         variables: variables,
       });
       enqueueSnackBar('Campaign added successfully', {
-        variant: 'success',
+        variant: SnackBarVariant.Success,
       });
       navigate(`/object/campaign/${id}`);
       // window.location.reload();
     } catch (errors: any) {
       console.error('Error adding campaign:', error);
       enqueueSnackBar(errors.message + 'Error while adding Campaign', {
-        variant: 'error',
+        variant: SnackBarVariant.Error,
       });
     }
   };

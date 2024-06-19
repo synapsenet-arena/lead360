@@ -1,8 +1,8 @@
-import { H2Title } from '@/ui/display/typography/components/H2Title';
 import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
 import { Section } from '@react-email/components';
 import { atom, useRecoilState } from 'recoil';
+import { H2Title } from 'twenty-ui';
 import { SytledHR } from '~/pages/Segment/SegmentStyles';
 
 export const campaignNameState = atom({
