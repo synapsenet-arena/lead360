@@ -207,6 +207,8 @@ export const ShowPageRightContainer = ({
     }
   };
 
+
+
   return (
     <StyledShowPageRightContainer isMobile={isMobile}>
       <StyledTabListContainer>
