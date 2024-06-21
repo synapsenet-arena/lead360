@@ -158,30 +158,6 @@ const StyledButton = styled('button', {
                     }
                   `}
             `;
-          case 'dark':
-            return css`
-              background: ${theme.color.black};
-              border-color: ${!disabled
-                ? focus
-                  ? theme.color.black
-                  : theme.background.transparent.light
-                : 'transparent'};
-              border-width: ${!disabled && focus ? '1px 1px !important' : 0};
-              box-shadow: ${!disabled && focus
-                ? `0 0 0 3px ${theme.color.gray70}`
-                : 'none'};
-              color: ${theme.grayScale.gray0};
-              opacity: ${disabled ? 0.24 : 1};
-
-              ${disabled
-                ? ''
-                : css`
-                    &:hover,
-                    &:active {
-                      background: ${theme.color.gray50};
-                    }
-                  `}
-            `;
         }
         break;
       case 'secondary':

@@ -22,8 +22,6 @@ import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSi
 import { TabList } from '@/ui/layout/tab/components/TabList';
 import { useTabList } from '@/ui/layout/tab/hooks/useTabList';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
-import { useIsFeatureEnabled } from '@/workspace/hooks/useIsFeatureEnabled';
-import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { IconClock, IconUsersGroup, IconMessage, IconDeviceTabletQuestion } from '@tabler/icons-react';
 import { Schedule } from '@/activities/Schedule/components/schedule';
 import { Leads } from '@/activities/Leads/components/Leads';

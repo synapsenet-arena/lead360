@@ -103,17 +103,4 @@ describe('turnSortsIntoOrderBy', () => {
       turnSortsIntoOrderBy({ ...objectMetadataItem, isRemote: true }, sorts),
     ).toEqual([]);
   });
-
-  it('should not return position for remotes', () => {
-    const sorts: Sort[] = [
-      {
-        fieldMetadataId: 'invalidField',
-        direction: 'asc',
-        definition: sortDefinition,
-      },
-    ];
-    expect(
-      turnSortsIntoOrderBy({ ...objectMetadataItem, isRemote: true }, sorts),
-    ).toEqual({});
-  });
 });

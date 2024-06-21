@@ -71,7 +71,6 @@ const setTokenStateFromCookie = (cookie: string) => {
 
 chrome.cookies.onChanged.addListener(async ({ cookie }) => {
   if (cookie.name === 'tokenPair') {
-    setTokenStateFromCookie(cookie.value);
     const store = await chrome.storage.local.get(['clientUrl']);
     const clientUrl = isDefined(store.clientUrl)
       ? store.clientUrl

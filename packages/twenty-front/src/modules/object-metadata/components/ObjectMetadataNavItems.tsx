@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { useIcons } from 'twenty-ui';
 

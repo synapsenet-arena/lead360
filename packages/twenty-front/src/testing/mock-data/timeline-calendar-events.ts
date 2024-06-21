@@ -1,6 +1,5 @@
 import { CalendarChannelVisibility } from '~/generated/graphql';
 import { TimelineCalendarEvent } from '~/generated-metadata/graphql';
-import { avatarUrl } from '~/testing/mock-data/users';
 
 export const mockedTimelineCalendarEvents: TimelineCalendarEvent[] = [
   {

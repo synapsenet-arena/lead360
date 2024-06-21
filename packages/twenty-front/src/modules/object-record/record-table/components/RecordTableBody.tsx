@@ -1,9 +1,10 @@
 import { useRecoilValue } from 'recoil';
 
 import { RecordTableBodyFetchMoreLoader } from '@/object-record/record-table/components/RecordTableBodyFetchMoreLoader';
-import { RecordTableRow } from '@/object-record/record-table/components/RecordTableRow';
+import { RecordTableBodyLoading } from '@/object-record/record-table/components/RecordTableBodyLoading';
 import { useRecordTableStates } from '@/object-record/record-table/hooks/internal/useRecordTableStates';
 import { DraggableTableBody } from '@/ui/layout/draggable-list/components/DraggableTableBody';
+import { RecordTableRow } from '@/object-record/record-table/components/RecordTableRow';
 
 type RecordTableBodyProps = {
   objectNameSingular: string;
@@ -14,9 +15,18 @@ export const RecordTableBody = ({
   objectNameSingular,
   recordTableId,
 }: RecordTableBodyProps) => {
-  const { tableRowIdsState } = useRecordTableStates();
+  const { tableRowIdsState, isRecordTableInitialLoadingState } =
+    useRecordTableStates();
 
   const tableRowIds = useRecoilValue(tableRowIdsState);
+
+  const isRecordTableInitialLoading = useRecoilValue(
+    isRecordTableInitialLoadingState,
+  );
+
+  if (isRecordTableInitialLoading && tableRowIds.length === 0) {
+    return <RecordTableBodyLoading />;
+  }
 
   return (
     <>
