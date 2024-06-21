@@ -40,10 +40,10 @@ const StyledShowPageRightContainer = styled.div<{ isMobile: boolean }>`
   overflow: scroll;
   scrollbar-color: ${({ theme }) => theme.border.color.strong};
   scrollbar-width: thin;
-  
+ 
    *::-webkit-scrollbar {
     height: 8px;
-    width: 8px; 
+    width: 8px;
   }
 
   *::-webkit-scrollbar-corner {
@@ -51,7 +51,7 @@ const StyledShowPageRightContainer = styled.div<{ isMobile: boolean }>`
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: ${({ theme }) => theme.border.color.strong}; 
+    background-color: ${({ theme }) => theme.border.color.strong};
     border-radius: ${({ theme }) => theme.border.radius.sm};
   }
   width: 100%;
