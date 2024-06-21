@@ -21,9 +21,11 @@ import { GraphQLConfigModule } from 'src/engine/api/graphql/graphql-config/graph
 import { GraphQLConfigService } from 'src/engine/api/graphql/graphql-config/graphql-config.service';
 import { WorkspaceCacheVersionModule } from 'src/engine/metadata-modules/workspace-cache-version/workspace-cache-version.module';
 import { GraphQLHydrateRequestFromTokenMiddleware } from 'src/engine/middlewares/graphql-hydrate-request-from-token.middleware';
+import { MessageQueueModule } from 'src/engine/integrations/message-queue/message-queue.module';
+import { MessageQueueDriverType } from 'src/engine/integrations/message-queue/interfaces';
 
-import { CoreEngineModule } from './engine/core-modules/core-engine.module';
 import { IntegrationsModule } from './engine/integrations/integrations.module';
+import { CoreEngineModule } from './engine/core-modules/core-engine.module';
 import { CampaignModule } from 'src/campaign/campaign.module';
 
 @Module({
@@ -46,7 +48,6 @@ import { CampaignModule } from 'src/campaign/campaign.module';
     }),
     // Integrations module, contains all the integrations with other services
     IntegrationsModule,
-    CampaignModule,
     // Core engine module, contains all the core modules
     CoreEngineModule,
     // Modules module, contains all business logic modules
@@ -59,6 +60,8 @@ import { CampaignModule } from 'src/campaign/campaign.module';
     RestApiModule,
     // Conditional modules
     ...AppModule.getConditionalModules(),
+    //campaign modules
+    CampaignModule,
   ],
 })
 export class AppModule {
@@ -72,6 +75,13 @@ export class AppModule {
           rootPath: frontPath,
         }),
       );
+    }
+
+    // Messaque Queue explorer only for sync driver
+    // Maybe we don't need to conditionaly register the explorer, because we're creating a jobs module
+    // that will expose classes that are only used in the queue worker
+    if (process.env.MESSAGE_QUEUE_TYPE === MessageQueueDriverType.Sync) {
+      modules.push(MessageQueueModule.registerExplorer());
     }
 
     return modules;

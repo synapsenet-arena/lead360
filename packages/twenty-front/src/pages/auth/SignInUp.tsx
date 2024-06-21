@@ -13,8 +13,6 @@ import { useSignInUpForm } from '@/auth/sign-in-up/hooks/useSignInUpForm';
 import { currentWorkspaceState } from '@/auth/states/currentWorkspaceState';
 import { AnimatedEaseIn } from '@/ui/utilities/animation/components/AnimatedEaseIn';
 import { isDefined } from '~/utils/isDefined';
-import { Logo } from '@/auth/components/Logo';
-import { AnimatedEaseIn } from '@/ui/utilities/animation/components/AnimatedEaseIn';
 
 export const SignInUp = () => {
   const { form } = useSignInUpForm();

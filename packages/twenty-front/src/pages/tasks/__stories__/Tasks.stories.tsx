@@ -9,7 +9,7 @@ import {
 import { PrefetchLoadingDecorator } from '~/testing/decorators/PrefetchLoadingDecorator';
 import { graphqlMocks } from '~/testing/graphqlMocks';
 import { mockedWorkspaceMemberData } from '~/testing/mock-data/users';
-import { sleep } from '~/testing/sleep';
+import { sleep } from '~/utils/sleep';
 
 import { Tasks } from '../Tasks';
 

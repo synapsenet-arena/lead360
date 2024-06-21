@@ -1,4 +1,4 @@
-import { Select } from '@/ui/input/components/Select';
+  import { Select } from '@/ui/input/components/Select';
 import { GET_SEGMENT_LISTS } from '@/users/graphql/queries/getSegments';
 import { useQuery } from '@apollo/client';
 import { Section } from '@react-email/components';

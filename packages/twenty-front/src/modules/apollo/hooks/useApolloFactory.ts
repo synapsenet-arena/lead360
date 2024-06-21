@@ -71,7 +71,6 @@ export const useApolloFactory = (options: Partial<Options<any>> = {}) => {
         setCurrentWorkspaceMember(null);
         setCurrentWorkspace(null);
         setWorkspaces(null);
-
         if (
           isMatchingLocation(CustomPath.CampaignForm) ||
           isMatchingLocation(CustomPath.CampaignForm2) ||

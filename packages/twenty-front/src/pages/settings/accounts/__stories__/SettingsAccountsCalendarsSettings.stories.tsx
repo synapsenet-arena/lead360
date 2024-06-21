@@ -11,7 +11,7 @@ import {
 import { PrefetchLoadingDecorator } from '~/testing/decorators/PrefetchLoadingDecorator';
 import { graphqlMocks } from '~/testing/graphqlMocks';
 import { mockedConnectedAccounts } from '~/testing/mock-data/accounts';
-import { sleep } from '~/testing/sleep';
+import { sleep } from '~/utils/sleep';
 
 import { SettingsAccountsCalendarsSettings } from '../SettingsAccountsCalendarsSettings';
 

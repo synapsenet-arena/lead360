@@ -15,11 +15,9 @@ import { AppPath } from '@/types/AppPath';
 import { PageHotkeyScope } from '@/types/PageHotkeyScope';
 import { SettingsPath } from '@/types/SettingsPath';
 import { useSetHotkeyScope } from '@/ui/utilities/hotkey/hooks/useSetHotkeyScope';
-import { useGetWorkspaceFromInviteHashLazyQuery } from '~/generated/graphql';
 import { useIsMatchingLocation } from '~/hooks/useIsMatchingLocation';
 import { usePageChangeEffectNavigateLocation } from '~/hooks/usePageChangeEffectNavigateLocation';
 import { isDefined } from '~/utils/isDefined';
-import { isUndefinedOrNull } from '~/utils/isUndefinedOrNull';
 
 import { CustomPath } from '@/types/CustomPath';
 import { OnboardingStatus } from '@/auth/utils/getOnboardingStatus';
@@ -140,8 +138,7 @@ export const PageChangeEffect = () => {
       navigate(AppPath.Index);
     }
   }, [navigate, pageChangeEffectNavigateLocation]);
-
-  useEffect(() => {
+useEffect(() => {
     switch (true) {
       case isMatchingLocation(AppPath.RecordIndexPage): {
         setHotkeyScope(TableHotkeyScope.Table, {
