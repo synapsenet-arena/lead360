@@ -19,6 +19,7 @@ import {
   StyledBoardContainer,
 } from '~/pages/Segment/SegmentStyles';
 import { DisplayLeads } from '~/pages/Segment/DisplayLeads';
+import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
 
 export const Segment = () => {
   const [segmentName, setSegmentName] = useState('');
@@ -191,14 +192,14 @@ export const Segment = () => {
         variables: variables,
       });
       enqueueSnackBar('Segment saved successfully', {
-        variant: 'success',
+        variant: SnackBarVariant.Success,
       });
       navigate(`/object/segment/${id}`);
       // window.location.reload();
     } catch (errors: any) {
       console.error('Error saving segment', error);
       enqueueSnackBar(errors.message + 'Error while adding Segment', {
-        variant: 'error',
+        variant: SnackBarVariant.Error,
       });
     }
   };

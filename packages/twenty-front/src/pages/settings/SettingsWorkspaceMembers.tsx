@@ -17,6 +17,7 @@ import { WorkspaceInviteLink } from '@/workspace/components/WorkspaceInviteLink'
 import { WorkspaceInviteTeam } from '@/workspace/components/WorkspaceInviteTeam';
 import { WorkspaceMemberCard } from '@/workspace/components/WorkspaceMemberCard';
 import { WorkspaceMember } from '@/workspace-member/types/WorkspaceMember';
+import { AppPath } from '@/types/AppPath';
 
 const StyledH1Title = styled(H1Title)`
   margin-bottom: 0;
@@ -67,7 +68,7 @@ export const SettingsWorkspaceMembers = () => {
               description="Copy and send an invite link directly"
             />
             <WorkspaceInviteLink
-              inviteLink={`${window.location.origin}/invite/${currentWorkspace?.inviteHash}`}
+              inviteLink={`${window.location.origin}/auth/invite/${currentWorkspace?.inviteHash}`}
             />
           </Section>
         )}
