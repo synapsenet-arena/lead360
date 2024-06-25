@@ -90,6 +90,38 @@ export const Campaigns = () => {
   const { enqueueSnackBar } = useSnackBar();
   const [addCampaigns, { error }] = useMutation(ADD_CAMPAIGN);
 
+  const validateFields = (messageTemplateId: string) => {
+    if (!campaignName) {
+      throw {
+        message: 'Campaign Name cannot be empty',
+      };
+    } else if (!campaignDescription) {
+      throw {
+        message: 'Campaign Description cannot be empty',
+      };
+    } else if (!specialty) {
+      throw {
+        message: 'Specialty not selected',
+      };
+    } else if (!subSpecialty) {
+      throw {
+        message: 'Subspecialty not selected',
+      };
+    } else if (!segment) {
+      throw {
+        message: 'Segment not selected',
+      };
+    } else if (!messageTemplateId) {
+      throw {
+        message: 'Message Template not selected',
+      };
+    } else if (!form) {
+      throw {
+        message: 'Form not selected',
+      };
+    }
+  };
+
   const handleSave = async () => {
     try {
       const id = uuidv4();
@@ -98,6 +130,7 @@ export const Campaigns = () => {
         : campaignData.emailTemplate
           ? campaignData.emailTemplate
           : null;
+      validateFields(messageTemplateId);
       const variables = {
         input: {
           name: campaignName,
@@ -120,11 +153,11 @@ export const Campaigns = () => {
       // window.location.reload();
     } catch (errors: any) {
       console.error('Error adding campaign:', error);
-      enqueueSnackBar(errors.message + 'Error while adding Campaign', {
+      enqueueSnackBar(errors.message + ': Error while creating Campaign', {
         variant: SnackBarVariant.Error,
       });
     }
-  };  
+  };
 
   return (
     <PageContainer>
@@ -150,7 +183,7 @@ export const Campaigns = () => {
             />
           </StyledButton>
         </StyledInputCard>
-         </StyledBoardContainer>
-     </PageContainer>
+      </StyledBoardContainer>
+    </PageContainer>
   );
 };

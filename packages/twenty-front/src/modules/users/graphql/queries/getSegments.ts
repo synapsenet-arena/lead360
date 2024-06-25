@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_SEGMENT_LISTS = gql`
-query FindManySegments($filter: SegmentFilterInput, $orderBy: SegmentOrderByInput, $lastCursor: String, $limit: Int) {
+query FindManySegments($filter: SegmentFilterInput, $orderBy: [SegmentOrderByInput], $lastCursor: String, $limit: Int) {
     segments(
       filter: $filter
       orderBy: $orderBy

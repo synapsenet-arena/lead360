@@ -152,6 +152,18 @@ export const Segment = () => {
       }
       setTotalLeadsCount(result.data.leads.totalCount);
       setQuerystamp(new Date().toISOString());
+      const leadsFetchedCount=result.data.leads.edges.length;
+      if(result.data.leads.edges.length==0){
+        enqueueSnackBar('Total Leads Fetched: '+leadsFetchedCount, {
+          variant: SnackBarVariant.Warning,
+      });
+      }else{
+        enqueueSnackBar('Total Leads Fetched: '+leadsFetchedCount, {
+          variant: SnackBarVariant.Info,
+      });
+      }
+      
+    
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -179,6 +191,9 @@ export const Segment = () => {
 
   const handlesave = async () => {
     try {
+      if(!segmentName || !segmentDescription){
+        throw {message:"Fields cannot be empty"};
+      }
       const id = uuidv4();
       const variables = {
         input: {
@@ -197,8 +212,7 @@ export const Segment = () => {
       navigate(`/object/segment/${id}`);
       // window.location.reload();
     } catch (errors: any) {
-      console.error('Error saving segment', error);
-      enqueueSnackBar(errors.message + 'Error while adding Segment', {
+      enqueueSnackBar(errors.message + ': Error while creating segment', {
         variant: SnackBarVariant.Error,
       });
     }

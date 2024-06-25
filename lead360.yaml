@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lead360-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lead360
+  template:
+    metadata:
+      labels:
+        app: lead360
+    spec:
+      containers:
+        - name: l360
+          image: registry.digitalocean.com/twentydocker/lead360v1
+          ports:
+            - containerPort: 3000 
+          env:
+            - name: PG_DATABASE_URL
+              value: 'postgres://twenty:twenty@lead360db-service:5432/default'  
+            - name: ACCESS_TOKEN_SECRET
+              value: 'replace_me_with_a_random_string_refresh'  
+            - name: LOGIN_TOKEN_SECRET
+              value: 'replace_me_with_a_random_string_refresh'  
+            - name: REFRESH_TOKEN_SECRET
+              value: 'replace_me_with_a_random_string_refresh'  
+            - name: SIGN_IN_PREFILLED
+              value: 'true'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lead360-service
+spec:
+  selector:
+    app: lead360
+  type: LoadBalancer
+
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const FILTER_LEADS =  gql`
-query FindManyLeads($filter: LeadFilterInput, $orderBy: LeadOrderByInput, $lastCursor: String, $limit: Int) {
+query FindManyLeads($filter: LeadFilterInput, $orderBy: [LeadOrderByInput], $lastCursor: String, $limit: Int) {
     leads(filter: $filter, orderBy: $orderBy, first: $limit, after: $lastCursor) {
       edges {
         node {

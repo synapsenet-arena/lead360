@@ -116,12 +116,12 @@ export const Schedule = ({
           <StyledComboInputContainer>
             <StyledLabel>
               <Checkbox
-                checked={false}
-                indeterminate={false}
-                variant={CheckboxVariant.Primary}
-                size={CheckboxSize.Small}
-                shape={CheckboxShape.Squared}
-                onChange={handleStartCheckboxChange}
+                  checked={false}
+                  indeterminate={false}
+                  variant={CheckboxVariant.Primary}
+                  size={CheckboxSize.Small}
+                  shape={CheckboxShape.Squared}
+                  onChange={handleStartCheckboxChange}
               />
               <StyledCheckboxLabel>Immediately</StyledCheckboxLabel>
             </StyledLabel>

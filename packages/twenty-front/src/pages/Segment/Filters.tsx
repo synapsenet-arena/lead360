@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/ui/input/button/components/Button';
 import { IconX } from '@tabler/icons-react';
 import { Select } from '@/ui/input/components/Select';

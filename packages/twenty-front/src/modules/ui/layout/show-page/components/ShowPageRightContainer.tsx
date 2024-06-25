@@ -209,13 +209,14 @@ export const ShowPageRightContainer = ({
 
 
 
+
   return (
     <StyledShowPageRightContainer isMobile={isMobile}>
       <StyledTabListContainer>
         <TabList
           loading={loading}
           tabListId={TAB_LIST_COMPONENT_ID + isRightDrawer}
-          tabs={tabs}
+          tabs={TASK_TABS}
         />
       </StyledTabListContainer>
       {activeTabId === 'timeline' && (
