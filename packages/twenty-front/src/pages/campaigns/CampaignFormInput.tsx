@@ -4,6 +4,7 @@ import { useQuery } from '@apollo/client';
 import { Section } from '@react-email/components';
 import { atom, useRecoilState } from 'recoil';
 import { H2Title } from 'twenty-ui';
+import { defaultOption } from '~/pages/campaigns/Campaigns';
 
 export const campaignFormInputState = atom({
   key: 'campaignFormInput',
@@ -16,7 +17,6 @@ export const CampaignFormInput = () => {
 
   const { loading: formTemplateLoading, data: formTemplateData } =
     useQuery(GET_FORM_TEMPLATES);
-
   if (!formTemplateLoading) {
     formTemplates = formTemplateData?.formTemplates.edges.map(
       (edge: { node: any }) => ({
@@ -25,6 +25,7 @@ export const CampaignFormInput = () => {
       }),
     );
   }
+  
   return (
     <>
       <Section>
@@ -36,7 +37,7 @@ export const CampaignFormInput = () => {
           fullWidth
           dropdownId="formTemplates"
           value={form}
-          options={formTemplates}
+          options={formTemplates? formTemplates : defaultOption}
           onChange={(e) => setForm(e)}
         />
       </Section>

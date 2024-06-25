@@ -75,6 +75,8 @@ const StyledButton = styled.span`
   margin: ${({ theme }) => theme.spacing(10)};
 `;
 
+export const defaultOption: any = [{ value: 'Select', label: 'Select' }];
+
 export const Campaigns = () => {
   const { campaignData } = useCampaign();
   const [campaignName] = useRecoilState(campaignNameState);
@@ -122,7 +124,7 @@ export const Campaigns = () => {
         variant: SnackBarVariant.Error,
       });
     }
-  };
+  };  
 
   return (
     <PageContainer>
@@ -148,7 +150,7 @@ export const Campaigns = () => {
             />
           </StyledButton>
         </StyledInputCard>
-      </StyledBoardContainer>
-    </PageContainer>
+         </StyledBoardContainer>
+     </PageContainer>
   );
 };

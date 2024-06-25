@@ -1,5 +1,3 @@
-
-
 import { Checkbox, CheckboxVariant, CheckboxSize, CheckboxShape } from '@/ui/input/components/Checkbox';
 import { Select } from '@/ui/input/components/Select';
 import { GET_MESSAGE_TEMPLATES } from '@/users/graphql/queries/getMessageTemplates';
@@ -9,8 +7,7 @@ import { Section } from '@react-email/components';
 import { ChangeEvent, useState } from 'react';
 import { H2Title } from 'twenty-ui';
 import { useCampaign } from '~/pages/campaigns/CampaignUseContext';
-
-
+import { defaultOption } from '~/pages/campaigns/Campaigns';
 
 
 const StyledSection = styled(Section)`
@@ -45,20 +42,16 @@ const StyledCheckboxLabel = styled.span`
 
 
 type MessageTemplate = {
-    type: string;
     value: string;
     label: string;
   };
 export const CampaignCommunication=()=>{
-    const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>(
-        [],
-      );
+    const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>();
     const { campaignData, setCampaignData } = useCampaign();
 
     const { loading: templatesLoading, data: templatesData } = useQuery(
         GET_MESSAGE_TEMPLATES,
       );
-
     const fetchTemplates = (channelType: string) => {
         const channelTemplates = templatesData?.messageTemplates.edges
           .filter((edge: { node: any }) => edge.node?.channelType === channelType)
@@ -126,7 +119,7 @@ export const CampaignCommunication=()=>{
                     fullWidth
                     dropdownId="whatsappTemplate"
                     value={campaignData?.whatsappTemplate}
-                    options={messageTemplates} // Display fetched templates
+                    options={messageTemplates ? messageTemplates : defaultOption} // Display fetched templates
                     onChange={(e) => {
                       setCampaignData({
                         ...campaignData,
@@ -169,7 +162,7 @@ export const CampaignCommunication=()=>{
                     fullWidth
                     dropdownId="emailTemplate"
                     value={campaignData?.emailTemplate}
-                    options={messageTemplates} // Display fetched templates
+                    options={messageTemplates ? messageTemplates : defaultOption} // Display fetched templates
                     onChange={(e) => {
                       setCampaignData({
                         ...campaignData,

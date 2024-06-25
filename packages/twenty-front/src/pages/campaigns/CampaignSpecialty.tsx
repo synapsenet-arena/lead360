@@ -5,6 +5,7 @@ import { Section } from '@react-email/components';
 import { atom, useRecoilState } from 'recoil';
 import { H2Title } from 'twenty-ui';
 import { SytledHR } from '~/pages/Segment/SegmentStyles';
+import { defaultOption } from '~/pages/campaigns/Campaigns';
 
 export const campaignSpecialtyState = atom({
   key: 'campaignSpecialty',
@@ -77,7 +78,7 @@ export const CampaignSpecialty = () => {
           // disabled
           dropdownId="Specialty Type"
           value={specialty}
-          options={Specialty}
+          options={Specialty ? Specialty : defaultOption}
           onChange={handleSpecialtySelectChange}
         />
       </Section>
@@ -95,7 +96,11 @@ export const CampaignSpecialty = () => {
               // disabled
               dropdownId="Sub Specialty Type"
               value={subSpecialty}
-              options={SpecialtyTypes[specialty]}
+              options={
+                SpecialtyTypes[specialty]
+                  ? SpecialtyTypes[specialty]
+                  : defaultOption
+              }
               onChange={handleSubSpecialtySelectChange}
             />
           </Section>

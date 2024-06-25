@@ -48,10 +48,9 @@ const StyledContainer = styled.div`
   cursor: pointer;
   height: 61px;
   padding: ${({ theme }) => theme.spacing(2)};
-  position: relative;
   width: 296px;
   margin-top: ${({ theme }) => theme.spacing(2)};
-
+  font-weight: ${({ theme }) =>theme.font.weight.semiBold};
   @media (max-width: ${MOBILE_VIEWPORT}px) {
     border-radius: 0;
     width: 100%;
