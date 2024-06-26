@@ -102,7 +102,7 @@ export const CampaignCommunication=()=>{
                       setCampaignData({
                         ...campaignData,
                         Whatsapp: event.target.checked,
-                        Email: !event.target.checked
+                        Email: event.target.checked
                           ? campaignData.Email
                           : false,
                       });
@@ -145,7 +145,7 @@ export const CampaignCommunication=()=>{
                       setCampaignData({
                         ...campaignData,
                         Email: event.target.checked,
-                        Whatsapp: !event.target.checked
+                        Whatsapp: event.target.checked
                           ? campaignData.Whatsapp
                           : false,
                       });

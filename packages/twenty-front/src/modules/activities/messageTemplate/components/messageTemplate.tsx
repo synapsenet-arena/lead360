@@ -30,15 +30,6 @@ const StyledAreaValueContainer = styled.div`
   margin-left: ${({ theme }) => theme.spacing(0)};
 `;
 
-const StyledTextArea = styled.textarea`
-  height: 200px; /* Adjust the height as needed */
-  width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  resize: vertical; /* Allow vertical resizing */
-`;
 export const MessageTemplate = ({
   targetableObject,
 }: {
@@ -74,6 +65,7 @@ export const MessageTemplate = ({
       setMessageTemplate([
         data?.data?.campaigns?.edges[0]?.node?.messageTemplate,
       ]);
+      console.log(data, '********');
     } catch (error) {
       console.error('Error fetching message template:', error);
     }
@@ -90,6 +82,7 @@ export const MessageTemplate = ({
           <EllipsisDisplay>Name</EllipsisDisplay>
         </StyledLabelContainer>
         <StyledValueContainer>
+          {!messageTemplate && <TextDisplay text="Select a message template" />}
           <TextDisplay text={messageTemplate[0]?.name} />
         </StyledValueContainer>
       </StyledDetailContainer>
@@ -98,6 +91,7 @@ export const MessageTemplate = ({
           <EllipsisDisplay>Channel Type</EllipsisDisplay>
         </StyledLabelContainer>
         <StyledValueContainer>
+          {!messageTemplate && <TextDisplay text="Select a message template"/>}
           <TextDisplay text={messageTemplate[0]?.channelType} />
         </StyledValueContainer>
       </StyledDetailContainer>
@@ -106,6 +100,7 @@ export const MessageTemplate = ({
           <EllipsisDisplay>Status</EllipsisDisplay>
         </StyledLabelContainer>
         <StyledValueContainer>
+          {!messageTemplate && <TextDisplay text="Select a message template" />}
           <TextDisplay text={messageTemplate[0]?.status} />
         </StyledValueContainer>
       </StyledDetailContainer>
@@ -114,6 +109,7 @@ export const MessageTemplate = ({
           <EllipsisDisplay>Body</EllipsisDisplay>
         </StyledLabelContainer>
         <StyledAreaValueContainer>
+          {!messageTemplate && <TextDisplay text="Select a message template" />}
           <TextArea
             placeholder={messageTemplate[0]?.body}
             minRows={20}

@@ -2,6 +2,7 @@ import { DateTimeDisplay } from '@/ui/field/display/components/DateTimeDisplay';
 import { EllipsisDisplay } from '@/ui/field/display/components/EllipsisDisplay';
 import { NumberDisplay } from '@/ui/field/display/components/NumberDisplay';
 import { Checkbox } from '@/ui/input/components/Checkbox';
+import styled from '@emotion/styled';
 import {
   StyledCountContainer,
   StyledComboInputContainer,
@@ -24,7 +25,22 @@ import {
   loadingState,
 } from '@/activities/Leads/components/LeadAtoms';
 import { useRecoilState } from 'recoil';
+import { PageTitle } from '@/ui/utilities/page-title/PageTitle';
+import AnimatedPlaceholder from '@/ui/layout/animated-placeholder/components/AnimatedPlaceholder';
+import { AnimatedPlaceholderEmptyTextContainer } from '@/ui/layout/animated-placeholder/components/EmptyPlaceholderStyled';
+import {
+  AnimatedPlaceholderErrorContainer,
+  AnimatedPlaceholderErrorTitle,
+} from '@/ui/layout/animated-placeholder/components/ErrorPlaceholderStyled';
 
+const StyledBackDrop = styled.div`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 70vh; 
+`;
 export type DisplayLeadsProps = {
   lastLeadRef: React.LegacyRef<HTMLTableRowElement> | undefined;
   handleRemoveContactedLeads: () => void;
@@ -59,14 +75,28 @@ export const DisplayLeads = ({
 
   return (
     <>
-      {leadsData[0] && (
+      {leadsData.length === 0 ? (
+        <>
+          <StyledBackDrop>
+            <PageTitle title="No leads available" />
+            <AnimatedPlaceholderErrorContainer>
+              <AnimatedPlaceholder type="error404" />
+              <AnimatedPlaceholderEmptyTextContainer>
+                <AnimatedPlaceholderErrorTitle>
+                  No leads available
+                </AnimatedPlaceholderErrorTitle>
+              </AnimatedPlaceholderEmptyTextContainer>
+            </AnimatedPlaceholderErrorContainer>
+          </StyledBackDrop>
+        </>
+      ) : (
         <>
           <StyledCountContainer>
             <StyledComboInputContainer>
               <StyledLabelContainer>
                 <EllipsisDisplay>Leads fetched at:</EllipsisDisplay>
               </StyledLabelContainer>
-              <DateTimeDisplay value={date} />
+              <DateTimeDisplay value={date.toISOString()} />
             </StyledComboInputContainer>
             <StyledComboInputContainer>
               <StyledLabelContainer>
@@ -91,7 +121,7 @@ export const DisplayLeads = ({
             <StyledCheckLabelContainer>
               <Checkbox
                 checked={false}
-                onChange={() => handleRemoveContactedLeads}
+                onChange={() => handleRemoveContactedLeads()}
               />
               Remove leads that were contacted previously
             </StyledCheckLabelContainer>
@@ -102,8 +132,8 @@ export const DisplayLeads = ({
               <StyledTableRow>
                 <StyledTableHeaderCell>
                   <Checkbox
-                    checked={unselectedID.size == 0}
-                    onChange={() => handleMasterCheckboxChange(event)}
+                    checked={unselectedID.size === 0}
+                    onChange={(event) => handleMasterCheckboxChange(event)}
                   />
                 </StyledTableHeaderCell>
 
@@ -122,7 +152,9 @@ export const DisplayLeads = ({
                     <StyledTableCell>
                       <Checkbox
                         checked={checkbox[lead.id]}
-                        onChange={() => handleCheckboxChange(event, lead.id)}
+                        onChange={(event) =>
+                          handleCheckboxChange(event, lead.id)
+                        }
                       />
                     </StyledTableCell>
                     {fieldsToDisplay.map((name) => (
