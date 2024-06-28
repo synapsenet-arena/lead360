@@ -6,7 +6,6 @@ import { FieldInput } from '@/object-record/record-field/components/FieldInput';
 import { FieldContext } from '@/object-record/record-field/contexts/FieldContext';
 import { FieldFocusContextProvider } from '@/object-record/record-field/contexts/FieldFocusContextProvider';
 import { useGetButtonIcon } from '@/object-record/record-field/hooks/useGetButtonIcon';
-import { useIsFieldEmpty } from '@/object-record/record-field/hooks/useIsFieldEmpty';
 import { useIsFieldInputOnly } from '@/object-record/record-field/hooks/useIsFieldInputOnly';
 import { FieldInputEvent } from '@/object-record/record-field/types/FieldInputEvent';
 import { isFieldRelation } from '@/object-record/record-field/types/guards/isFieldRelation';
@@ -29,10 +28,7 @@ export const RecordInlineCell = ({
   loading,
 }: RecordInlineCellProps) => {
   const { fieldDefinition, entityId } = useContext(FieldContext);
-
   const buttonIcon = useGetButtonIcon();
-
-  const isFieldEmpty = useIsFieldEmpty();
 
   const isFieldInputOnly = useIsFieldInputOnly();
 
@@ -132,7 +128,6 @@ export const RecordInlineCell = ({
               />
             }
             displayModeContent={<FieldDisplay />}
-            isDisplayModeContentEmpty={isFieldEmpty}
             isDisplayModeFixHeight
             editModeContentOnly={isFieldInputOnly}
             loading={loading}
@@ -165,7 +160,7 @@ export const RecordInlineCell = ({
                 onEnter={handleEnter}
                 onCancel={handleCancel}
                 onEscape={handleEscape}
-                onSubmit={handleStageChange}
+                onSubmit={handleSubmit}
                 onTab={handleTab}
                 onShiftTab={handleShiftTab}
                 onClickOutside={handleClickOutside}
@@ -173,13 +168,13 @@ export const RecordInlineCell = ({
               />
             }
             displayModeContent={<FieldDisplay />}
-            isDisplayModeContentEmpty={isFieldEmpty}
             isDisplayModeFixHeight
             editModeContentOnly={isFieldInputOnly}
             loading={loading}
           />
         </FieldFocusContextProvider>
       )}
+      ;
     </>
   );
 };
