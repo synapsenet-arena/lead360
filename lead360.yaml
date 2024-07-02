@@ -1,4 +1,86 @@
+#lead360-env-varibales
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lead360-config
+data:
+  postgres-db: 
+
 ---
+
+#lead360-secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lead360-secret
+data:
+  #base64-encoded
+  postgres-user: 
+  postgres-password:
+  access-token-secret: 
+  login-token-secret: 
+  refresh-token-secret: 
+  sign-in-prefilled:
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lead360db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lead360db
+  template:
+    metadata:
+      labels:
+        app: lead360db
+    spec:
+      containers:
+        - name: lead360db-container
+          image: registry.digitalocean.com/twentydocker/db  
+          ports:
+            - containerPort: 5432  
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: lead360-secret
+                  key: postgres-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lead360-secret
+                  key: postgres-password
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: lead360-config
+                  key: postgres-db
+          volumeMounts:
+            - name: twenty-db-data  
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: twenty-db-data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lead360db-service
+spec:
+  selector:
+    app: lead360db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,15 +102,27 @@ spec:
             - containerPort: 3000 
           env:
             - name: PG_DATABASE_URL
-              value: 'postgres://twenty:twenty@lead360db-service:5432/default'  
+              value: 'postgres://twenty:twenty@lead360db-service:5432/default'
             - name: ACCESS_TOKEN_SECRET
-              value: 'replace_me_with_a_random_string_refresh'  
+              valueFrom:
+                secretKeyRef:
+                  name: lead360-secret
+                  key: access-token-secret
             - name: LOGIN_TOKEN_SECRET
-              value: 'replace_me_with_a_random_string_refresh'  
+              valueFrom:
+                secretKeyRef:
+                  name: lead360-secret
+                  key: login-token-secret
             - name: REFRESH_TOKEN_SECRET
-              value: 'replace_me_with_a_random_string_refresh'  
+              valueFrom:
+                secretKeyRef:
+                  name: lead360-secret
+                  key: refresh-token-secret
             - name: SIGN_IN_PREFILLED
-              value: 'true'
+              valueFrom:
+                secretKeyRef:
+                  name: lead360-secret
+                  key: sign-in-prefilled
 ---
 apiVersion: v1
 kind: Service
@@ -38,7 +132,6 @@ spec:
   selector:
     app: lead360
   type: LoadBalancer
-
   ports:
     - protocol: TCP
       port: 3000
