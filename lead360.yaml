@@ -136,3 +136,58 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 3000
+
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-lead360
+  annotations:
+    cert-manager.io/issuer: letsencrypt-nginx
+spec:
+  tls:
+  - hosts: 
+    - lead360-synapsenet.shop
+    secretName: letsencrypt-nginx
+  ingressClassName: nginx
+  rules:
+    - host: lead360-synapsenet.shop
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lead360-service
+                port:
+                  number: 3000
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lead360-cert
+data:
+  tls.crt: 
+  tls.key: 
+type: kubernetes.io/tls
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-nginx
+spec:
+  acme:
+    email: admin@synapsenet.co
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: lead360-private-key
+    solvers:
+      # Use the HTTP-01 challenge provider
+      - http01:
+          ingress:
+            class: nginx
