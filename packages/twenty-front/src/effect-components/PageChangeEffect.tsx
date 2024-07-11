@@ -20,10 +20,8 @@ import { usePageChangeEffectNavigateLocation } from '~/hooks/usePageChangeEffect
 import { isDefined } from '~/utils/isDefined';
 
 import { CustomPath } from '@/types/CustomPath';
-import { OnboardingStatus } from '@/auth/utils/getOnboardingStatus';
-import { useOnboardingStatus } from '@/auth/hooks/useOnboardingStatus';
-import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
 // TODO: break down into smaller functions and / or hooks
 //  - moved usePageChangeEffectNavigateLocation into dedicated hook
@@ -33,8 +31,6 @@ export const PageChangeEffect = () => {
   const { enqueueSnackBar } = useSnackBar();
 
   const [previousLocation, setPreviousLocation] = useState('');
-
-  const onboardingStatus = useOnboardingStatus();
 
   const setHotkeyScope = useSetHotkeyScope();
 
@@ -88,55 +84,7 @@ export const PageChangeEffect = () => {
       console.log('Path Location:', location.pathname);
       navigate(location.pathname);
       return;
-    } else if (
-      onboardingStatus === OnboardingStatus.OngoingUserCreation &&
-      !isMatchingOngoingUserCreationRoute &&
-      !isMatchingLocation(AppPath.ResetPassword)
-    ) {
-      navigate(AppPath.SignInUp);
-    } else if (
-      isDefined(onboardingStatus) &&
-      onboardingStatus === OnboardingStatus.Incomplete &&
-      !isMatchingLocation(AppPath.PlanRequired)
-    ) {
-      navigate(AppPath.PlanRequired);
-    } else if (
-      isDefined(onboardingStatus) &&
-      [OnboardingStatus.Unpaid, OnboardingStatus.Canceled].includes(
-        onboardingStatus,
-      ) &&
-      !(
-        isMatchingLocation(AppPath.SettingsCatchAll) ||
-        isMatchingLocation(AppPath.PlanRequired)
-      )
-    ) {
-      navigate(
-        `${AppPath.SettingsCatchAll.replace('/*', '')}/${SettingsPath.Billing}`,
-      );
-    } else if (
-      onboardingStatus === OnboardingStatus.OngoingWorkspaceActivation &&
-      !isMatchingLocation(AppPath.CreateWorkspace) &&
-      !isMatchingLocation(AppPath.PlanRequiredSuccess)
-    ) {
-      navigate(AppPath.CreateWorkspace);
-    } else if (
-      onboardingStatus === OnboardingStatus.OngoingProfileCreation &&
-      !isMatchingLocation(AppPath.CreateProfile)
-    ) {
-      navigate(AppPath.CreateProfile);
-    } else if (
-      onboardingStatus === OnboardingStatus.Completed &&
-      isMatchingOnboardingRoute &&
-      !isMatchingLocation(AppPath.Invite)
-    ) {
-      navigate(AppPath.Index);
-    } else if (
-      onboardingStatus === OnboardingStatus.CompletedWithoutSubscription &&
-      isMatchingOnboardingRoute &&
-      !isMatchingLocation(AppPath.PlanRequired)
-    ) {
-      navigate(AppPath.Index);
-    }
+    } 
   }, [navigate, pageChangeEffectNavigateLocation]);
 useEffect(() => {
     switch (true) {
