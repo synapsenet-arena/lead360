@@ -11,7 +11,7 @@ import { PrefetchLoadingDecorator } from '~/testing/decorators/PrefetchLoadingDe
 import { graphqlMocks } from '~/testing/graphqlMocks';
 import {
   mockDefaultWorkspace,
-  mockedUsersData,
+  mockedUserData,
   mockedWorkspaceMemberData,
 } from '~/testing/mock-data/users';
 
@@ -31,7 +31,7 @@ const meta: Meta<typeof SupportChat> = {
 
       setCurrentWorkspace(mockDefaultWorkspace);
       setCurrentWorkspaceMember(mockedWorkspaceMemberData);
-      setCurrentUser(mockedUsersData[0]);
+      setCurrentUser(mockedUserData);
       setSupportChat({ supportDriver: 'front', supportFrontChatId: '1234' });
 
       return <Story />;

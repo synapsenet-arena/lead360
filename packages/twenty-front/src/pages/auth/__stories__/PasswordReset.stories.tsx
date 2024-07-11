@@ -4,7 +4,10 @@ import { within } from '@storybook/test';
 import { graphql, HttpResponse } from 'msw';
 
 import { GET_CURRENT_USER } from '@/users/graphql/queries/getCurrentUser';
-import { ValidatePasswordResetTokenDocument } from '~/generated/graphql';
+import {
+  OnboardingStatus,
+  ValidatePasswordResetTokenDocument,
+} from '~/generated/graphql';
 import { PasswordReset } from '~/pages/auth/PasswordReset';
 import {
   PageDecorator,
@@ -12,7 +15,11 @@ import {
 } from '~/testing/decorators/PageDecorator';
 import { PrefetchLoadingDecorator } from '~/testing/decorators/PrefetchLoadingDecorator';
 import { graphqlMocks } from '~/testing/graphqlMocks';
-import { mockedOnboardingUsersData } from '~/testing/mock-data/users';
+import { mockedOnboardingUserData } from '~/testing/mock-data/users';
+
+const mockedOnboardingUsersData = mockedOnboardingUserData(
+  OnboardingStatus.Completed,
+);
 
 const meta: Meta<PageDecoratorArgs> = {
   title: 'Pages/Auth/PasswordReset',
@@ -31,8 +38,8 @@ const meta: Meta<PageDecoratorArgs> = {
             return HttpResponse.json({
               data: {
                 validatePasswordResetToken: {
-                  id: mockedOnboardingUsersData[0].id,
-                  email: mockedOnboardingUsersData[0].email,
+                  id: mockedOnboardingUsersData.id,
+                  email: mockedOnboardingUsersData.email,
                 },
               },
             });
@@ -41,7 +48,7 @@ const meta: Meta<PageDecoratorArgs> = {
         graphql.query(getOperationName(GET_CURRENT_USER) ?? '', () => {
           return HttpResponse.json({
             data: {
-              currentUser: mockedOnboardingUsersData[0],
+              currentUser: mockedOnboardingUsersData,
             },
           });
         }),

@@ -13,7 +13,11 @@ import {
 import { Calendar } from '@/activities/calendar/components/Calendar';
 import { EmailThreads } from '@/activities/emails/components/EmailThreads';
 import { Attachments } from '@/activities/files/components/Attachments';
+import { FormTemplate } from '@/activities/formTemplate/components/formTemplate';
+import { Leads } from '@/activities/Leads/components/Leads';
+import { MessageTemplate } from '@/activities/messageTemplate/components/messageTemplate';
 import { Notes } from '@/activities/notes/components/Notes';
+import { Schedule } from '@/activities/Schedule/components/schedule';
 import { ObjectTasks } from '@/activities/tasks/components/ObjectTasks';
 import { TimelineActivities } from '@/activities/timelineActivities/components/TimelineActivities';
 import { TimelineActivitiesQueryEffect } from '@/activities/timelineActivities/components/TimelineActivitiesQueryEffect';
@@ -22,13 +26,12 @@ import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSi
 import { TabList } from '@/ui/layout/tab/components/TabList';
 import { useTabList } from '@/ui/layout/tab/hooks/useTabList';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
-import { IconClock, IconUsersGroup, IconMessage, IconDeviceTabletQuestion } from '@tabler/icons-react';
-import { Schedule } from '@/activities/Schedule/components/schedule';
-import { Leads } from '@/activities/Leads/components/Leads';
-import { MessageTemplate } from '@/activities/messageTemplate/components/messageTemplate';
-import { FormTemplate } from '@/activities/formTemplate/components/formTemplate';
-import { Timeline } from '@/activities/timeline/components/Timeline';
-import { TimelineQueryEffect } from '@/activities/timeline/components/TimelineQueryEffect';
+import {
+  IconClock,
+  IconDeviceTabletQuestion,
+  IconMessage,
+  IconUsersGroup,
+} from '@tabler/icons-react';
 
 const StyledShowPageRightContainer = styled.div<{ isMobile: boolean }>`
   display: flex;
@@ -40,8 +43,8 @@ const StyledShowPageRightContainer = styled.div<{ isMobile: boolean }>`
   overflow: scroll;
   scrollbar-color: ${({ theme }) => theme.border.color.strong};
   scrollbar-width: thin;
- 
-   *::-webkit-scrollbar {
+
+  *::-webkit-scrollbar {
     height: 8px;
     width: 8px;
   }
@@ -92,9 +95,7 @@ export const ShowPageRightContainer = ({
   summary,
   isRightDrawer = false,
 }: ShowPageRightContainerProps) => {
-  const { activeTabIdState } = useTabList(
-    TAB_LIST_COMPONENT_ID + isRightDrawer,
-  );
+  const { activeTabIdState } = useTabList(TAB_LIST_COMPONENT_ID);
   const activeTabId = useRecoilValue(activeTabIdState);
 
   const targetObjectNameSingular =
@@ -141,7 +142,10 @@ export const ShowPageRightContainer = ({
   ];
   let TASK_TABS = [];
 
-  if (targetableObject.targetObjectNameSingular === 'campaign'|| targetableObject.targetObjectNameSingular === 'campaignTrigger') {
+  if (
+    targetableObject.targetObjectNameSingular === 'campaign' ||
+    targetableObject.targetObjectNameSingular === 'campaignTrigger'
+  ) {
     TASK_TABS = [
       {
         id: 'schedule',
@@ -166,17 +170,10 @@ export const ShowPageRightContainer = ({
         title: 'Form Template',
         Icon: IconDeviceTabletQuestion,
         hide: !notes,
-      },
-      {
-        id: 'emails',
-        title: 'Emails',
-        Icon: IconMail,
-        hide: !shouldDisplayEmailsTab,
-        hasBetaPill: true,
-      },
+      }
     ];
-  }else{
-    TASK_TABS=tabs
+  } else {
+    TASK_TABS = tabs;
   }
 
   const renderActiveTabContent = () => {
@@ -207,52 +204,25 @@ export const ShowPageRightContainer = ({
     }
   };
 
-
-
-
   return (
     <StyledShowPageRightContainer isMobile={isMobile}>
       <StyledTabListContainer>
         <TabList
           loading={loading}
-          tabListId={TAB_LIST_COMPONENT_ID + isRightDrawer}
+          tabListId={TAB_LIST_COMPONENT_ID}
           tabs={TASK_TABS}
         />
       </StyledTabListContainer>
-      {activeTabId === 'timeline' && (
-        <>
-          <TimelineQueryEffect targetableObject={targetableObject} />
-          <Timeline loading={loading} targetableObject={targetableObject} />
-        </>
-      )}
-      {activeTabId === 'tasks' && (
-        <ObjectTasks targetableObject={targetableObject} />
-      )}
-      {activeTabId === 'notes' && <Notes targetableObject={targetableObject} />}
-      {activeTabId === 'files' && (
-        <Attachments targetableObject={targetableObject} />
-      )}
-      {activeTabId === 'emails' && (
-        <EmailThreads targetableObject={targetableObject} />
-      )}
-      {activeTabId === 'calendar' && (
-        <Calendar targetableObject={targetableObject} />
-      )}
-      {activeTabId === 'logs' && (
-        <TimelineActivities targetableObject={targetableObject} />
-      )}
 
-{activeTabId === 'schedule' && (
+      {activeTabId === 'schedule' && (
         <Schedule targetableObject={targetableObject} />
       )}
-      {activeTabId === 'leads' && (
-        <Leads targetableObject={targetableObject}/>
-      )}
+      {activeTabId === 'leads' && <Leads targetableObject={targetableObject} />}
       {activeTabId === 'messageTemplate' && (
-        <MessageTemplate targetableObject={targetableObject}/>
+        <MessageTemplate targetableObject={targetableObject} />
       )}
       {activeTabId === 'formTemplate' && (
-        <FormTemplate targetableObject={targetableObject}/>
+        <FormTemplate targetableObject={targetableObject} />
       )}
       {renderActiveTabContent()}
     </StyledShowPageRightContainer>

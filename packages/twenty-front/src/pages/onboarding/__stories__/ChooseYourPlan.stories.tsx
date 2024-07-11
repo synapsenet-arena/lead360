@@ -5,6 +5,7 @@ import { graphql, HttpResponse } from 'msw';
 
 import { AppPath } from '@/types/AppPath';
 import { GET_CURRENT_USER } from '@/users/graphql/queries/getCurrentUser';
+import { OnboardingStatus } from '~/generated/graphql';
 import { ChooseYourPlan } from '~/pages/onboarding/ChooseYourPlan';
 import {
   PageDecorator,
@@ -12,7 +13,7 @@ import {
 } from '~/testing/decorators/PageDecorator';
 import { PrefetchLoadingDecorator } from '~/testing/decorators/PrefetchLoadingDecorator';
 import { graphqlMocks } from '~/testing/graphqlMocks';
-import { mockedOnboardingUsersData } from '~/testing/mock-data/users';
+import { mockedOnboardingUserData } from '~/testing/mock-data/users';
 import { sleep } from '~/utils/sleep';
 
 const meta: Meta<PageDecoratorArgs> = {
@@ -26,7 +27,9 @@ const meta: Meta<PageDecoratorArgs> = {
         graphql.query(getOperationName(GET_CURRENT_USER) ?? '', () => {
           return HttpResponse.json({
             data: {
-              currentUser: mockedOnboardingUsersData[0],
+              currentUser: mockedOnboardingUserData(
+                OnboardingStatus.PlanRequired,
+              ),
             },
           });
         }),
