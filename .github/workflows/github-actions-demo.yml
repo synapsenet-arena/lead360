@@ -22,9 +22,14 @@ jobs:
           # Set always-auth in npmrc.
           always-auth: false
           # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
-          node-version: 18.17.1
+          # node-version: 18.17.1
           # File containing the version Spec of the version to use.  Examples: package.json, .nvmrc, .node-version, .tool-versions.
           node-version-file: package.json
+      - name: Setup NVM and yarn
+        run: |
+          sudo apt-get install curl
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+          corepack enable
       - name: Setup PostgreSQL Database
         run: make postgres-on-linux
       - name: Setup Environment variables
