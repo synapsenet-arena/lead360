@@ -37,10 +37,7 @@ jobs:
           cp ./packages/twenty-front/.env.example ./packages/twenty-front/.env
           cp ./packages/twenty-server/.env.example ./packages/twenty-server/.env
       - name: Install dependencies
-        run: |
-          nvm install
-          nvm use
-          yarn
+        run: yarn
       - name: Build Project
         run: |
           npx nx database:reset twenty-server
