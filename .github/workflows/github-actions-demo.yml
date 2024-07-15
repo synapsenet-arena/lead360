@@ -25,5 +25,20 @@ jobs:
           node-version: 18.17.1
           # File containing the version Spec of the version to use.  Examples: package.json, .nvmrc, .node-version, .tool-versions.
           node-version-file: package.json
-                
+      - name: Setup PostgreSQL Database
+        run: make postgres-on-linux
+      - name: Setup Environment variables
+        run: | 
+          cp ./packages/twenty-front/.env.example ./packages/twenty-front/.env
+          cp ./packages/twenty-server/.env.example ./packages/twenty-server/.env
+      - name: Install dependencies
+        run: |
+          nvm install
+          nvm use
+          yarn
+      - name: Build Project
+        run: |
+          npx nx database:reset twenty-server
+          npx nx build twenty-server
+          npx nx build twenty-front
             
