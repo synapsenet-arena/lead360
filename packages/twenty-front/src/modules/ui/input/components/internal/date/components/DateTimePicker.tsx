@@ -1,13 +1,13 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-import React, { useState } from 'react';
-import ReactDatePicker from 'react-datepicker';
 import styled from '@emotion/styled';
+import { useState } from 'react';
+import ReactDatePicker from 'react-datepicker';
 
 import { MenuItemLeftContent } from '@/ui/navigation/menu-item/internals/components/MenuItemLeftContent';
 import { StyledHoverableMenuItemBase } from '@/ui/navigation/menu-item/internals/components/StyledMenuItemBase';
 
-import 'react-datepicker/dist/react-datepicker.css';
 import { IconCalendar } from '@tabler/icons-react';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const StyledContainer = styled.div`
   & .react-datepicker {
@@ -285,7 +285,6 @@ export default function DateTimePicker({
       {clearable && (
         <StyledButtonContainer
           onClick={(event) => setOpenCalendar(true)}
-          isMenuOpen={false}
         >
           {/* <input onClick={(event)=>setOpen(true)} placeholder={selectedDate} disabled/> */}
           <StyledButton LeftIcon={IconCalendar} text={date} />
