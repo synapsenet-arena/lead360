@@ -73,6 +73,7 @@ jobs:
           token: ${{secrets.DIGITALOCEAN_ACCESS_TOKEN}}
       - name: push-db360
         run: |
+              doctl auth init
               docker tag db360:latest  registry.digitalocean.com/twentydocker/d360
               docker push registry.digitalocean.com/twentydocker/d360
 
