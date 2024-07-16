@@ -68,7 +68,7 @@ jobs:
         uses: digitalocean/action-doctl@v2.5.1
         with:
           # Skip authentication
-          no_auth: FALSE
+          no_auth: TRUE
           # DigitalOcean API Token
           token: ${{secrets.DIGITALOCEAN_ACCESS_TOKEN}}
       - name: push-db360
