@@ -80,7 +80,7 @@ jobs:
         with:
           file: ./DockerfileDB
           platforms: linux/amd64
-          tags: registry.digitalocean.com/twentydocker/d360:latest
+          tags: registry.digitalocean.com/twentydocker/ld360:latest
           push: true
             
       
