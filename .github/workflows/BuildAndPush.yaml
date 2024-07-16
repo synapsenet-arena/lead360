@@ -78,7 +78,6 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v6.4.0
         with:
-          context: .
           file: ./DockerfileDB
           platforms: linux/amd64
           tags: registry.digitalocean.com/twentydocker/d360:latest
