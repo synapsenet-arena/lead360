@@ -73,7 +73,7 @@ jobs:
           run: pwd
         
         - name: List files
-          run: ls -la
+          run: ls
 
           
         - name: Build container image
