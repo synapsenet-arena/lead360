@@ -165,17 +165,6 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: Secret
-metadata:
-  name: lead360-cert
-data:
-  tls.crt: 
-  tls.key: 
-type: kubernetes.io/tls
-
----
-
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
