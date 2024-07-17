@@ -60,6 +60,7 @@ jobs:
   #             echo ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} | docker login registry.digitalocean.com -u doctl --password-stdin
   #             docker tag db360:latest  registry.digitalocean.com/${{secrets.REGISTRY_NAME}}/d360
   #             docker push registry.digitalocean.com/${{secrets.REGISTRY_NAME}}/d360
+
   
   Deploy-lead360-App:
       # needs:  Build-Lead360
