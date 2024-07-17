@@ -65,6 +65,9 @@ jobs:
       # needs:  Build-Lead360
       runs-on: ubuntu-latest
       steps:
+        - name: Check out repository code
+          uses: actions/checkout@v4
+
         - name: Install doctl
           uses: digitalocean/action-doctl@v2
           with:
@@ -75,9 +78,11 @@ jobs:
         - name: List files
           run: ls
 
-          
+        - name: List files in the repository
+          run: |
+            ls ${{ github.workspace }}
         - name: Build container image
-          run: docker build -t ${{ secrets.REGISTRY_NAME }}/d360:$(echo $GITHUB_SHA | head -c7) .
+          run: docker build -t ${{ secrets.REGISTRY_NAME }}/d360:$(echo $GITHUB_SHA | head -c7) ./DockerfileDB
         
         - name: Log in to DigitalOcean Container Registry with short-lived credentials
           run: doct0l registry login --expiry-seconds 1200
