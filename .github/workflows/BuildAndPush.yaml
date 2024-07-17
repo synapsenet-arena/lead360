@@ -82,7 +82,7 @@ jobs:
           run: |
             ls ${{ github.workspace }}
         - name: Build container image
-          run: docker build -t ${{ secrets.REGISTRY_NAME }}/d360:$(echo $GITHUB_SHA | head -c7) ./DockerfileDB
+          run: docker build -t ${{ secrets.REGISTRY_NAME }}/d360:$(echo $GITHUB_SHA | head -c7) -f ./DockerfileDB .
         
         - name: Log in to DigitalOcean Container Registry with short-lived credentials
           run: doct0l registry login --expiry-seconds 1200
