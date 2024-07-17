@@ -108,4 +108,4 @@ jobs:
           run: kubectl apply -f ./lead360.yaml
         
         - name: Verify deployment
-          run: kubectl rollout status ldeployment/lead360-deployment
+          run: kubectl rollout status deployment/lead360-deployment
