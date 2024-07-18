@@ -36,7 +36,7 @@ jobs:
           npx nx build twenty-front
   
   Deploy-lead360-App:
-      # needs:  Build-Lead360
+      needs:  Build-Lead360
       runs-on: ubuntu-latest
       steps:
         - name: Check out repository code
