@@ -89,7 +89,7 @@ jobs:
           run: doctl registry login --expiry-seconds 1200
         
         - name: Push image to DigitalOcean Container Registry
-          run: docker push ${{ secrets.REGISTRY_NAME }}/db:$(echo $GITHUB_SHA | head -c7)
+          run: docker push ${{ secrets.REGISTRY_NAME }}/db:latest
 
         # - name: Update deployment file
         #   run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|${{ secrets.REGISTRY_NAME }}/db:latest|' ./lead360.yaml
