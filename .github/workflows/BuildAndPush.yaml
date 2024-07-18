@@ -46,7 +46,11 @@ jobs:
           uses: digitalocean/action-doctl@v2
           with:
             token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-            
+
+        - name: Setup Environment variables
+          run: | 
+              cp ./packages/twenty-server/.env.example ./packages/twenty-server/.env
+              
         - name: Replace ConfigMap and Secret Values
           run: |
             sed -i "s|<POSTGRES_DB>|${{ secrets.POSTGRES_DB }}|" ./lead360.yaml
