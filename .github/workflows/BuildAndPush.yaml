@@ -103,6 +103,9 @@ jobs:
         
         - name: print deployment file
           run: echo ./lead360.yaml
+
+        - name: Restart
+          run: kubectl apply -f ./lead360-restart.yaml
           
         - name: Deploy to DigitalOcean Kubernetes
           run: kubectl apply -f ./lead360.yaml
