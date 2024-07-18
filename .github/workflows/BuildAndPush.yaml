@@ -82,6 +82,17 @@ jobs:
         - name: List files in the repository
           run: |
             ls ${{ github.workspace }}
+
+        - name: Replace ConfigMap and Secret Values
+          run: |
+            sed -i "s|<POSTGRES_DB>|${{ secrets.POSTGRES_DB }}|" ./lead360.yaml
+            sed -i "s|<POSTGRES_USER>|$(echo -n ${{ secrets.POSTGRES_USER }} | base64)|" ./lead360.yaml
+            sed -i "s|<POSTGRES_PASSWORD>|$(echo -n ${{ secrets.POSTGRES_PASSWORD }} | base64)|" ./lead360.yaml
+            sed -i "s|<ACCESS_TOKEN_SECRET>|$(echo -n ${{ secrets.ACCESS_TOKEN_SECRET }} | base64)|" ./lead360.yaml
+            sed -i "s|<LOGIN_TOKEN_SECRET>|$(echo -n ${{ secrets.LOGIN_TOKEN_SECRET }} | base64)|" ./lead360.yaml
+            sed -i "s|<REFRESH_TOKEN_SECRET>|$(echo -n ${{ secrets.REFRESH_TOKEN_SECRET }} | base64)|" ./lead360.yaml
+            sed -i "s|<SIGN_IN_PREFILLED>|$(echo -n ${{ secrets.SIGN_IN_PREFILLED }} | base64)|" ./lead360.yaml
+
         - name: Build container image
           run: docker build -t ${{ secrets.REGISTRY_NAME }}/db:latest -f ./DockerfileDB .
         
@@ -90,10 +101,7 @@ jobs:
         
         - name: Push image to DigitalOcean Container Registry
           run: docker push ${{ secrets.REGISTRY_NAME }}/db:latest
-
-        # - name: Update deployment file
-        #   run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|${{ secrets.REGISTRY_NAME }}/db:latest|' ./lead360.yaml
-        
+      
         - name: Save DigitalOcean kubeconfig with short-lived credentials
           run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
 
@@ -103,11 +111,11 @@ jobs:
         - name: print deployment file
           run: echo ./lead360.yaml
 
-        - name: Restart
-          run: kubectl apply -f ./lead360-restart.yaml
+        - name : Apply Deployment
+          run : kubectl apply -f ./lead360.yaml 
           
-        - name: Deploy to DigitalOcean Kubernetes
-          run: kubectl apply -f ./lead360.yaml
-        
         - name: Verify deployment
-          run: kubectl rollout status deployment/lead360-deployment
+          run: kubectl rollout restart deployment/lead360-deployment
+
+        - name: Verify deployment
+          run: kubectl rollout restart deployment/lead360db-deployment
