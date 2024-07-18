@@ -83,7 +83,7 @@ jobs:
           run: |
             ls ${{ github.workspace }}
         - name: Build container image
-          run: docker build -t ${{ secrets.REGISTRY_NAME }}/db:$(echo $GITHUB_SHA | head -c7) -f ./DockerfileDB .
+          run: docker build -t ${{ secrets.REGISTRY_NAME }}/db:latest -f ./DockerfileDB .
         
         - name: Log in to DigitalOcean Container Registry with short-lived credentials
           run: doctl registry login --expiry-seconds 1200
@@ -91,9 +91,8 @@ jobs:
         - name: Push image to DigitalOcean Container Registry
           run: docker push ${{ secrets.REGISTRY_NAME }}/db:$(echo $GITHUB_SHA | head -c7)
 
-
-        - name: Update deployment file
-          run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|${{ secrets.REGISTRY_NAME }}/db:'${TAG}'|' ./lead360.yaml
+        # - name: Update deployment file
+        #   run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|${{ secrets.REGISTRY_NAME }}/db:latest|' ./lead360.yaml
         
         - name: Save DigitalOcean kubeconfig with short-lived credentials
           run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
