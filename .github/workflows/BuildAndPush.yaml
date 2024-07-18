@@ -36,7 +36,7 @@ jobs:
           npx nx build twenty-front
   
   Deploy-lead360-App:
-      needs:  Build-Lead360
+      # needs:  Build-Lead360
       runs-on: ubuntu-latest
       steps:
         - name: Check out repository code
@@ -59,15 +59,15 @@ jobs:
 
         - name: Build Lead360DB container image
           run: docker build -t ${{ secrets.REGISTRY_NAME }}/db:latest -f ./DockerfileDB .
+          
+        - name: Build Lead360 container image
+          run: docker build -t ${{ secrets.REGISTRY_NAME }}/lead360v1:latest -f ./Dockerfile .
 
         - name: Log in to DigitalOcean Container Registry with short-lived credentials
-          run: doctl registry login --expiry-seconds 1500
+          run: doctl registry login --expiry-seconds 1200
         
         - name: Push image to DigitalOcean Container Registry
           run: docker push ${{ secrets.REGISTRY_NAME }}/db:latest
-
-        - name: Build Lead360 container image
-          run: docker build -t ${{ secrets.REGISTRY_NAME }}/db:latest -f ./Dockerfile .
 
         - name: Push image to DigitalOcean Container Registry
           run: docker push ${{ secrets.REGISTRY_NAME }}/lead360v1:latest
