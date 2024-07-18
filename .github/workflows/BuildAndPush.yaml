@@ -114,8 +114,8 @@ jobs:
         - name : Apply Deployment
           run : kubectl apply -f ./lead360.yaml 
           
-        - name: Verify deployment
-          run: kubectl rollout restart deployment/lead360-deployment
+        # - name: Verify deployment
+        #   run: kubectl rollout restart deployment/lead360-deployment
 
         - name: Verify deployment
           run: kubectl rollout restart deployment/lead360db-deployment
