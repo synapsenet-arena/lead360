@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: lead360-config
 data:
-  postgres-db: 
+  postgres-db: "<POSTGRES_DB>"
 
 ---
 
@@ -15,12 +15,12 @@ metadata:
   name: lead360-secret
 data:
   #base64-encoded
-  postgres-user: 
-  postgres-password:
-  access-token-secret: 
-  login-token-secret: 
-  refresh-token-secret: 
-  sign-in-prefilled:
+  postgres-user: "<POSTGRES_USER>"
+  postgres-password: "<POSTGRES_PASSWORD>"
+  access-token-secret: "<ACCESS_TOKEN_SECRET>"
+  login-token-secret: "<LOGIN_TOKEN_SECRET>"
+  refresh-token-secret: "<REFRESH_TOKEN_SECRET>"
+  sign-in-prefilled: "<SIGN_IN_PREFILLED>"
 
 ---
 apiVersion: apps/v1
