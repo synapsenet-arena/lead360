@@ -211,7 +211,9 @@ useEffect(() => {
   useEffect(() => {
     if (
       isCaptchaScriptLoaded &&
-      isMatchingLocation(AppPath.SignInUp || AppPath.Invite)
+      (isMatchingLocation(AppPath.SignInUp) ||
+        isMatchingLocation(AppPath.Invite) ||
+        isMatchingLocation(AppPath.ResetPassword))
     ) {
       requestFreshCaptchaToken();
     }

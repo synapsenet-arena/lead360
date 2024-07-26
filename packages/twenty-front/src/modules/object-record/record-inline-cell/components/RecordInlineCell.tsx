@@ -13,19 +13,22 @@ import { RelationPickerHotkeyScope } from '@/object-record/relation-picker/types
 
 import { useInlineCell } from '../hooks/useInlineCell';
 
-import { RecordInlineCellContainer } from './RecordInlineCellContainer';
 import { useOpenCreateActivityDrawer } from '@/activities/hooks/useOpenCreateActivityDrawer';
-import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
+import { RecordInlineCellContainer } from './RecordInlineCellContainer';
 
 type RecordInlineCellProps = {
   readonly?: boolean;
   loading?: boolean;
+  isCentered?: boolean;
 };
 
+// TODO: refactor props drilling with a RecordInlineCellContext
 export const RecordInlineCell = ({
   readonly,
   loading,
+  isCentered,
 }: RecordInlineCellProps) => {
   const { fieldDefinition, entityId } = useContext(FieldContext);
   const buttonIcon = useGetButtonIcon();
@@ -131,7 +134,7 @@ export const RecordInlineCell = ({
             isDisplayModeFixHeight
             editModeContentOnly={isFieldInputOnly}
             loading={loading}
-          />
+            />
         </FieldFocusContextProvider>
       )}
       {fieldDefinition.metadata.fieldName === 'stage' && (

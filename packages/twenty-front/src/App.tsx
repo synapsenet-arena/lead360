@@ -24,6 +24,7 @@ import { ApolloMetadataClientProvider } from '@/object-metadata/components/Apoll
 import { ObjectMetadataItemsProvider } from '@/object-metadata/components/ObjectMetadataItemsProvider';
 import { PrefetchDataProvider } from '@/prefetch/components/PrefetchDataProvider';
 import { AppPath } from '@/types/AppPath';
+import { CustomPath } from '@/types/CustomPath';
 import { SettingsPath } from '@/types/SettingsPath';
 import { DialogManager } from '@/ui/feedback/dialog-manager/components/DialogManager';
 import { DialogManagerScope } from '@/ui/feedback/dialog-manager/scopes/DialogManagerScope';
@@ -34,6 +35,7 @@ import { AppThemeProvider } from '@/ui/theme/components/AppThemeProvider';
 import { PageTitle } from '@/ui/utilities/page-title/PageTitle';
 import { UserProvider } from '@/users/components/UserProvider';
 import { UserProviderEffect } from '@/users/components/UserProviderEffect';
+import { useIsFeatureEnabled } from '@/workspace/hooks/useIsFeatureEnabled';
 import { CommandMenuEffect } from '~/effect-components/CommandMenuEffect';
 import { GotoHotkeysEffect } from '~/effect-components/GotoHotkeysEffect';
 import { PageChangeEffect } from '~/effect-components/PageChangeEffect';
@@ -41,6 +43,11 @@ import { Authorize } from '~/pages/auth/Authorize';
 import { Invite } from '~/pages/auth/Invite';
 import { PasswordReset } from '~/pages/auth/PasswordReset';
 import { SignInUp } from '~/pages/auth/SignInUp';
+import { CampaignForm } from '~/pages/campaigns/CampaignForm';
+import { CampaignForm2 } from '~/pages/campaigns/CampaignForm2';
+import { CampaignForm3 } from '~/pages/campaigns/CampaignForm3';
+import { Campaigns } from '~/pages/campaigns/Campaigns';
+import Dashboard from '~/pages/campaigns/Dashboard';
 import { ImpersonateEffect } from '~/pages/impersonate/ImpersonateEffect';
 import { NotFound } from '~/pages/not-found/NotFound';
 import { RecordIndexPage } from '~/pages/object-record/RecordIndexPage';
@@ -51,10 +58,12 @@ import { CreateWorkspace } from '~/pages/onboarding/CreateWorkspace';
 import { InviteTeam } from '~/pages/onboarding/InviteTeam';
 import { PaymentSuccess } from '~/pages/onboarding/PaymentSuccess';
 import { SyncEmails } from '~/pages/onboarding/SyncEmails';
+import { Segment } from '~/pages/Segment/Segment';
 import { SettingsAccounts } from '~/pages/settings/accounts/SettingsAccounts';
 import { SettingsAccountsCalendars } from '~/pages/settings/accounts/SettingsAccountsCalendars';
 import { SettingsAccountsEmails } from '~/pages/settings/accounts/SettingsAccountsEmails';
 import { SettingsNewAccount } from '~/pages/settings/accounts/SettingsNewAccount';
+import { SettingsCRMMigration } from '~/pages/settings/crm-migration/SettingsCRMMigration';
 import { SettingsNewObject } from '~/pages/settings/data-model/SettingsNewObject';
 import { SettingsObjectDetail } from '~/pages/settings/data-model/SettingsObjectDetail';
 import { SettingsObjectEdit } from '~/pages/settings/data-model/SettingsObjectEdit';
@@ -81,13 +90,6 @@ import { SettingsWorkspace } from '~/pages/settings/SettingsWorkspace';
 import { SettingsWorkspaceMembers } from '~/pages/settings/SettingsWorkspaceMembers';
 import { Tasks } from '~/pages/tasks/Tasks';
 import { getPageTitleFromPath } from '~/utils/title-utils';
-import { CustomPath } from '@/types/CustomPath';
-import { CampaignForm } from '~/pages/campaigns/CampaignForm';
-import { CampaignForm2 } from '~/pages/campaigns/CampaignForm2';
-import { CampaignForm3 } from '~/pages/campaigns/CampaignForm3';
-import { Campaigns } from '~/pages/campaigns/Campaigns';
-import { Segment } from '~/pages/Segment/Segment';
-import Dashboard from '~/pages/campaigns/Dashboard';
 
 const ProvidersThatNeedRouterContext = () => {
   const { pathname } = useLocation();
@@ -132,7 +134,10 @@ const ProvidersThatNeedRouterContext = () => {
   );
 };
 
-const createRouter = (isBillingEnabled?: boolean) =>
+const createRouter = (
+  isBillingEnabled?: boolean,
+  isCRMMigrationEnabled?: boolean,
+) =>
   createBrowserRouter(
     createRoutesFromElements(
       <Route
@@ -229,6 +234,12 @@ const createRouter = (isBillingEnabled?: boolean) =>
                   path={SettingsPath.Developers}
                   element={<SettingsDevelopers />}
                 />
+                {isCRMMigrationEnabled && (
+                  <Route
+                    path={SettingsPath.CRMMigration}
+                    element={<SettingsCRMMigration />}
+                  />
+                )}
                 <Route
                   path={AppPath.DevelopersCatchAll}
                   element={
@@ -311,6 +322,11 @@ const createRouter = (isBillingEnabled?: boolean) =>
 
 export const App = () => {
   const billing = useRecoilValue(billingState);
+  const isCRMMigrationEnabled = useIsFeatureEnabled('IS_CRM_MIGRATION_ENABLED');
 
-  return <RouterProvider router={createRouter(billing?.isBillingEnabled)} />;
+  return (
+    <RouterProvider
+      router={createRouter(billing?.isBillingEnabled, isCRMMigrationEnabled)}
+    />
+  );
 };
