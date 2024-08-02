@@ -14,6 +14,7 @@ import { RelationPickerHotkeyScope } from '@/object-record/relation-picker/types
 import { useInlineCell } from '../hooks/useInlineCell';
 
 import { useOpenCreateActivityDrawer } from '@/activities/hooks/useOpenCreateActivityDrawer';
+import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
 import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { RecordInlineCellContainer } from './RecordInlineCellContainer';
@@ -51,7 +52,9 @@ export const RecordInlineCell = ({
     closeInlineCell();
   };
 
-  const openCreateActivity = useOpenCreateActivityDrawer();
+  const openCreateActivity = useOpenCreateActivityDrawer({
+    activityObjectNameSingular: CoreObjectNameSingular.Note,
+  });
   const { enqueueSnackBar } = useSnackBar();
   const handleStageChange: FieldInputEvent = (persistField) => {
     persistField();
@@ -61,7 +64,6 @@ export const RecordInlineCell = ({
       ? fieldDefinition.metadata.objectMetadataNameSingular
       : '';
     openCreateActivity({
-      type: 'Note',
       targetableObjects: [
         {
           id: entityId,
@@ -134,7 +136,7 @@ export const RecordInlineCell = ({
             isDisplayModeFixHeight
             editModeContentOnly={isFieldInputOnly}
             loading={loading}
-            />
+          />
         </FieldFocusContextProvider>
       )}
       {fieldDefinition.metadata.fieldName === 'stage' && (
