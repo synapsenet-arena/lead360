@@ -82,13 +82,15 @@ import { SettingsIntegrationEditDatabaseConnection } from '~/pages/settings/inte
 import { SettingsIntegrationNewDatabaseConnection } from '~/pages/settings/integrations/SettingsIntegrationNewDatabaseConnection';
 import { SettingsIntegrations } from '~/pages/settings/integrations/SettingsIntegrations';
 import { SettingsIntegrationShowDatabaseConnection } from '~/pages/settings/integrations/SettingsIntegrationShowDatabaseConnection';
+import { SettingsAppearance } from '~/pages/settings/profile/appearance/components/SettingsAppearance';
 import { Releases } from '~/pages/settings/Releases';
-import { SettingsAppearance } from '~/pages/settings/SettingsAppearance';
+import { SettingsServerlessFunctionDetailWrapper } from '~/pages/settings/serverless-functions/SettingsServerlessFunctionDetailWrapper';
+import { SettingsServerlessFunctions } from '~/pages/settings/serverless-functions/SettingsServerlessFunctions';
+import { SettingsServerlessFunctionsNew } from '~/pages/settings/serverless-functions/SettingsServerlessFunctionsNew';
 import { SettingsBilling } from '~/pages/settings/SettingsBilling';
 import { SettingsProfile } from '~/pages/settings/SettingsProfile';
 import { SettingsWorkspace } from '~/pages/settings/SettingsWorkspace';
 import { SettingsWorkspaceMembers } from '~/pages/settings/SettingsWorkspaceMembers';
-import { Tasks } from '~/pages/tasks/Tasks';
 import { getPageTitleFromPath } from '~/utils/title-utils';
 
 const ProvidersThatNeedRouterContext = () => {
@@ -137,6 +139,7 @@ const ProvidersThatNeedRouterContext = () => {
 const createRouter = (
   isBillingEnabled?: boolean,
   isCRMMigrationEnabled?: boolean,
+  isServerlessFunctionSettingsEnabled?: boolean,
 ) =>
   createBrowserRouter(
     createRoutesFromElements(
@@ -161,7 +164,6 @@ const createRouter = (
             element={<PaymentSuccess />}
           />
           <Route path={indexAppPath.getIndexAppPath()} element={<></>} />
-          <Route path={AppPath.TasksPage} element={<Tasks />} />
           <Route path={AppPath.Impersonate} element={<ImpersonateEffect />} />
           <Route path={AppPath.RecordIndexPage} element={<RecordIndexPage />} />
           <Route path={AppPath.RecordShowPage} element={<RecordShowPage />} />
@@ -263,6 +265,22 @@ const createRouter = (
                     </Routes>
                   }
                 />
+                {isServerlessFunctionSettingsEnabled && (
+                  <>
+                    <Route
+                      path={SettingsPath.ServerlessFunctions}
+                      element={<SettingsServerlessFunctions />}
+                    />
+                    <Route
+                      path={SettingsPath.NewServerlessFunction}
+                      element={<SettingsServerlessFunctionsNew />}
+                    />
+                    <Route
+                      path={SettingsPath.ServerlessFunctionDetail}
+                      element={<SettingsServerlessFunctionDetailWrapper />}
+                    />
+                  </>
+                )}
                 <Route
                   path={SettingsPath.Integrations}
                   element={<SettingsIntegrations />}
@@ -323,10 +341,17 @@ const createRouter = (
 export const App = () => {
   const billing = useRecoilValue(billingState);
   const isCRMMigrationEnabled = useIsFeatureEnabled('IS_CRM_MIGRATION_ENABLED');
+  const isServerlessFunctionSettingsEnabled = useIsFeatureEnabled(
+    'IS_FUNCTION_SETTINGS_ENABLED',
+  );
 
   return (
     <RouterProvider
-      router={createRouter(billing?.isBillingEnabled, isCRMMigrationEnabled)}
+      router={createRouter(
+        billing?.isBillingEnabled,
+        isCRMMigrationEnabled,
+        isServerlessFunctionSettingsEnabled,
+      )}
     />
   );
 };

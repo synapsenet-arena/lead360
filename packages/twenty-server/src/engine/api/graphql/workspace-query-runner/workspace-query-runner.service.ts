@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  RequestTimeoutException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import isEmpty from 'lodash.isempty';
@@ -30,7 +25,7 @@ import {
 import { ObjectMetadataInterface } from 'src/engine/metadata-modules/field-metadata/interfaces/object-metadata.interface';
 
 import { WorkspaceQueryBuilderFactory } from 'src/engine/api/graphql/workspace-query-builder/workspace-query-builder.factory';
-import { QueryResultGettersFactory } from 'src/engine/api/graphql/workspace-query-runner/factories/query-result-getters.factory';
+import { QueryResultGettersFactory } from 'src/engine/api/graphql/workspace-query-runner/factories/query-result-getters/query-result-getters.factory';
 import { QueryRunnerArgsFactory } from 'src/engine/api/graphql/workspace-query-runner/factories/query-runner-args.factory';
 import {
   CallWebhookJobsJob,
@@ -40,8 +35,11 @@ import {
 import { assertIsValidUuid } from 'src/engine/api/graphql/workspace-query-runner/utils/assert-is-valid-uuid.util';
 import { parseResult } from 'src/engine/api/graphql/workspace-query-runner/utils/parse-result.util';
 import { WorkspaceQueryHookService } from 'src/engine/api/graphql/workspace-query-runner/workspace-query-hook/workspace-query-hook.service';
+import {
+  WorkspaceQueryRunnerException,
+  WorkspaceQueryRunnerExceptionCode,
+} from 'src/engine/api/graphql/workspace-query-runner/workspace-query-runner.exception';
 import { DuplicateService } from 'src/engine/core-modules/duplicate/duplicate.service';
-import { NotFoundError } from 'src/engine/core-modules/graphql/utils/graphql-errors.util';
 import { EnvironmentService } from 'src/engine/integrations/environment/environment.service';
 import { ObjectRecordCreateEvent } from 'src/engine/integrations/event-emitter/types/object-record-create.event';
 import { ObjectRecordDeleteEvent } from 'src/engine/integrations/event-emitter/types/object-record-delete.event';
@@ -127,6 +125,7 @@ export class WorkspaceQueryRunnerService {
       result,
       objectMetadataItem,
       '',
+      workspaceId,
     );
   }
 
@@ -138,7 +137,10 @@ export class WorkspaceQueryRunnerService {
     options: WorkspaceQueryRunnerOptions,
   ): Promise<Record | undefined> {
     if (!args.filter || Object.keys(args.filter).length === 0) {
-      throw new BadRequestException('Missing filter argument');
+      throw new WorkspaceQueryRunnerException(
+        'Missing filter argument',
+        WorkspaceQueryRunnerExceptionCode.INVALID_QUERY_INPUT,
+      );
     }
     const { workspaceId, userId, objectMetadataItem } = options;
 
@@ -166,6 +168,7 @@ export class WorkspaceQueryRunnerService {
       result,
       objectMetadataItem,
       '',
+      workspaceId,
     );
 
     return parsedResult?.edges?.[0]?.node;
@@ -176,14 +179,16 @@ export class WorkspaceQueryRunnerService {
     options: WorkspaceQueryRunnerOptions,
   ): Promise<IConnection<TRecord> | undefined> {
     if (!args.data && !args.ids) {
-      throw new BadRequestException(
+      throw new WorkspaceQueryRunnerException(
         'You have to provide either "data" or "id" argument',
+        WorkspaceQueryRunnerExceptionCode.INVALID_QUERY_INPUT,
       );
     }
 
     if (!args.ids && isEmpty(args.data)) {
-      throw new BadRequestException(
+      throw new WorkspaceQueryRunnerException(
         'The "data" condition can not be empty when ID input not provided',
+        WorkspaceQueryRunnerExceptionCode.INVALID_QUERY_INPUT,
       );
     }
 
@@ -205,7 +210,10 @@ export class WorkspaceQueryRunnerService {
       );
 
       if (!existingRecords || existingRecords.length === 0) {
-        throw new NotFoundError(`Object with id ${args.ids} not found`);
+        throw new WorkspaceQueryRunnerException(
+          `Object with id ${args.ids} not found`,
+          WorkspaceQueryRunnerExceptionCode.DATA_NOT_FOUND,
+        );
       }
     }
 
@@ -229,6 +237,7 @@ export class WorkspaceQueryRunnerService {
       result,
       objectMetadataItem,
       '',
+      workspaceId,
       true,
     );
   }
@@ -277,6 +286,7 @@ export class WorkspaceQueryRunnerService {
         result,
         objectMetadataItem,
         'insertInto',
+        workspaceId,
       )
     )?.records;
 
@@ -386,7 +396,10 @@ export class WorkspaceQueryRunnerService {
     });
 
     if (!existingRecord) {
-      throw new NotFoundError(`Object with id ${args.id} not found`);
+      throw new WorkspaceQueryRunnerException(
+        `Object with id ${args.id} not found`,
+        WorkspaceQueryRunnerExceptionCode.DATA_NOT_FOUND,
+      );
     }
 
     const query = await this.workspaceQueryBuilderFactory.updateOne(
@@ -409,6 +422,7 @@ export class WorkspaceQueryRunnerService {
         result,
         objectMetadataItem,
         'update',
+        workspaceId,
       )
     )?.records;
 
@@ -425,6 +439,7 @@ export class WorkspaceQueryRunnerService {
       recordId: existingRecord.id,
       objectMetadata: objectMetadataItem,
       properties: {
+        updatedFields: Object.keys(args.data),
         before: this.removeNestedProperties(existingRecord as Record),
         after: this.removeNestedProperties(parsedResults?.[0]),
       },
@@ -476,6 +491,7 @@ export class WorkspaceQueryRunnerService {
         result,
         objectMetadataItem,
         'update',
+        workspaceId,
       )
     )?.records;
 
@@ -503,6 +519,7 @@ export class WorkspaceQueryRunnerService {
         recordId: existingRecord.id,
         objectMetadata: objectMetadataItem,
         properties: {
+          updatedFields: Object.keys(args.data),
           before: this.removeNestedProperties(existingRecord as Record),
           after: this.removeNestedProperties(record),
         },
@@ -546,6 +563,7 @@ export class WorkspaceQueryRunnerService {
         result,
         objectMetadataItem,
         'deleteFrom',
+        workspaceId,
       )
     )?.records;
 
@@ -609,6 +627,7 @@ export class WorkspaceQueryRunnerService {
         result,
         objectMetadataItem,
         'deleteFrom',
+        workspaceId,
       )
     )?.records;
 
@@ -681,8 +700,9 @@ export class WorkspaceQueryRunnerService {
       );
     } catch (error) {
       if (isQueryTimeoutError(error)) {
-        throw new RequestTimeoutException(
+        throw new WorkspaceQueryRunnerException(
           'The SQL request took too long to process, resulting in a query read timeout. To resolve this issue, consider modifying your query by reducing the depth of relationships or limiting the number of records being fetched.',
+          WorkspaceQueryRunnerExceptionCode.QUERY_TIMEOUT,
         );
       }
 
@@ -711,6 +731,7 @@ export class WorkspaceQueryRunnerService {
     graphqlResult: PGGraphQLResult | undefined,
     objectMetadataItem: ObjectMetadataInterface,
     command: string,
+    workspaceId: string,
     isMultiQuery = false,
   ): Promise<Result> {
     const entityKey = `${command}${computeObjectTargetTable(
@@ -733,7 +754,10 @@ export class WorkspaceQueryRunnerService {
       ['update', 'deleteFrom'].includes(command) &&
       !result.affectedCount
     ) {
-      throw new BadRequestException('No rows were affected.');
+      throw new WorkspaceQueryRunnerException(
+        'No rows were affected.',
+        WorkspaceQueryRunnerExceptionCode.NO_ROWS_AFFECTED,
+      );
     }
 
     if (errors && errors.length > 0) {
@@ -754,6 +778,7 @@ export class WorkspaceQueryRunnerService {
     const resultWithGetters = await this.queryResultGettersFactory.create(
       result,
       objectMetadataItem,
+      workspaceId,
     );
 
     return parseResult(resultWithGetters);
@@ -767,7 +792,7 @@ export class WorkspaceQueryRunnerService {
   ): Promise<Result> {
     const result = await this.execute(query, workspaceId);
 
-    return this.parseResult(result, objectMetadataItem, command);
+    return this.parseResult(result, objectMetadataItem, command, workspaceId);
   }
 
   async triggerWebhooks<Record>(

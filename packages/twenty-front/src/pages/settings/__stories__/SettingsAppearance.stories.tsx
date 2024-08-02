@@ -7,7 +7,7 @@ import {
 import { PrefetchLoadingDecorator } from '~/testing/decorators/PrefetchLoadingDecorator';
 import { graphqlMocks } from '~/testing/graphqlMocks';
 
-import { SettingsAppearance } from '../SettingsAppearance';
+import { SettingsAppearance } from '../profile/appearance/components/SettingsAppearance';
 
 const meta: Meta<PageDecoratorArgs> = {
   title: 'Pages/Settings/SettingsAppearance',
