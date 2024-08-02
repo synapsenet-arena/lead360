@@ -13,7 +13,7 @@ const config: CodegenConfig = {
     },
   ],
   overwrite: true,
-  documents: ['./src/**/*.ts', '!src/generated/**/*.*'],
+  documents: ['./src/**/*.ts', '!src/generated/**/*.*' ],
   generates: {
     './src/generated/graphql.tsx': {
       plugins: [

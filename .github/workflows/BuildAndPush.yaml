@@ -1,0 +1,91 @@
+name: Build and Push 
+run-name: ${{ github.actor }} is testing out Building the project
+on: [push]
+jobs:
+  Build-Lead360:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version-file: package.json
+      - name: Setup NVM and yarn
+        run: |
+          sudo apt-get install curl
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+          corepack enable
+      - name: Setup PostgreSQL Database
+        run: make postgres-on-linux
+      - name: Setup Environment variables
+        run: | 
+          cp ./packages/twenty-front/.env.example ./packages/twenty-front/.env
+          cp ./packages/twenty-server/.env.example ./packages/twenty-server/.env
+      - name: Install dependencies
+        run: yarn
+      - name: Build Project
+        run: |
+          npx nx database:reset twenty-server
+          npx nx build twenty-server
+          npx nx build twenty-front
+  
+  Deploy-lead360-App:
+      needs:  Build-Lead360
+      runs-on: ubuntu-latest
+      steps:
+        - name: Check out repository code
+          uses: actions/checkout@v4
+
+        - name: Install doctl
+          uses: digitalocean/action-doctl@v2
+          with:
+            token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+        - name: Setup Environment variables
+          run: | 
+              cp ./packages/twenty-server/.env.example ./packages/twenty-server/.env
+              
+        - name: Replace ConfigMap and Secret Values
+          run: |
+            sed -i "s|<POSTGRES_DB>|${{ secrets.POSTGRES_DB }}|" ./lead360.yaml
+            sed -i "s|<POSTGRES_USER>|$(echo -n ${{ secrets.POSTGRES_USER }} | base64)|" ./lead360.yaml
+            sed -i "s|<POSTGRES_PASSWORD>|$(echo -n ${{ secrets.POSTGRES_PASSWORD }} | base64)|" ./lead360.yaml
+            sed -i "s|<ACCESS_TOKEN_SECRET>|$(echo -n ${{ secrets.ACCESS_TOKEN_SECRET }} | base64)|" ./lead360.yaml
+            sed -i "s|<LOGIN_TOKEN_SECRET>|$(echo -n ${{ secrets.LOGIN_TOKEN_SECRET }} | base64)|" ./lead360.yaml
+            sed -i "s|<REFRESH_TOKEN_SECRET>|$(echo -n ${{ secrets.REFRESH_TOKEN_SECRET }} | base64)|" ./lead360.yaml
+            sed -i "s|<SIGN_IN_PREFILLED>|$(echo -n ${{ secrets.SIGN_IN_PREFILLED }} | base64)|" ./lead360.yaml
+
+        - name: Build Lead360DB container image
+          run: docker build -t ${{ secrets.REGISTRY_NAME }}/db:latest -f ./DockerfileDB .
+          
+        - name: Build Lead360 container image
+          run: docker build -t ${{ secrets.REGISTRY_NAME }}/lead360v1:latest -f ./Dockerfile .
+
+        - name: Log in to DigitalOcean Container Registry with short-lived credentials
+          run: doctl registry login --expiry-seconds 1200
+        
+        - name: Push image to DigitalOcean Container Registry
+          run: docker push ${{ secrets.REGISTRY_NAME }}/db:latest
+
+        - name: Push image to DigitalOcean Container Registry
+          run: docker push ${{ secrets.REGISTRY_NAME }}/lead360v1:latest
+          
+        - name: Save DigitalOcean kubeconfig with short-lived credentials
+          run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
+
+        - name : Apply Deployment
+          run : kubectl apply -f ./lead360.yaml 
+          
+        - name: Restart lead360db deployment
+          run: kubectl rollout restart deployment/lead360db-deployment
+          
+        - name: Restart lead360 deployment
+          run: kubectl rollout restart deployment/lead360-deployment
+
+

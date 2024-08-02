@@ -37,7 +37,6 @@ const StyledActionContainer = styled.div`
   justify-content: center;
   width: 300px;
 `;
-
 const Sidepanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [clientUrl, setClientUrl] = useState(

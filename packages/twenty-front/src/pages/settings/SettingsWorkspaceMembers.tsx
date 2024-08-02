@@ -67,7 +67,7 @@ export const SettingsWorkspaceMembers = () => {
               description="Copy and send an invite link directly"
             />
             <WorkspaceInviteLink
-              inviteLink={`${window.location.origin}/invite/${currentWorkspace?.inviteHash}`}
+              inviteLink={`${window.location.origin}/auth/invite/${currentWorkspace?.inviteHash}`}
             />
           </Section>
         )}

@@ -24,6 +24,7 @@ import { ApolloMetadataClientProvider } from '@/object-metadata/components/Apoll
 import { ObjectMetadataItemsProvider } from '@/object-metadata/components/ObjectMetadataItemsProvider';
 import { PrefetchDataProvider } from '@/prefetch/components/PrefetchDataProvider';
 import { AppPath } from '@/types/AppPath';
+import { CustomPath } from '@/types/CustomPath';
 import { SettingsPath } from '@/types/SettingsPath';
 import { DialogManager } from '@/ui/feedback/dialog-manager/components/DialogManager';
 import { DialogManagerScope } from '@/ui/feedback/dialog-manager/scopes/DialogManagerScope';
@@ -42,6 +43,11 @@ import { Authorize } from '~/pages/auth/Authorize';
 import { Invite } from '~/pages/auth/Invite';
 import { PasswordReset } from '~/pages/auth/PasswordReset';
 import { SignInUp } from '~/pages/auth/SignInUp';
+import { CampaignForm } from '~/pages/campaigns/CampaignForm';
+import { CampaignForm2 } from '~/pages/campaigns/CampaignForm2';
+import { CampaignForm3 } from '~/pages/campaigns/CampaignForm3';
+import { Campaigns } from '~/pages/campaigns/Campaigns';
+import Dashboard from '~/pages/campaigns/Dashboard';
 import { ImpersonateEffect } from '~/pages/impersonate/ImpersonateEffect';
 import { NotFound } from '~/pages/not-found/NotFound';
 import { RecordIndexPage } from '~/pages/object-record/RecordIndexPage';
@@ -52,6 +58,7 @@ import { CreateWorkspace } from '~/pages/onboarding/CreateWorkspace';
 import { InviteTeam } from '~/pages/onboarding/InviteTeam';
 import { PaymentSuccess } from '~/pages/onboarding/PaymentSuccess';
 import { SyncEmails } from '~/pages/onboarding/SyncEmails';
+import { Segment } from '~/pages/Segment/Segment';
 import { SettingsAccounts } from '~/pages/settings/accounts/SettingsAccounts';
 import { SettingsAccountsCalendars } from '~/pages/settings/accounts/SettingsAccountsCalendars';
 import { SettingsAccountsEmails } from '~/pages/settings/accounts/SettingsAccountsEmails';
@@ -315,8 +322,20 @@ const createRouter = (
         <Route element={<BlankLayout />}>
           <Route path={AppPath.Authorize} element={<Authorize />} />
         </Route>
-      </Route>,
-    ),
+        <Route element={<DefaultLayout />}>
+
+        <Route path={CustomPath.CampaignsPage} element={<Campaigns />} />
+          <Route path={CustomPath.CampaignForm} element={<CampaignForm />} />
+          <Route path={CustomPath.CampaignForm2} element={<CampaignForm2 />} />
+          <Route path={CustomPath.CampaignForm3} element={<CampaignForm3 />} />
+
+          <Route path={CustomPath.Dashboard} element={<Dashboard />} />
+
+          <Route path={CustomPath.SegmentPage} element={<Segment />} />
+      </Route>
+
+    </Route>
+    )
   );
 
 export const App = () => {

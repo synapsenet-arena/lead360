@@ -16,6 +16,7 @@ import { App } from './App';
 
 import './index.css';
 import 'react-loading-skeleton/dist/skeleton.css';
+import CampaignContext from '~/pages/campaigns/CampaignContext';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') ?? document.body,
@@ -31,7 +32,9 @@ root.render(
           <IconsProvider>
             <ExceptionHandlerProvider>
               <HelmetProvider>
-                <App />
+                <CampaignContext>
+                  <App />
+                </CampaignContext>
               </HelmetProvider>
             </ExceptionHandlerProvider>
           </IconsProvider>

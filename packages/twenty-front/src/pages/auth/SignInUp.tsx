@@ -16,7 +16,7 @@ import { isDefined } from '~/utils/isDefined';
 
 export const SignInUp = () => {
   const { form } = useSignInUpForm();
-  const currentWorkspace = useRecoilValue(currentWorkspaceState);
+  const currentWorkspace= useRecoilValue(currentWorkspaceState);
 
   const { signInUpStep, signInUpMode } = useSignInUp(form);
 
@@ -25,11 +25,11 @@ export const SignInUp = () => {
       signInUpStep === SignInUpStep.Init ||
       signInUpStep === SignInUpStep.Email
     ) {
-      return 'Welcome to Twenty';
+      return 'Welcome to Lead360';
     }
     return signInUpMode === SignInUpMode.SignIn
-      ? 'Sign in to Twenty'
-      : 'Sign up to Twenty';
+      ? 'Sign in to Lead360'
+      : 'Sign up to Lead360';
   }, [signInUpMode, signInUpStep]);
 
   if (isDefined(currentWorkspace)) {

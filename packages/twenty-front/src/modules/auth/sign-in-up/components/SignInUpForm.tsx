@@ -258,7 +258,7 @@ export const SignInUpForm = () => {
       )}
       {signInUpStep === SignInUpStep.Init && (
         <FooterNote>
-          By using Twenty, you agree to the{' '}
+          By using Lead360, you agree to the{' '}
           <a
             href="https://twenty.com/legal/terms"
             target="_blank"

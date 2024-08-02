@@ -26,6 +26,7 @@ import { MessageQueueDriverType } from 'src/engine/integrations/message-queue/in
 
 import { IntegrationsModule } from './engine/integrations/integrations.module';
 import { CoreEngineModule } from './engine/core-modules/core-engine.module';
+import { CampaignModule } from 'src/campaign/campaign.module';
 
 @Module({
   imports: [
@@ -59,6 +60,8 @@ import { CoreEngineModule } from './engine/core-modules/core-engine.module';
     RestApiModule,
     // Conditional modules
     ...AppModule.getConditionalModules(),
+    //campaign modules
+    CampaignModule,
   ],
 })
 export class AppModule {

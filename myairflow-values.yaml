@@ -1,0 +1,22 @@
+dags:
+  gitSync:
+    enabled: true
+    repo: git@github.com:synapsenet-arena/lead360-workflow.git
+    branch: feature/workflow-campaign
+    depth: 1
+    # the number of consecutive failures allowed before aborting
+    maxFailures: 0
+    # subpath within the repo where dags are located
+    # should be "" if dags are at repo root
+    subPath: "/dags"
+    sshKeySecret: 
+
+registry:
+  secretName: digitalocean-secrets
+
+  # Example:
+  connection:
+    user: 
+    pass: 
+    host: 
+    email: 

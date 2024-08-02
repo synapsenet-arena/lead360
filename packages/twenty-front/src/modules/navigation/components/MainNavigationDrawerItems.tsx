@@ -10,6 +10,8 @@ import { NavigationDrawerSection } from '@/ui/navigation/navigation-drawer/compo
 import { navigationMemorizedUrlState } from '@/ui/navigation/states/navigationMemorizedUrlState';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
 
+import { IconBrandGoogleAnalytics } from '@tabler/icons-react';
+
 export const MainNavigationDrawerItems = () => {
   const isMobile = useIsMobile();
   const { toggleCommandMenu } = useCommandMenu();
@@ -35,6 +37,13 @@ export const MainNavigationDrawerItems = () => {
               setNavigationMemorizedUrl(location.pathname + location.search);
             }}
             Icon={IconSettings}
+          />
+            <NavigationDrawerItem
+            label="Dashboard"
+            to="/dashboard"
+            // active={isTasksPage}
+            Icon={IconBrandGoogleAnalytics}
+            // count={currentUserDueTaskCount}
           />
         </NavigationDrawerSection>
       )}

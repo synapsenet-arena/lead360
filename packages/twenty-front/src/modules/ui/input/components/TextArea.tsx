@@ -6,7 +6,7 @@ import { usePreviousHotkeyScope } from '@/ui/utilities/hotkey/hooks/usePreviousH
 
 import { InputHotkeyScope } from '../types/InputHotkeyScope';
 
-const MAX_ROWS = 5;
+const MAX_ROWS = 100;
 
 export type TextAreaProps = {
   disabled?: boolean;

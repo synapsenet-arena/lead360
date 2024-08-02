@@ -85,7 +85,6 @@ type EmailThreadPreviewProps = {
   divider?: boolean;
   thread: TimelineThread;
 };
-
 export const EmailThreadPreview = ({
   divider,
   thread,

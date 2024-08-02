@@ -13,7 +13,11 @@ import {
 import { Calendar } from '@/activities/calendar/components/Calendar';
 import { EmailThreads } from '@/activities/emails/components/EmailThreads';
 import { Attachments } from '@/activities/files/components/Attachments';
+import { FormTemplate } from '@/activities/formTemplate/components/formTemplate';
+import { Leads } from '@/activities/Leads/components/Leads';
+import { MessageTemplate } from '@/activities/messageTemplate/components/messageTemplate';
 import { Notes } from '@/activities/notes/components/Notes';
+import { Schedule } from '@/activities/Schedule/components/schedule';
 import { ObjectTasks } from '@/activities/tasks/components/ObjectTasks';
 import { TimelineActivities } from '@/activities/timelineActivities/components/TimelineActivities';
 import { ActivityTargetableObject } from '@/activities/types/ActivityTargetableEntity';
@@ -22,12 +26,37 @@ import { ShowPageActivityContainer } from '@/ui/layout/show-page/components/Show
 import { TabList } from '@/ui/layout/tab/components/TabList';
 import { useTabList } from '@/ui/layout/tab/hooks/useTabList';
 import { useIsMobile } from '@/ui/utilities/responsive/hooks/useIsMobile';
+import {
+  IconClock,
+  IconDeviceTabletQuestion,
+  IconMessage,
+  IconUsersGroup,
+} from '@tabler/icons-react';
 
 const StyledShowPageRightContainer = styled.div<{ isMobile: boolean }>`
   display: flex;
   flex: 1 0 0;
   flex-direction: column;
   justify-content: start;
+  overflow: ${() => (useIsMobile() ? 'none' : 'hidden')};
+  /* width: calc(100% + 4px); */
+  overflow: scroll;
+  scrollbar-color: ${({ theme }) => theme.border.color.strong};
+  scrollbar-width: thin;
+
+  *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.border.color.strong};
+    border-radius: ${({ theme }) => theme.border.radius.sm};
+  }
   width: 100%;
 `;
 
@@ -151,6 +180,41 @@ export const ShowPageRightContainer = ({
       hide: !shouldDisplayCalendarTab,
     },
   ];
+  let TASK_TABS = [];
+
+  if (
+    targetableObject.targetObjectNameSingular === 'campaign' ||
+    targetableObject.targetObjectNameSingular === 'campaignTrigger'
+  ) {
+    TASK_TABS = [
+      {
+        id: 'schedule',
+        title: 'Schedule',
+        Icon: IconClock,
+        hide: !timeline,
+      },
+      {
+        id: 'leads',
+        title: 'Leads',
+        Icon: IconUsersGroup,
+        hide: !tasks,
+      },
+      {
+        id: 'messageTemplate',
+        title: 'Message Template',
+        Icon: IconMessage,
+        hide: !notes,
+      },
+      {
+        id: 'formTemplate',
+        title: 'Form Template',
+        Icon: IconDeviceTabletQuestion,
+        hide: !notes,
+      }
+    ];
+  } else {
+    TASK_TABS = tabs;
+  }
 
   const renderActiveTabContent = () => {
     switch (activeTabId) {
@@ -196,9 +260,20 @@ export const ShowPageRightContainer = ({
         <TabList
           loading={loading}
           tabListId={`${TAB_LIST_COMPONENT_ID}-${isInRightDrawer}`}
-          tabs={tabs}
+          tabs={TASK_TABS}
         />
       </StyledTabListContainer>
+
+      {activeTabId === 'schedule' && (
+        <Schedule targetableObject={targetableObject} />
+      )}
+      {activeTabId === 'leads' && <Leads targetableObject={targetableObject} />}
+      {activeTabId === 'messageTemplate' && (
+        <MessageTemplate targetableObject={targetableObject} />
+      )}
+      {activeTabId === 'formTemplate' && (
+        <FormTemplate targetableObject={targetableObject} />
+      )}
       {renderActiveTabContent()}
     </StyledShowPageRightContainer>
   );

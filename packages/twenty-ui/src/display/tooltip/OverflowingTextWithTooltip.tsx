@@ -5,6 +5,7 @@ import { styled } from '@linaria/react';
 import { THEME_COMMON } from '@ui/theme';
 
 import { AppTooltip, TooltipDelay } from './AppTooltip';
+import { delay } from 'framer-motion';
 
 const spacing4 = THEME_COMMON.spacing(4);
 

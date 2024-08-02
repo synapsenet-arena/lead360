@@ -48,10 +48,9 @@ const StyledContainer = styled.div`
   cursor: pointer;
   height: 61px;
   padding: ${({ theme }) => theme.spacing(2)};
-  position: relative;
   width: 296px;
   margin-top: ${({ theme }) => theme.spacing(2)};
-
+  font-weight: ${({ theme }) =>theme.font.weight.semiBold};
   @media (max-width: ${MOBILE_VIEWPORT}px) {
     border-radius: 0;
     width: 100%;
@@ -188,7 +187,6 @@ export const SnackBar = ({
         {title}
         <StyledActions>
           {!!onCancel && <LightButton title="Cancel" onClick={onCancel} />}
-
           {!!onClose && (
             <LightIconButton title="Close" Icon={IconX} onClick={onClose} />
           )}

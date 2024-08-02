@@ -4,6 +4,7 @@ import {
   PageDecorator,
   PageDecoratorArgs,
 } from '~/testing/decorators/PageDecorator';
+import { PrefetchLoadingDecorator } from '~/testing/decorators/PrefetchLoadingDecorator';
 import { graphqlMocks } from '~/testing/graphqlMocks';
 
 import { SettingsAppearance } from '../profile/appearance/components/SettingsAppearance';
@@ -11,7 +12,7 @@ import { SettingsAppearance } from '../profile/appearance/components/SettingsApp
 const meta: Meta<PageDecoratorArgs> = {
   title: 'Pages/Settings/SettingsAppearance',
   component: SettingsAppearance,
-  decorators: [PageDecorator],
+  decorators: [PrefetchLoadingDecorator, PageDecorator],
   args: { routePath: '/settings/appearance' },
   parameters: {
     msw: graphqlMocks,

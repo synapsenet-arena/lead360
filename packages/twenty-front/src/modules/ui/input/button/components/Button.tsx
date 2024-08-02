@@ -8,7 +8,7 @@ import { IconComponent, Pill } from 'twenty-ui';
 export type ButtonSize = 'medium' | 'small';
 export type ButtonPosition = 'standalone' | 'left' | 'middle' | 'right';
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
-export type ButtonAccent = 'default' | 'blue' | 'danger';
+export type ButtonAccent = 'default' | 'blue' | 'danger' | 'dark';
 
 export type ButtonProps = {
   className?: string;
@@ -312,13 +312,13 @@ const StyledButton = styled('button', {
   border-radius: ${({ position, theme }) => {
     switch (position) {
       case 'left':
-        return `${theme.border.radius.sm} 0px 0px ${theme.border.radius.sm}`;
+        return `${theme.border.radius.md} 0px 0px ${theme.border.radius.md}`;
       case 'right':
-        return `0px ${theme.border.radius.sm} ${theme.border.radius.sm} 0px`;
+        return `0px ${theme.border.radius.md} ${theme.border.radius.md} 0px`;
       case 'middle':
         return '0px';
       case 'standalone':
-        return theme.border.radius.sm;
+        return theme.border.radius.md;
     }
   }};
   border-style: solid;
@@ -338,9 +338,8 @@ const StyledButton = styled('button', {
   font-weight: 500;
   gap: ${({ theme }) => theme.spacing(1)};
   height: ${({ size }) => (size === 'small' ? '24px' : '32px')};
-  justify-content: ${({ justify }) => justify};
   padding: ${({ theme }) => {
-    return `0 ${theme.spacing(2)}`;
+    return `0 ${theme.spacing(8)}`;
   }};
 
   transition: background 0.1s ease;
@@ -370,7 +369,6 @@ export const Button = ({
   position = 'standalone',
   soon = false,
   disabled = false,
-  justify = 'flex-start',
   focus = false,
   onClick,
   to,
@@ -388,7 +386,6 @@ export const Button = ({
       position={position}
       disabled={soon || disabled}
       focus={focus}
-      justify={justify}
       accent={accent}
       className={className}
       onClick={onClick}

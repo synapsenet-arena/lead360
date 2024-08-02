@@ -20,11 +20,16 @@ import { useIsMatchingLocation } from '~/hooks/useIsMatchingLocation';
 import { usePageChangeEffectNavigateLocation } from '~/hooks/usePageChangeEffectNavigateLocation';
 import { isDefined } from '~/utils/isDefined';
 
+import { CustomPath } from '@/types/CustomPath';
+import { SnackBarVariant } from '@/ui/feedback/snack-bar-manager/components/SnackBar';
+import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
+
 // TODO: break down into smaller functions and / or hooks
 //  - moved usePageChangeEffectNavigateLocation into dedicated hook
 export const PageChangeEffect = () => {
   const navigate = useNavigate();
   const isMatchingLocation = useIsMatchingLocation();
+  const { enqueueSnackBar } = useSnackBar();
 
   const [previousLocation, setPreviousLocation] = useState('');
 
@@ -52,12 +57,39 @@ export const PageChangeEffect = () => {
   }, [location, previousLocation]);
 
   useEffect(() => {
+    const isMatchingOngoingUserCreationRoute =
+      isMatchingLocation(AppPath.SignIn) ||
+      isMatchingLocation(AppPath.Invite) ||
+      isMatchingLocation(AppPath.Verify);
+
+    const isMatchingOnboardingRoute =
+      isMatchingOngoingUserCreationRoute ||
+      isMatchingLocation(AppPath.CreateWorkspace) ||
+      isMatchingLocation(AppPath.CreateProfile) ||
+      isMatchingLocation(AppPath.PlanRequired) ||
+      isMatchingLocation(AppPath.PlanRequiredSuccess);
+
+    const navigateToSignUp = () => {
+      enqueueSnackBar('workspace does not exist', {
+        variant: SnackBarVariant.Error,
+      });
+      navigate(AppPath.SignUp);
+    };
+
     if (isDefined(pageChangeEffectNavigateLocation)) {
       navigate(pageChangeEffectNavigateLocation);
     }
+    if (
+      isMatchingLocation(CustomPath.CampaignForm) ||
+      isMatchingLocation(CustomPath.CampaignForm2) ||
+      isMatchingLocation(CustomPath.CampaignForm3)
+    ) {
+      console.log('Path Location:', location.pathname);
+      navigate(location.pathname);
+      return;
+    } 
   }, [navigate, pageChangeEffectNavigateLocation]);
-
-  useEffect(() => {
+useEffect(() => {
     switch (true) {
       case isMatchingLocation(AppPath.RecordIndexPage): {
         setHotkeyScope(TableHotkeyScope.Table, {
@@ -73,6 +105,28 @@ export const PageChangeEffect = () => {
         });
         break;
       }
+      case isMatchingLocation(CustomPath.CampaignForm): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+      case isMatchingLocation(CustomPath.CampaignForm2): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+      case isMatchingLocation(CustomPath.CampaignForm3): {
+        setHotkeyScope(PageHotkeyScope.CampaignForm, {
+          goto: true,
+          keyboardShortcutMenu: true,
+        });
+        break;
+      }
+
       case isMatchingLocation(AppPath.OpportunitiesPage): {
         setHotkeyScope(PageHotkeyScope.OpportunitiesPage, {
           goto: true,
@@ -102,14 +156,6 @@ export const PageChangeEffect = () => {
       }
       case isMatchingLocation(AppPath.CreateWorkspace): {
         setHotkeyScope(PageHotkeyScope.CreateWokspace);
-        break;
-      }
-      case isMatchingLocation(AppPath.SyncEmails): {
-        setHotkeyScope(PageHotkeyScope.SyncEmail);
-        break;
-      }
-      case isMatchingLocation(AppPath.InviteTeam): {
-        setHotkeyScope(PageHotkeyScope.InviteTeam);
         break;
       }
       case isMatchingLocation(AppPath.PlanRequired): {

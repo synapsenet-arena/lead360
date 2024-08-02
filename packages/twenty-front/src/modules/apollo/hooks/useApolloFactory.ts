@@ -17,6 +17,7 @@ import { useUpdateEffect } from '~/hooks/useUpdateEffect';
 import { isDefined } from '~/utils/isDefined';
 
 import { ApolloFactory, Options } from '../services/apollo.factory';
+import { CustomPath } from '@/types/CustomPath';
 
 export const useApolloFactory = (options: Partial<Options<any>> = {}) => {
   // eslint-disable-next-line @nx/workspace-no-state-useref
@@ -71,6 +72,12 @@ export const useApolloFactory = (options: Partial<Options<any>> = {}) => {
         setCurrentWorkspace(null);
         setWorkspaces(null);
         if (
+          isMatchingLocation(CustomPath.CampaignForm) ||
+          isMatchingLocation(CustomPath.CampaignForm2) ||
+          isMatchingLocation(CustomPath.CampaignForm3)
+        ) {
+          navigate(location.pathname);
+        } else if (
           !isMatchingLocation(AppPath.Verify) &&
           !isMatchingLocation(AppPath.SignInUp) &&
           !isMatchingLocation(AppPath.Invite) &&
